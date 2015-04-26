@@ -18,11 +18,9 @@ void splitDataSet() {
 }
 
 
-std::vector<testPoint*>* fillTestPoints() {
+std::vector<testPoint*> fillTestPoints() {
     
-    
-    
-    std::vector<testPoint*> *trainingData = new std::vector<testPoint*>;
+    std::vector<testPoint*> trainingData;
     std::ifstream data;
     std::string line;
     
@@ -58,7 +56,23 @@ std::vector<testPoint*>* fillTestPoints() {
         }
         pointCount++;
         
-        trainingData -> push_back(pt);
+        trainingData.push_back(pt);
     }
     return trainingData;
 }
+
+
+double getGlobalAverage(std::vector<testPoint *> ratings) {
+    
+    double g_avg = 0.0;
+    
+    for(int i = 0; i < ratings.size(); i++) {
+        g_avg += (double) ratings[i] -> getRating();
+    }
+    
+    return g_avg / ratings.size();
+}
+
+
+
+

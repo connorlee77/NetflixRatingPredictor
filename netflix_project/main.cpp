@@ -7,7 +7,7 @@
 //
 
 #include <iostream>
-#include "dataManager.h"
+#include "svd.h"
 
 
 
@@ -16,9 +16,21 @@
 
 int main(int argc, const char * argv[]) {
     
-    //test dataManager's make test point objects
-    std::vector<testPoint*>* dataSet = fillTestPoints();
-    printf("%d", dataSet -> at(1900000) -> getUser());
+    // Parse file and store test points as testPoint objects
+    std::vector<testPoint*> dataSet = fillTestPoints();
+    
+    
+    // Get global average of data set
+    
+    /*
+    double avg = getGlobalAverage(dataSet);
+    printf("%f", avg);
+     */
+    initialize(30);
+    
+    for(int i = 0; i < TOTAL_USERS; i++) {
+        printf("%f\n", user_feature_table[i][0]);
+    }
     
     return 0;
 }

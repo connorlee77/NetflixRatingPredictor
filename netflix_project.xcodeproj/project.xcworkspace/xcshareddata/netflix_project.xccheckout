@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>93FE9F37-49D9-41F3-BC88-C00616BEEFE6</string>
+	<key>IDESourceControlProjectName</key>
+	<string>netflix_project</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>2A0B9DA78046E7DA8FE0D8BB4F2F6967BC4FF07E</key>
+		<string>https://github.com/connorlee77/UMRatingPredictor.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>netflix_project.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>2A0B9DA78046E7DA8FE0D8BB4F2F6967BC4FF07E</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/connorlee77/UMRatingPredictor.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>2A0B9DA78046E7DA8FE0D8BB4F2F6967BC4FF07E</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>2A0B9DA78046E7DA8FE0D8BB4F2F6967BC4FF07E</string>
+			<key>IDESourceControlWCCName</key>
+			<string>netflix_project</string>
+		</dict>
+	</array>
+</dict>
+</plist>

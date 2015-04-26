@@ -26,11 +26,11 @@
 
 
 // change in sample data file here!
-#define inSampleDataFile "/Users/ConnorLee/Desktop/netflix/file2.dta"
+#define inSampleDataFile "/Users/ConnorLee/Desktop/netflix/file1.dta"
 
 void splitDataSet();
-std::vector<testPoint*>* fillTestPoints();
-
+std::vector<testPoint*> fillTestPoints();
+double getGlobalAverage(std::vector<testPoint *> ratings);
 
 
 

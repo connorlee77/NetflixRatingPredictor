@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		552D0ED61AEA13760082D855 /* testpoints.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 552D0ED41AEA13760082D855 /* testpoints.cpp */; };
 		552D0EDA1AEA2A800082D855 /* dataManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 552D0ED71AEA1E610082D855 /* dataManager.cpp */; };
+		552D0EF01AEC40530082D855 /* svd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 552D0EEE1AEC40530082D855 /* svd.cpp */; };
 		558FD3801ADFAB8C00953B06 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 558FD37F1ADFAB8C00953B06 /* main.cpp */; };
 		558FD3881ADFABD000953B06 /* split_set.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 558FD3861ADFABD000953B06 /* split_set.cpp */; };
 /* End PBXBuildFile section */
@@ -30,6 +31,8 @@
 		552D0ED51AEA13760082D855 /* testpoints.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = testpoints.h; sourceTree = "<group>"; };
 		552D0ED71AEA1E610082D855 /* dataManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dataManager.cpp; sourceTree = "<group>"; };
 		552D0ED81AEA1E610082D855 /* dataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dataManager.h; sourceTree = "<group>"; };
+		552D0EEE1AEC40530082D855 /* svd.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = svd.cpp; sourceTree = "<group>"; };
+		552D0EEF1AEC40530082D855 /* svd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = svd.h; sourceTree = "<group>"; };
 		558FD37C1ADFAB8C00953B06 /* netflix_project */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = netflix_project; sourceTree = BUILT_PRODUCTS_DIR; };
 		558FD37F1ADFAB8C00953B06 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		558FD3861ADFABD000953B06 /* split_set.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = split_set.cpp; sourceTree = "<group>"; };
@@ -73,6 +76,8 @@
 				558FD3871ADFABD000953B06 /* split_set.h */,
 				552D0ED71AEA1E610082D855 /* dataManager.cpp */,
 				552D0ED81AEA1E610082D855 /* dataManager.h */,
+				552D0EEE1AEC40530082D855 /* svd.cpp */,
+				552D0EEF1AEC40530082D855 /* svd.h */,
 			);
 			path = netflix_project;
 			sourceTree = "<group>";
@@ -137,6 +142,7 @@
 				552D0EDA1AEA2A800082D855 /* dataManager.cpp in Sources */,
 				558FD3801ADFAB8C00953B06 /* main.cpp in Sources */,
 				558FD3881ADFABD000953B06 /* split_set.cpp in Sources */,
+				552D0EF01AEC40530082D855 /* svd.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
