@@ -8,29 +8,22 @@
 
 #include <iostream>
 #include "svd.h"
-
+#include "errorManager.h"
 
 
 
 
 
 int main(int argc, const char * argv[]) {
+    std::vector<testPoint *> train_data = fillTestPoints();
     
-    // Parse file and store test points as testPoint objects
-    std::vector<testPoint*> dataSet = fillTestPoints();
+    // epochs : set for number of features in feature vector.
+    int num_features = 40;
     
+    computeSVD(0.001, num_features, train_data);
     
-    // Get global average of data set
-    
-    /*
-    double avg = getGlobalAverage(dataSet);
-    printf("%f", avg);
-     */
-    initialize(30);
-    
-    for(int i = 0; i < TOTAL_USERS; i++) {
-        printf("%f\n", user_feature_table[i][0]);
-    }
+    double err = getSampleError(train_data, num_features);
+    printf("\nEin: %f\n", err);
     
     return 0;
 }

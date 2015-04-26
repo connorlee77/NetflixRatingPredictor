@@ -26,7 +26,7 @@
 
 
 // change in sample data file here!
-#define inSampleDataFile "/Users/ConnorLee/Desktop/netflix/file1.dta"
+#define inSampleDataFile "/Users/ConnorLee/Desktop/netflix/file2.dta"
 
 void splitDataSet();
 std::vector<testPoint*> fillTestPoints();

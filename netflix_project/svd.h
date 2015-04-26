@@ -11,21 +11,24 @@
 
 #include <stdio.h>
 #include "dataManager.h"
+#include <assert.h>
+#include <math.h>
 
-const float GLOBAL_AVG_SET1 = 3.608609;
-const float GLOBAL_AVG_SET2 = 3.608859;
+extern const float GLOBAL_AVG_SET1;
+extern const float GLOBAL_AVG_SET2;
 
-const int TOTAL_USERS = 458293;
-const int TOTAL_MOVIES = 17770;
+extern const int TOTAL_USERS;
+extern const int TOTAL_MOVIES;
 
-double **user_feature_table = new double *[TOTAL_USERS];
-double **movie_feature_table = new double *[TOTAL_MOVIES];
+extern double **user_feature_table;
+extern double **movie_feature_table;
 
 
 void initialize(int num_features);
 void train();
-double predictRating(int user, int movie); 
-
+double predictRating(int user, int movie, int num_features);
+void trainFeatures(double learning_rate, int user, int movie, int rating, int num_feature);
+void computeSVD(double learning_rate, int num_features, std::vector<testPoint *> train_data);
 
 
 
