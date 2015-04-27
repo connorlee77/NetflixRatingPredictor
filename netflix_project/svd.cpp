@@ -18,7 +18,7 @@ double **user_feature_table = new double *[TOTAL_USERS];
 double **movie_feature_table = new double *[TOTAL_MOVIES];
 
 
-void initialize(int num_features) {
+void initializeFeatureVectors(int num_features) {
     
     for(int i = 0; i < TOTAL_USERS; i++) {
         
@@ -74,7 +74,7 @@ void trainFeatures(double learning_rate, int user, int movie, int rating, int nu
 
 void computeSVD(double learning_rate, int num_features, std::vector<testPoint *> train_data) {
     
-    initialize(num_features);
+    initializeFeatureVectors(num_features);
     
     int user, movie, rating;
     
@@ -89,20 +89,6 @@ void computeSVD(double learning_rate, int num_features, std::vector<testPoint *>
             trainFeatures(learning_rate, user, movie, rating, i);
         }
         
-        printf("Epoch %d completed.\n", i + 1);
+        printf("Feature %d trained.\n", i + 1);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

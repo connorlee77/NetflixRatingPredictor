@@ -24,7 +24,7 @@ extern double **user_feature_table;
 extern double **movie_feature_table;
 
 
-void initialize(int num_features);
+void initializeFeatureVectors(int num_features);
 void train();
 double predictRating(int user, int movie, int num_features);
 void trainFeatures(double learning_rate, int user, int movie, int rating, int num_feature);

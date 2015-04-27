@@ -70,9 +70,52 @@ double getSampleError(std::vector<testPoint *> inputData, int num_features) {
     return calcSampleError(getSquareResiduals(inputData, num_features));
 }
 
-
-
-
-
-
-
+void predictQual(int num_features){
+    
+    std::vector<testPoint*> trainingData;
+    std::ifstream data;
+    std::string line;
+    
+    std::ofstream qualOut;
+    qualOut.open("/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/qualOut.dta", std::ios::app);
+    if(!qualOut.is_open()) {
+        fprintf(stderr, "qualOut was not opened!");
+    }
+    
+    data.open(qualDataFile, std::ios::in);
+    int pointCount = 1;
+    while(getline(data, line)) {
+        
+        int col = 0;
+        std::istringstream lineIn(line);
+        testPoint *pt = new testPoint();
+        
+        while(lineIn) {
+            int val = 0;
+            
+            if(lineIn >> val) {
+                
+                if(col == 0) {
+                    pt -> setUser(val);
+                } else if(col == 1){
+                    pt -> setMovie(val);
+                } else if(col == 2) {
+                    pt -> setDate(val);
+                } else if(col == 3) {
+                    pt -> setRating(val);
+                }
+            }
+            
+            col++;
+        }
+        
+        if(pointCount % 100000 == 0) {
+            printf("%d testing points evaluated!\n", pointCount);
+        }
+        pointCount++;
+        
+        double predictedRating = predictRating(pt->getUser(), pt->getMovie(), num_features);
+        qualOut << predictedRating << "\n";
+    }
+    qualOut.close();
+}

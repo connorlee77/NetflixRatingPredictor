@@ -15,10 +15,13 @@
 #include "svd.h"
 #include <math.h>
 
+#define qualDataFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file5.dta"
+
 std::vector<double> predictSet(std::vector<testPoint *> inputData, int num_features);
 std::vector<double> getSquareResiduals(std::vector<testPoint *> inputData, int num_features);
 
 double calcSampleError(std::vector<double> residuals);
 double getSampleError(std::vector<testPoint *> inputData, int num_features);
+void predictQual(int num_features);
 
 #endif /* defined(__netflix_project__errorManager__) */

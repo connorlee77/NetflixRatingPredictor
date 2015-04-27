@@ -18,7 +18,7 @@ void splitDataSet() {
 }
 
 
-std::vector<testPoint*> fillTestPoints() {
+std::vector<testPoint*> fillTrainingData() {
     
     std::vector<testPoint*> trainingData;
     std::ifstream data;
@@ -72,7 +72,3 @@ double getGlobalAverage(std::vector<testPoint *> ratings) {
     
     return g_avg / ratings.size();
 }
-
-
-
-
