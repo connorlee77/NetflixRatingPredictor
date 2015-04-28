@@ -28,7 +28,7 @@ void initializeFeatureVectors(int num_features);
 void train();
 double predictRating(int user, int movie, int num_features);
 void trainFeatures(double learning_rate, int user, int movie, int rating, int num_feature);
-void computeSVD(double learning_rate, int num_features, std::vector<testPoint *> train_data);
+void computeSVD(double learning_rate, int num_features, std::vector<testPoint *> train_data, int epochs);
 
 
 

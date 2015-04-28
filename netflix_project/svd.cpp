@@ -7,6 +7,7 @@
 //
 
 #include "svd.h"
+#include <limits.h>
 
 const float GLOBAL_AVG_SET1 = 3.608609;
 const float GLOBAL_AVG_SET2 = 3.608859;
@@ -59,36 +60,42 @@ double predictRating(int user, int movie, int num_features) {
 /* Train feature #num_features */
 void trainFeatures(double learning_rate, int user, int movie, int rating, int num_feature) {
     
-    double error = learning_rate * (rating - predictRating(user, movie, num_feature + 1));
+    double error = (rating - predictRating(user, movie, num_feature + 1));
+    
     double temp_user_feature = user_feature_table[user - 1][num_feature];
-    
-    user_feature_table[user - 1][num_feature] += error * movie_feature_table[movie - 1][num_feature];
-    movie_feature_table[movie - 1][num_feature] += error * temp_user_feature;
-    
-    
+    user_feature_table[user - 1][num_feature] += learning_rate * error * movie_feature_table[movie - 1][num_feature];
+    movie_feature_table[movie - 1][num_feature] += learning_rate * error * temp_user_feature;
     
     assert(user_feature_table[user - 1][num_feature] < 50 && user_feature_table[user - 1][num_feature] > -50);
     assert(movie_feature_table[movie - 1][num_feature] < 50 && movie_feature_table[movie - 1][num_feature] > -50);
 }
 
 
-void computeSVD(double learning_rate, int num_features, std::vector<testPoint *> train_data) {
+void computeSVD(double learning_rate, int num_features, std::vector<testPoint *> train_data, int epochs) {
     
     initializeFeatureVectors(num_features);
     
     int user, movie, rating;
+    double curr_rmse;
     
-    for(int i = 0; i < num_features; i++) {
-        
+    int x = 0;
+    while(x < epochs) {
+        double sum = 0.0;
         for(int k = 0; k < train_data.size(); k++) {
             
             user = train_data[k] -> getUser();
             movie = train_data[k] -> getMovie();
             rating = train_data[k] -> getRating();
             
-            trainFeatures(learning_rate, user, movie, rating, i);
+            for(int i = 0; i < num_features; i++) {
+                trainFeatures(learning_rate, user, movie, rating, i);
+            }
+            sum += pow((rating - predictRating(user, movie, num_features)), 2);
         }
         
-        printf("Feature %d trained.\n", i + 1);
+        curr_rmse = sqrt((sum / train_data.size()));
+        x++;
+        printf("Epoch %d, rsme: %f\n", x, curr_rmse);
     }
+
 }

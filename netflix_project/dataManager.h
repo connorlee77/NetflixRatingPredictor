@@ -26,7 +26,13 @@
 
 
 // change in sample data file here!
-#define inSampleDataFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file1.dta"
+
+// Roshan's path
+//#define inSampleDataFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file1.dta"
+
+// Connor's path
+#define inSampleDataFile "/Users/ConnorLee/Desktop/netflix/file2.dta"
+
 
 void splitDataSet();
 std::vector<testPoint*> fillTrainingData();

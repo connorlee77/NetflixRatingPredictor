@@ -38,14 +38,9 @@ std::vector<double> getSquareResiduals(std::vector<testPoint *> inputData, int n
         
         rating = rating - predicted_rating;
         
-        // absolute value error
-        if(rating < 0) {
-            rating *= -1;
-        }
-        
         // squared error
-        //rating *= rating;
-        
+        rating = pow(rating, 2);
+        assert(rating >= 0.0);
         assert(isfinite(rating));
         residuals.push_back(rating);
     }
@@ -63,7 +58,7 @@ double calcSampleError(std::vector<double> residuals) {
         sum += residuals[i];
     }
     
-    return sum / residuals.size();
+    return sqrt(sum / residuals.size());
 }
 
 double getSampleError(std::vector<testPoint *> inputData, int num_features) {
@@ -77,7 +72,14 @@ void predictQual(int num_features){
     std::string line;
     
     std::ofstream qualOut;
-    qualOut.open("/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/qualOut.dta", std::ios::app);
+    
+    //Roshan's file path
+   
+    //qualOut.open("/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/qualOut.dta", std::ios::app);
+    
+    //Connor's file path
+    qualOut.open("/Users/ConnorLee/Desktop/netflix/qualOut.dta", std::ios::app);
+    
     if(!qualOut.is_open()) {
         fprintf(stderr, "qualOut was not opened!");
     }
