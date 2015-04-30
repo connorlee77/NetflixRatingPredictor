@@ -72,3 +72,36 @@ double getGlobalAverage(std::vector<testPoint *> ratings) {
     
     return g_avg / ratings.size();
 }
+
+
+void roundAll(std::string qual_filePath, std::string qual_out) {
+    std::ifstream data;
+    std::string line;
+    
+    std::ofstream roundOut;
+    double rounded;
+    
+    //Connor's file path
+    roundOut.open(qual_filePath, std::ios::app);
+    
+    if(!roundOut.is_open()) {
+        fprintf(stderr, "qualOut was not opened!");
+    }
+    
+    data.open(qual_out, std::ios::in);
+    while(getline(data, line)) {
+        
+        std::istringstream lineIn(line);
+        
+        while(lineIn) {
+            double val = 0;
+            if(lineIn >> val) {
+                rounded = std::round(val);
+                roundOut << rounded << "\n";
+            }
+        }
+        
+        
+    }
+    roundOut.close();
+}
