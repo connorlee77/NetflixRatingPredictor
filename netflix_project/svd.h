@@ -20,6 +20,8 @@ extern const float GLOBAL_AVG_SET2;
 extern const int TOTAL_USERS;
 extern const int TOTAL_MOVIES;
 
+extern const long BASE_SIZE;
+
 extern double **user_feature_table;
 extern double **movie_feature_table;
 
@@ -27,8 +29,8 @@ extern double **movie_feature_table;
 void initializeFeatureVectors(int num_features);
 void train();
 double predictRating(int user, int movie, int num_features);
-void trainFeatures(double learning_rate, int user, int movie, int rating, int num_feature);
-void computeSVD(double learning_rate, int num_features, std::vector<testPoint *> train_data, int epochs);
+void trainFeature(double learning_rate, int user, int movie, int rating, int num_feature, int num_features);
+void computeSVD(double learning_rate, int num_features, int* train_data, int epochs);
 
 
 

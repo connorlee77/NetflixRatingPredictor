@@ -15,6 +15,8 @@ const float GLOBAL_AVG_SET2 = 3.608859;
 const int TOTAL_USERS = 458293;
 const int TOTAL_MOVIES = 17770;
 
+const long BASE_SIZE = 94362233;
+
 double **user_feature_table = new double *[TOTAL_USERS];
 double **movie_feature_table = new double *[TOTAL_MOVIES];
 
@@ -58,9 +60,9 @@ double predictRating(int user, int movie, int num_features) {
 
 
 /* Train feature #num_features */
-void trainFeatures(double learning_rate, int user, int movie, int rating, int num_feature) {
+void trainFeature(double learning_rate, int user, int movie, int rating, int num_feature, int num_features) {
     
-    double error = (rating - predictRating(user, movie, num_feature + 1));
+    double error = rating - predictRating(user, movie, num_features);
     
     double temp_user_feature = user_feature_table[user - 1][num_feature];
     user_feature_table[user - 1][num_feature] += learning_rate * error * movie_feature_table[movie - 1][num_feature];
@@ -71,31 +73,30 @@ void trainFeatures(double learning_rate, int user, int movie, int rating, int nu
 }
 
 
-void computeSVD(double learning_rate, int num_features, std::vector<testPoint *> train_data, int epochs) {
+void computeSVD(double learning_rate, int num_features, int* train_data, int epochs) {
     
     initializeFeatureVectors(num_features);
     
     int user, movie, rating;
     double curr_rmse;
-    
-    int x = 0;
-    while(x < epochs) {
+
+    for(int i = 0; i < epochs; i++) {
         double sum = 0.0;
-        for(int k = 0; k < train_data.size(); k++) {
+        for(int j = 0; j < BASE_SIZE; j++) {
             
-            user = train_data[k] -> getUser();
-            movie = train_data[k] -> getMovie();
-            rating = train_data[k] -> getRating();
+            user = train_data[4 * j];
+            movie = train_data[4 * j + 1];
+            rating = train_data[4 * j + 3];
             
             for(int i = 0; i < num_features; i++) {
-                trainFeatures(learning_rate, user, movie, rating, i);
+                trainFeature(learning_rate, user, movie, rating, i, num_features);
             }
             sum += pow((rating - predictRating(user, movie, num_features)), 2);
+            
         }
         
-        curr_rmse = sqrt((sum / train_data.size()));
-        x++;
-        printf("Epoch %d, rsme: %f\n", x, curr_rmse);
+        curr_rmse = sqrt((sum / BASE_SIZE));
+        printf("Epoch %d, rsme: %f\n", i, curr_rmse);
     }
 
 }
