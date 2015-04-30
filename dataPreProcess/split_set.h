@@ -28,6 +28,7 @@ public:
     split_set(std::string guide, std::string data_set);
     void parse_guide_data_set();
     std::string get_path(std::string name);
+    void splitDataSet();
 };
 
 

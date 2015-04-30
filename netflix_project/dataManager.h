@@ -12,32 +12,24 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <pthread.h>
 
 #include <iostream>
 #include <string>
 #include <fstream>
 #include <sstream>
 
-
-#include "split_set.h"
-#include "testpoints.h"
-
-#include <vector>
-#include <cmath>
-
 // change in sample data file here!
 
 // Roshan's path
 #define inSampleDataFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file1.dta"
+#define movieAveragesFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/movieAverages.dta"
+#define userOffsetFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/userOffsets.dta"
 
 // Connor's path
 //#define inSampleDataFile "/Users/ConnorLee/Desktop/netflix/file1.dta"
 
-
-void splitDataSet();
 int* fillTrainingData();
-double getGlobalAverage(std::vector<testPoint *> ratings);
-void roundAll(std::string qual_filePath, std::string qual_out);
+double* getMovieAverages();
+double* getUserOffsets();
 
 #endif /* defined(__netflix_project__dataManager__) */

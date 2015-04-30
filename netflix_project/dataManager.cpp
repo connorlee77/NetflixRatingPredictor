@@ -8,19 +8,14 @@
 
 #include "dataManager.h"
 
-
-void splitDataSet() {
-    split_set obj = split_set("um/all.idx", "um/all.dta");
-    obj.parse_guide_data_set();
-    printf("%s", "done");
-}
-
+long BASE_SIZE = 94362233;
+const int TOTAL_USERS = 458293;
+const int TOTAL_MOVIES = 17770;
 
 int* fillTrainingData() {
     std::ifstream data;
     std::string line;
-    
-    long BASE_SIZE = 94362233/6;
+
     int* trainingData = new int[4 * BASE_SIZE];
     
     data.open(inSampleDataFile, std::ios::in);
@@ -37,7 +32,7 @@ int* fillTrainingData() {
             col++;
         }
         
-        if((pointCount + 1) % 100000 == 0) {
+        if((pointCount + 1) % 1000000 == 0) {
             printf("%d test points inputted!\n", pointCount);
         }
         
@@ -48,47 +43,64 @@ int* fillTrainingData() {
     return trainingData;
 }
 
-
-double getGlobalAverage(std::vector<testPoint *> ratings) {
-    
-    double g_avg = 0.0;
-    
-    for(int i = 0; i < ratings.size(); i++) {
-        g_avg += (double) ratings[i] -> getRating();
-    }
-    
-    return g_avg / ratings.size();
-}
-
-
-void roundAll(std::string qual_filePath, std::string qual_out) {
+double* getMovieAverages(){
     std::ifstream data;
     std::string line;
     
-    std::ofstream roundOut;
-    double rounded;
+    double* movieAverageArray = new double[TOTAL_MOVIES];
     
-    //Connor's file path
-    roundOut.open(qual_filePath, std::ios::app);
+    data.open(movieAveragesFile, std::ios::in);
+    int pointCount = 0;
+    double val = 0;
     
-    if(!roundOut.is_open()) {
-        fprintf(stderr, "qualOut was not opened!");
-    }
-    
-    data.open(qual_out, std::ios::in);
     while(getline(data, line)) {
         
         std::istringstream lineIn(line);
         
         while(lineIn) {
-            double val = 0;
             if(lineIn >> val) {
-                rounded = std::round(val);
-                roundOut << rounded << "\n";
+                movieAverageArray[pointCount] = val;
             }
         }
         
+        if((pointCount + 1) % 100000 == 0) {
+            printf("%d movies inputted!\n", pointCount);
+        }
         
+        pointCount++;
     }
-    roundOut.close();
+    
+    return movieAverageArray;
+
+}
+
+double* getUserOffsets(){
+    std::ifstream data;
+    std::string line;
+    
+    double* userOffsetArray = new double[TOTAL_USERS];
+    
+    data.open(userOffsetFile, std::ios::in);
+    int pointCount = 0;
+    double val = 0;
+    
+    while(getline(data, line)) {
+        
+        std::istringstream lineIn(line);
+        
+        while(lineIn) {
+            if(lineIn >> val) {
+                userOffsetArray[pointCount] = val;
+            }
+        }
+        
+        if((pointCount + 1) % 100000 == 0) {
+            printf("%d users inputted!\n", pointCount);
+        }
+        
+        pointCount++;
+    }
+    
+    return userOffsetArray;
+
 }
