@@ -67,7 +67,6 @@ double getSampleError(std::vector<testPoint *> inputData, int num_features) {
 
 void predictQual(int num_features){
     
-    std::vector<testPoint*> trainingData;
     std::ifstream data;
     std::string line;
     

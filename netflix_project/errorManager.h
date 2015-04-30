@@ -17,7 +17,7 @@
 
 // #define qualDataFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file5.dta"
 
-#define qualDataFile "/Users/ConnorLee/Desktop/netflix/file2.dta"
+#define qualDataFile "/Users/ConnorLee/Desktop/netflix/file5.dta"
 
 std::vector<double> predictSet(std::vector<testPoint *> inputData, int num_features);
 std::vector<double> getSquareResiduals(std::vector<testPoint *> inputData, int num_features);
