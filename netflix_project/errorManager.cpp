@@ -17,7 +17,7 @@ std::vector<double> predictSet(std::vector<testPoint *> inputData, int num_featu
     for(int i = 0; i < inputData.size(); i++) {
         user = inputData[i] -> getUser();
         movie = inputData[i] -> getMovie();
-        double rating = predictRating(user, movie, num_features);
+        double rating = predictRating(user, movie);
         predictions.push_back(rating);
     }
     return predictions;
@@ -34,7 +34,7 @@ std::vector<double> getSquareResiduals(std::vector<testPoint *> inputData, int n
         movie = inputData[i] -> getMovie();
         rating = inputData[i] -> getRating();
         
-        predicted_rating = predictRating(user, movie, num_features);
+        predicted_rating = predictRating(user, movie);
         
         rating = rating - predicted_rating;
         
@@ -115,7 +115,7 @@ void predictQual(int num_features){
         }
         pointCount++;
         
-        double predictedRating = predictRating(pt->getUser(), pt->getMovie(), num_features);
+        double predictedRating = predictRating(pt->getUser(), pt->getMovie());
         qualOut << predictedRating << "\n";
     }
     qualOut.close();

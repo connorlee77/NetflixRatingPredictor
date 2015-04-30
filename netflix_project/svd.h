@@ -26,10 +26,10 @@ extern double **user_feature_table;
 extern double **movie_feature_table;
 
 
-void initializeFeatureVectors(int num_features);
+void initializeFeatureVectors();
 void train();
-double predictRating(int user, int movie, int num_features);
-void trainFeature(double learning_rate, int user, int movie, int rating, int num_feature, int num_features);
+double predictRating(int user, int movie);
+void trainFeature(double learning_rate, int user, int movie, int rating, int num_feature);
 void computeSVD(double learning_rate, int num_features, int* train_data, int epochs);
 
 

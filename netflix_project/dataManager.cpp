@@ -20,13 +20,13 @@ int* fillTrainingData() {
     std::ifstream data;
     std::string line;
     
-    long BASE_SIZE = 94362233;
+    long BASE_SIZE = 94362233/6;
     int* trainingData = new int[4 * BASE_SIZE];
     
     data.open(inSampleDataFile, std::ios::in);
     int pointCount = 0, col = 0, val = 0;
     
-    while(getline(data, line)) {
+    while(getline(data, line) && pointCount < BASE_SIZE) {
         
         std::istringstream lineIn(line);
 
