@@ -15,40 +15,49 @@ const float GLOBAL_AVG_SET2 = 3.608859;
 const int TOTAL_USERS = 458293;
 const int TOTAL_MOVIES = 17770;
 
-double **user_feature_table = new double *[TOTAL_USERS];
-double **movie_feature_table = new double *[TOTAL_MOVIES];
+const long BASE_SIZE = 94362233/6;
+
+int NUMFEATURES;
+
+double **user_feature_table;
+double **movie_feature_table;
 
 
-void initializeFeatureVectors(int num_features) {
+void initializeFeatureVectors() {
     
-    for(int i = 0; i < TOTAL_USERS; i++) {
+    double setVal = GLOBAL_AVG_SET2 / NUMFEATURES;
+    
+    user_feature_table = new double *[NUMFEATURES];
+    movie_feature_table = new double *[NUMFEATURES];
+    
+    for(int i = 0; i < NUMFEATURES; i++) {
         
-        user_feature_table[i] = new double[num_features];
+        user_feature_table[i] = new double[TOTAL_USERS];
         
-        for(int k = 0; k < num_features; k++) {
+        for(int k = 0; k < TOTAL_USERS; k++) {
             //user_feature_table[i][k] = 0.1;
-            user_feature_table[i][k] = GLOBAL_AVG_SET2 / num_features;
+            user_feature_table[i][k] = setVal;
         }
     }
     
-    for(int i = 0; i < TOTAL_MOVIES; i++) {
+    for(int i = 0; i < NUMFEATURES; i++) {
         
-        movie_feature_table[i] = new double[num_features];
+        movie_feature_table[i] = new double[TOTAL_MOVIES];
         
-        for(int k = 0; k < num_features; k++) {
+        for(int k = 0; k < TOTAL_MOVIES; k++) {
             //movie_feature_table[i][k] = 0.1;
-            movie_feature_table[i][k] = GLOBAL_AVG_SET2 / num_features;
+            movie_feature_table[i][k] = setVal;
         }
     }
 }
 
 
-double predictRating(int user, int movie, int num_features) {
+double predictRating(int user, int movie) {
     
     double sum = 0.0;
     
-    for(int i = 0; i < num_features; i++) {
-        sum += (user_feature_table[user - 1][i] * movie_feature_table[movie - 1][i]);
+    for(int i = 0; i < NUMFEATURES; i++) {
+        sum += (user_feature_table[i][user - 1] * movie_feature_table[i][movie - 1]);
     }
     
     assert(isfinite(sum));
@@ -58,44 +67,45 @@ double predictRating(int user, int movie, int num_features) {
 
 
 /* Train feature #num_features */
-void trainFeatures(double learning_rate, int user, int movie, int rating, int num_feature) {
+void trainFeature(double learning_rate, int user, int movie, int rating, int num_feature) {
     
-    double error = (rating - predictRating(user, movie, num_feature + 1));
+    double error = rating - predictRating(user, movie);
     
-    double temp_user_feature = user_feature_table[user - 1][num_feature];
-    user_feature_table[user - 1][num_feature] += learning_rate * error * movie_feature_table[movie - 1][num_feature];
-    movie_feature_table[movie - 1][num_feature] += learning_rate * error * temp_user_feature;
+    double temp_user_feature = user_feature_table[num_feature][user - 1];
+    user_feature_table[num_feature][user - 1] += learning_rate * error * movie_feature_table[num_feature][movie - 1];
+    movie_feature_table[num_feature][movie - 1] += learning_rate * error * temp_user_feature;
     
-    assert(user_feature_table[user - 1][num_feature] < 50 && user_feature_table[user - 1][num_feature] > -50);
-    assert(movie_feature_table[movie - 1][num_feature] < 50 && movie_feature_table[movie - 1][num_feature] > -50);
+    assert(user_feature_table[num_feature][user - 1] < 50 && user_feature_table[num_feature][user - 1] > -50);
+    assert(movie_feature_table[num_feature][movie - 1] < 50 && movie_feature_table[num_feature][movie - 1] > -50);
 }
 
 
-void computeSVD(double learning_rate, int num_features, std::vector<testPoint *> train_data, int epochs) {
+void computeSVD(double learning_rate, int num_features, int* train_data, int epochs) {
     
-    initializeFeatureVectors(num_features);
+    NUMFEATURES = num_features;
+    
+    initializeFeatureVectors();
     
     int user, movie, rating;
     double curr_rmse;
-    
-    int x = 0;
-    while(x < epochs) {
+
+    for(int i = 0; i < epochs; i++) {
         double sum = 0.0;
-        for(int k = 0; k < train_data.size(); k++) {
+        for(int j = 0; j < BASE_SIZE; j++) {
             
-            user = train_data[k] -> getUser();
-            movie = train_data[k] -> getMovie();
-            rating = train_data[k] -> getRating();
+            user = train_data[4 * j];
+            movie = train_data[4 * j + 1];
+            rating = train_data[4 * j + 3];
             
             for(int i = 0; i < num_features; i++) {
-                trainFeatures(learning_rate, user, movie, rating, i);
+                trainFeature(learning_rate, user, movie, rating, i);
             }
-            sum += pow((rating - predictRating(user, movie, num_features)), 2);
+            sum += pow((rating - predictRating(user, movie)), 2);
+            
         }
         
-        curr_rmse = sqrt((sum / train_data.size()));
-        x++;
-        printf("Epoch %d, rsme: %f\n", x, curr_rmse);
+        curr_rmse = sqrt((sum / BASE_SIZE));
+        printf("Epoch %d, rsme: %f\n", i, curr_rmse);
     }
 
 }
