@@ -21,7 +21,7 @@ int main(int argc, const char * argv[]) {
     
     //Set the length of the feature vectors
     int num_features = 15;
-    int epochs = 80;
+    int epochs = 5;
     computeSVD(0.001, num_features, trainingData, movieAverages, userOffsets, epochs);
     
     

@@ -25,8 +25,11 @@ double *userOffs;
 
 void initializeFeatureVectors() {
     
-    user_feature_table = new double *[NUMFEATURES];
-    movie_feature_table = new double *[NUMFEATURES];
+    user_feature_table = new double *[NUMFEATURES + 1];
+    movie_feature_table = new double *[NUMFEATURES + 1];
+    
+    //user_feature_table = new double *[NUMFEATURES];
+    //movie_feature_table = new double *[NUMFEATURES];
     
     for(int i = 0; i < NUMFEATURES; i++) {
         
@@ -39,6 +42,8 @@ void initializeFeatureVectors() {
         }
     }
     
+    user_feature_table[NUMFEATURES] = userOffs;
+    
     for(int i = 0; i < NUMFEATURES; i++) {
         
         movie_feature_table[i] = new double[TOTAL_MOVIES];
@@ -48,16 +53,20 @@ void initializeFeatureVectors() {
             //movie_feature_table[i][k] = movieAvs[k]/NUMFEATURES;
         }
     }
+    
+    movie_feature_table[NUMFEATURES] = movieAvs;
 }
 
 
 double predictRating(int user, int movie) {
     
-    double sum = userOffs[user - 1] + movieAvs[movie - 1];
+    double sum = 0.0;
     
     for(int i = 0; i < NUMFEATURES; i++) {
         sum += (user_feature_table[i][user - 1] * movie_feature_table[i][movie - 1]);
     }
+    
+    sum += user_feature_table[NUMFEATURES][user - 1] + movie_feature_table[NUMFEATURES][movie - 1];
     
     assert(isfinite(sum));
     
@@ -94,6 +103,7 @@ void computeSVD(double learning_rate, int num_features, int* train_data, double*
 
     for(int i = 0; i < epochs; i++) {
         double sum = 0.0;
+        printf("Training epoch %d\n", i + 1);
         for(int j = 0; j < BASE_SIZE; j++) {
             
             user = train_data[4 * j];
@@ -105,13 +115,13 @@ void computeSVD(double learning_rate, int num_features, int* train_data, double*
             }
             sum += pow((rating - predictRating(user, movie)), 2);
             
-            if((j + 1) % 10000000 == 0) {
-                printf("%d test points inputted!\n", j);
+            if((j + 1) % 1000000 == 0) {
+                printf("%d test points inputted!\n", j + 1);
             }
             
         }
         
         curr_rmse = sqrt((sum / BASE_SIZE));
-        printf("Epoch %d, rsme: %f\n", i, curr_rmse);
+        printf("Epoch %d, rsme: %f\n", i + 1, curr_rmse);
     }
 }

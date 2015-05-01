@@ -11,11 +11,10 @@
 int TOTAL_USERS = 458293;
 int TOTAL_MOVIES = 17770;
 
-int** createSparseMatrix() {
+int** createSparseMatrix(int* trainingData) {
+    long BASE_SIZE = 94362233;
     std::ifstream data;
     std::string line;
-    
-    long BASE_SIZE = 94362233;
     
     int **trainingDataMatrix = new int *[TOTAL_USERS];
     
@@ -23,68 +22,37 @@ int** createSparseMatrix() {
         trainingDataMatrix[i] = new int [TOTAL_MOVIES];
     }
     
-    data.open(inSampleDataFile, std::ios::in);
-    int pointCount = 0, col = 0, val = 0;
-    
-    while(getline(data, line) && pointCount < BASE_SIZE) {
+   
+    for(int i = 0; i < BASE_SIZE; i++){
         
-        std::istringstream lineIn(line);
+        trainingDataMatrix[trainingData[i]][trainingData[i + 1]] = trainingData[i + 3];
         
-        int user = 0, movie = 0, rating = 0;
-        
-        while(lineIn) {
-            int val = 0;
-            
-            if(lineIn >> val) {
-                
-                if(col == 0) {
-                    user = val;
-                }
-                else if(col == 1){
-                    movie = val;
-                }
-                else if(col == 3){
-                    rating = val;
-                }
-                
-            }
-            col++;
+        if((i + 1) % 10000000 == 0) {
+            printf("%d test points added to sparse matrix\n", i + 1);
         }
-        
-        trainingDataMatrix[user - 1][movie  - 1] = rating;
-        
-        if((pointCount + 1) % 100000 == 0) {
-            printf("%d test points inputted!\n", pointCount);
-        }
-        
-        
-        col = 0;
-        pointCount++;
     }
     
     return trainingDataMatrix;
 }
 
-double calculateGlobalAverage(int** trainingDataMatrix){
+double calculateGlobalAverage(int* trainingData){
+    double BASE_SIZE = 100;
     double sum = 0.0;
-    double count = 0.0;
-    for(int i = 0; i < TOTAL_USERS; i++){
-        for(int j = 0; j < TOTAL_MOVIES; j++){
-            int val = trainingDataMatrix[i][j];
-            if(val != 0){
-                sum += val;
-                count++;
-            }
-        }
+    for(int i = 0; i < BASE_SIZE; i++){
+        sum += trainingData[i * 4 + 3];
+        printf("%d\n", trainingData[i * 4 + 3]);
     }
     
-    return sum/count;
+    double average = sum/BASE_SIZE;
+    
+    printf("%f\n", average);
+    
+    return average;
 }
 
 void printOutUserOffest(int** trainingDataMatrix, double globalAverage){
-    std::ofstream data;
-
-    data.open(outUserSampleDataFile, std::ios::app);
+    ofstream data;
+    data.open(outUserOffsetBin, ios::out|ios::binary);
     
     if(!data.is_open()) {
         fprintf(stderr, "userOffset was not opened!");
@@ -101,14 +69,16 @@ void printOutUserOffest(int** trainingDataMatrix, double globalAverage){
                 count++;
             }
         }
-        data << (sum/count - globalAverage) << "\n";
+        
+        double outVal = sum/count - globalAverage;
+        data.write (reinterpret_cast<char*> (&outVal), sizeof(double));
     }
 }
 
-void printOutMovieAverage(int** trainingDataMatrix, double globalAverage){
+void printOutMovieAverage(int** trainingDataMatrix){
     std::ofstream data;
     
-    data.open(outMovieSampleDataFile, std::ios::app);
+    data.open(outMovieAveragesBin, ios::out|ios::binary);
     
     if(!data.is_open()) {
         fprintf(stderr, "userOffset was not opened!");
@@ -125,6 +95,7 @@ void printOutMovieAverage(int** trainingDataMatrix, double globalAverage){
                 count++;
             }
         }
-        data << (sum/count) << "\n";
+        double outVal = sum/count;
+        data.write (reinterpret_cast<char*> (&outVal), sizeof(double));
     }
 }

@@ -12,33 +12,20 @@ long BASE_SIZE = 94362233;
 const int TOTAL_USERS = 458293;
 const int TOTAL_MOVIES = 17770;
 
-int* fillTrainingData() {
-    std::ifstream data;
-    std::string line;
-
+int* fillTrainingData(){
+    
     int* trainingData = new int[4 * BASE_SIZE];
     
-    data.open(inSampleDataFile, std::ios::in);
-    int pointCount = 0, col = 0, val = 0;
+    ifstream inBinFile;
+    inBinFile.open(outSampleBinaryData, ios::out|ios::binary);
     
-    while(getline(data, line) && pointCount < BASE_SIZE) {
-        
-        std::istringstream lineIn(line);
-
-        while(lineIn) {
-            if(lineIn >> val) {
-                trainingData[4 * pointCount + col] = val;
-            }
-            col++;
+    for(int i = 0; i < BASE_SIZE; i++){
+        inBinFile.read (reinterpret_cast<char*> (&trainingData[i]), sizeof(int));
+        if((i + 1) % 1000000 == 0) {
+            printf("%d test points inputted!\n", i +1);
         }
-        
-        if((pointCount + 1) % 1000000 == 0) {
-            printf("%d test points inputted!\n", pointCount);
-        }
-        
-        col = 0;
-        pointCount++;
     }
+    inBinFile.close();
     
     return trainingData;
 }
@@ -64,7 +51,7 @@ double* getMovieAverages(){
         }
         
         if((pointCount + 1) % 100000 == 0) {
-            printf("%d movies inputted!\n", pointCount);
+            printf("%d movies inputted!\n", pointCount + 1);
         }
         
         pointCount++;
@@ -95,7 +82,7 @@ double* getUserOffsets(){
         }
         
         if((pointCount + 1) % 100000 == 0) {
-            printf("%d users inputted!\n", pointCount);
+            printf("%d users inputted!\n", pointCount + 1);
         }
         
         pointCount++;

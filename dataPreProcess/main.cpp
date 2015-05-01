@@ -9,14 +9,24 @@
 #include <iostream>
 #include "split_set.h"
 #include "averages.h"
+#include "binaryPreProcess.h"
 
 int main(int argc, const char * argv[]) {
 
-    int **sparseMatrix = createSparseMatrix();
-    double globalAverage = calculateGlobalAverage(sparseMatrix);
+    //writeArrayToBinary();
     
-    printOutMovieAverage(sparseMatrix, globalAverage);
-    printOutUserOffest(sparseMatrix, globalAverage);
+    int* trainingData = readArrayFromBinary();
+    
+    int BASE_SIZE = 94362233;
+    
+    printf("%d %d %d %d\n", trainingData[(BASE_SIZE - 1) * 4], trainingData[(BASE_SIZE - 1) * 4 + 1], trainingData[(BASE_SIZE - 1) * 4 + 2], trainingData[(BASE_SIZE - 1) * 4 + 3]);
+    
+    int** sparseMatrix = createSparseMatrix(trainingData);
+    
+    double globalAverage = calculateGlobalAverage(trainingData);
+    
+    //printOutUserOffest(sparseMatrix, globalAverage);
+    //printOutMovieAverage(sparseMatrix);
     
     return 0;
 }

@@ -18,12 +18,15 @@
 #include <fstream>
 #include <sstream>
 
+using namespace std;
+
 // change in sample data file here!
 
 // Roshan's path
 #define inSampleDataFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file1.dta"
 #define movieAveragesFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/movieAverages.dta"
 #define userOffsetFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/userOffsets.dta"
+#define outSampleBinaryData "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file1binary.bin"
 
 // Connor's path
 //#define inSampleDataFile "/Users/ConnorLee/Desktop/netflix/file1.dta"
