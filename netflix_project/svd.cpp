@@ -101,7 +101,11 @@ void computeSVD(double learning_rate, int num_features, int* train_data, double*
     int user, movie, rating;
     double curr_rmse;
 
+    clock_t start, end;
+    double duration;
+    
     for(int i = 0; i < epochs; i++) {
+        start = clock();
         double sum = 0.0;
         printf("Training epoch %d\n", i + 1);
         for(int j = 0; j < BASE_SIZE; j++) {
@@ -110,17 +114,20 @@ void computeSVD(double learning_rate, int num_features, int* train_data, double*
             movie = train_data[4 * j + 1];
             rating = train_data[4 * j + 3];
             
-            for(int i = 0; i < num_features; i++) {
-                trainFeature(learning_rate, user, movie, rating, i);
+            for(int k = 0; k < num_features; k++) {
+                trainFeature(learning_rate, user, movie, rating, k);
             }
             sum += pow((rating - predictRating(user, movie)), 2);
             
             if((j + 1) % 1000000 == 0) {
-                printf("%d test points inputted!\n", j + 1);
+                printf("%d test points trained!\n", j + 1);
             }
             
         }
+        end = clock();
         
+        duration=(end-start)/CLOCKS_PER_SEC;
+        printf("Epoch %d took %f seconds\n",i + 1, duration);
         curr_rmse = sqrt((sum / BASE_SIZE));
         printf("Epoch %d, rsme: %f\n", i + 1, curr_rmse);
     }

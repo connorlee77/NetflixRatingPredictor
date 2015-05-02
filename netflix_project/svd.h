@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <math.h>
+#include <time.h>
 
 extern const float GLOBAL_AVG_SET1;
 extern const float GLOBAL_AVG_SET2;

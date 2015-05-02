@@ -25,7 +25,7 @@ int** createSparseMatrix(int* trainingData) {
    
     for(int i = 0; i < BASE_SIZE; i++){
         
-        trainingDataMatrix[trainingData[i]][trainingData[i + 1]] = trainingData[i + 3];
+        trainingDataMatrix[trainingData[i * 4] - 1][trainingData[i * 4 + 1] - 1] = trainingData[i * 4 + 3];
         
         if((i + 1) % 10000000 == 0) {
             printf("%d test points added to sparse matrix\n", i + 1);
@@ -36,11 +36,11 @@ int** createSparseMatrix(int* trainingData) {
 }
 
 double calculateGlobalAverage(int* trainingData){
-    double BASE_SIZE = 100;
+    double BASE_SIZE = 94362233;
     double sum = 0.0;
     for(int i = 0; i < BASE_SIZE; i++){
         sum += trainingData[i * 4 + 3];
-        printf("%d\n", trainingData[i * 4 + 3]);
+        //printf("%d\n", trainingData[i * 4 + 3]);
     }
     
     double average = sum/BASE_SIZE;
@@ -58,10 +58,11 @@ void printOutUserOffest(int** trainingDataMatrix, double globalAverage){
         fprintf(stderr, "userOffset was not opened!");
     }
     
-    
+    double sum;
+    int count;
     for(int i = 0; i < TOTAL_USERS; i++){
-        double sum = 0.0;
-        int count = 0;
+        sum = 0.0;
+        count = 0;
         for(int j = 0; j < TOTAL_MOVIES; j++){
             int val = trainingDataMatrix[i][j];
             if(val != 0){
@@ -71,7 +72,7 @@ void printOutUserOffest(int** trainingDataMatrix, double globalAverage){
         }
         
         double outVal = sum/count - globalAverage;
-        data.write (reinterpret_cast<char*> (&outVal), sizeof(double));
+        data.write(reinterpret_cast<char*> (&outVal), sizeof(double));
     }
 }
 
@@ -96,6 +97,6 @@ void printOutMovieAverage(int** trainingDataMatrix){
             }
         }
         double outVal = sum/count;
-        data.write (reinterpret_cast<char*> (&outVal), sizeof(double));
+        data.write(reinterpret_cast<char*> (&outVal), sizeof(double));
     }
 }

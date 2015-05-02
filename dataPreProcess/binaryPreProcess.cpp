@@ -21,10 +21,13 @@ void writeArrayToBinary(){
     outBinFile.open(outSampleBinaryData, ios::out|ios::binary);
     
     if(!outBinFile.is_open()) {
-        fprintf(stderr, "userOffset was not opened!");
+        fprintf(stderr, "binary file was not opened!");
     }
     
     data.open(inSampleDataFile, std::ios::in);
+    if(!data.is_open()) {
+        fprintf(stderr, "input data file was not opened!");
+    }
     int pointCount = 0, val = 0;
     
     while(getline(data, line)) {
@@ -53,18 +56,16 @@ int* readArrayFromBinary(){
     int* trainingData = new int[4 * BASE_SIZE];
     
     ifstream inBinFile;
-    inBinFile.open(outSampleBinaryData, ios::out|ios::binary);
+    inBinFile.open(outSampleBinaryData, ios::in|ios::binary);
     
     if(!inBinFile.is_open()) {
-        fprintf(stderr, "userOffset was not opened!");
+        fprintf(stderr, "binary file was not opened!");
     }
     
-    for(int i = 0; i < BASE_SIZE; i++){
-        inBinFile.read (reinterpret_cast<char*> (&trainingData[i]), sizeof(int));
-        if((i + 1) % 10000000 == 0) {
-            printf("%d test points read from binary file\n", i +1);
-        }
-    }
+    inBinFile.seekg (0, ios::beg);
+    
+    inBinFile.read(reinterpret_cast<char*> (trainingData), sizeof(int) * 4 * BASE_SIZE);
+
     inBinFile.close();
     
     return trainingData;

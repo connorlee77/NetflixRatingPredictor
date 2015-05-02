@@ -10,22 +10,41 @@
 #include "dataManager.h"
 #include "svd.h"
 #include "errorManager.h"
+#include <time.h>
 
 int main(int argc, const char * argv[]) {
+    
+    
+    clock_t start, end;
+    double duration;
+    start = clock();
     
     //Store the training data in train_data
     int* trainingData = fillTrainingData();
     
+    end = clock();
+    duration=(end-start)/CLOCKS_PER_SEC;
+    printf("Reading data took %f seconds\n",duration);
+    
+    start = clock();
     double* movieAverages = getMovieAverages();
+    
+    end = clock();
+    duration=(end-start)/CLOCKS_PER_SEC;
+    printf("Reading movieAverages took %f seconds\n",duration);
+    
+    start = clock();
     double* userOffsets = getUserOffsets();
+    end = clock();
+    duration=(end-start)/CLOCKS_PER_SEC;
+    printf("Reading userOffsets took %f seconds\n",duration);
     
     //Set the length of the feature vectors
     int num_features = 15;
     int epochs = 5;
     computeSVD(0.001, num_features, trainingData, movieAverages, userOffsets, epochs);
     
-    
-    predictQual(num_features);
+    //predictQual(num_features);
 
     return 0;
 }

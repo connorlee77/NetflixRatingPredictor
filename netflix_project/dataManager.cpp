@@ -14,79 +14,59 @@ const int TOTAL_MOVIES = 17770;
 
 int* fillTrainingData(){
     
+    ifstream inBinFile;
+    inBinFile.open(outSampleBinaryData, ios::in|ios::binary);
+    
+    if(!inBinFile.is_open()) {
+        fprintf(stderr, "binary file was not opened!");
+    }
+    
     int* trainingData = new int[4 * BASE_SIZE];
     
-    ifstream inBinFile;
-    inBinFile.open(outSampleBinaryData, ios::out|ios::binary);
+    inBinFile.seekg (0, ios::beg);
     
-    for(int i = 0; i < BASE_SIZE; i++){
-        inBinFile.read (reinterpret_cast<char*> (&trainingData[i]), sizeof(int));
-        if((i + 1) % 1000000 == 0) {
-            printf("%d test points inputted!\n", i +1);
-        }
-    }
+    inBinFile.read(reinterpret_cast<char*> (trainingData), sizeof(int) * 4 * BASE_SIZE);
+    
     inBinFile.close();
     
     return trainingData;
 }
 
 double* getMovieAverages(){
-    std::ifstream data;
-    std::string line;
+    
+    ifstream inBinFile;
+    inBinFile.open(movieAveragesFile, ios::in|ios::binary);
+    
+    if(!inBinFile.is_open()) {
+        fprintf(stderr, "binary file was not opened!");
+    }
     
     double* movieAverageArray = new double[TOTAL_MOVIES];
     
-    data.open(movieAveragesFile, std::ios::in);
-    int pointCount = 0;
-    double val = 0;
+    inBinFile.seekg (0, ios::beg);
     
-    while(getline(data, line)) {
-        
-        std::istringstream lineIn(line);
-        
-        while(lineIn) {
-            if(lineIn >> val) {
-                movieAverageArray[pointCount] = val;
-            }
-        }
-        
-        if((pointCount + 1) % 100000 == 0) {
-            printf("%d movies inputted!\n", pointCount + 1);
-        }
-        
-        pointCount++;
-    }
+    inBinFile.read(reinterpret_cast<char*> (movieAverageArray), sizeof(double) * TOTAL_MOVIES);
     
+    inBinFile.close();
     return movieAverageArray;
 
 }
 
 double* getUserOffsets(){
-    std::ifstream data;
-    std::string line;
+    ifstream inBinFile;
+    inBinFile.open(userOffsetFile, ios::in|ios::binary);
+    
+    if(!inBinFile.is_open()) {
+        fprintf(stderr, "binary file was not opened!");
+    }
     
     double* userOffsetArray = new double[TOTAL_USERS];
     
-    data.open(userOffsetFile, std::ios::in);
-    int pointCount = 0;
-    double val = 0;
+    inBinFile.seekg (0, ios::beg);
     
-    while(getline(data, line)) {
-        
-        std::istringstream lineIn(line);
-        
-        while(lineIn) {
-            if(lineIn >> val) {
-                userOffsetArray[pointCount] = val;
-            }
-        }
-        
-        if((pointCount + 1) % 100000 == 0) {
-            printf("%d users inputted!\n", pointCount + 1);
-        }
-        
-        pointCount++;
-    }
+    inBinFile.read(reinterpret_cast<char*> (userOffsetArray), sizeof(double) * TOTAL_USERS);
+    
+    inBinFile.close();
     
     return userOffsetArray;
 
