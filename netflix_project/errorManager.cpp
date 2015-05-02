@@ -17,10 +17,10 @@ void predictQual(int num_features){
     
     //Roshan's file path
    
-    //qualOut.open("/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/qualOut.dta", std::ios::app);
+    qualOut.open("/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/qualOut.dta", std::ios::app);
     
     //Connor's file path
-    qualOut.open("/Users/ConnorLee/Desktop/netflix/qualOut.dta", std::ios::app);
+    //qualOut.open("/Users/ConnorLee/Desktop/netflix/qualOut.dta", std::ios::app);
     
     if(!qualOut.is_open()) {
         fprintf(stderr, "qualOut was not opened!");

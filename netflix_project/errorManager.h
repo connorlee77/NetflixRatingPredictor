@@ -17,9 +17,9 @@
 #include <sstream>
 #include "svd.h"
 
-// #define qualDataFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file5.dta"
+#define qualDataFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file5.dta"
 
-#define qualDataFile "/Users/ConnorLee/Desktop/netflix/file5.dta"
+//#define qualDataFile "/Users/ConnorLee/Desktop/netflix/file5.dta"
 
 
 void predictQual(int num_features);

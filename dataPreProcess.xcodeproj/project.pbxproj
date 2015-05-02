@@ -10,6 +10,7 @@
 		C88CECDA1AF2335900F122BC /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C88CECD91AF2335900F122BC /* main.cpp */; };
 		C88CECE21AF2352400F122BC /* split_set.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C88CECE01AF2352400F122BC /* split_set.cpp */; };
 		C88CECE51AF2387100F122BC /* averages.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C88CECE31AF2387100F122BC /* averages.cpp */; };
+		C8C6AB841AF2E43B000B5377 /* binaryPreProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C6AB821AF2E43B000B5377 /* binaryPreProcess.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -31,6 +32,8 @@
 		C88CECE11AF2352400F122BC /* split_set.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = split_set.h; sourceTree = "<group>"; };
 		C88CECE31AF2387100F122BC /* averages.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = averages.cpp; sourceTree = "<group>"; };
 		C88CECE41AF2387100F122BC /* averages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = averages.h; sourceTree = "<group>"; };
+		C8C6AB821AF2E43B000B5377 /* binaryPreProcess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = binaryPreProcess.cpp; sourceTree = "<group>"; };
+		C8C6AB831AF2E43B000B5377 /* binaryPreProcess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = binaryPreProcess.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,9 +67,11 @@
 			isa = PBXGroup;
 			children = (
 				C88CECD91AF2335900F122BC /* main.cpp */,
-				C88CECE01AF2352400F122BC /* split_set.cpp */,
 				C88CECE31AF2387100F122BC /* averages.cpp */,
 				C88CECE41AF2387100F122BC /* averages.h */,
+				C8C6AB821AF2E43B000B5377 /* binaryPreProcess.cpp */,
+				C8C6AB831AF2E43B000B5377 /* binaryPreProcess.h */,
+				C88CECE01AF2352400F122BC /* split_set.cpp */,
 				C88CECE11AF2352400F122BC /* split_set.h */,
 			);
 			path = dataPreProcess;
@@ -128,6 +133,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C8C6AB841AF2E43B000B5377 /* binaryPreProcess.cpp in Sources */,
 				C88CECDA1AF2335900F122BC /* main.cpp in Sources */,
 				C88CECE21AF2352400F122BC /* split_set.cpp in Sources */,
 				C88CECE51AF2387100F122BC /* averages.cpp in Sources */,
