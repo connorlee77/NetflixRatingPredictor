@@ -16,6 +16,7 @@ const int TOTAL_USERS = 458293;
 const int TOTAL_MOVIES = 17770;
 
 int NUMFEATURES;
+double LRATE;
 
 double **user_feature_table;
 double **movie_feature_table;
@@ -73,18 +74,27 @@ double predictRating(int user, int movie) {
     return sum;
 }
 
-
 /* Train feature #num_features */
-void trainFeature(double learning_rate, int user, int movie, int rating, int num_feature) {
+int trainFeatures(int user, int movie, int rating) {
     
-    double error = rating - predictRating(user, movie);
+    double error, temp_user_adjustment, userVal, movieVal;
+    double ratingPredict = predictRating(user, movie);
+    for(int i = 0; i < NUMFEATURES; i++){
+        error = rating - ratingPredict;
+        userVal = user_feature_table[i][user - 1];
+        movieVal = movie_feature_table[i][movie - 1];
+        ratingPredict -= userVal * movieVal;
+        
+        user_feature_table[i][user - 1] += LRATE * error * movieVal;
+        movie_feature_table[i][movie - 1] += LRATE * error * userVal;
+        
+        ratingPredict += user_feature_table[i][user - 1] * movie_feature_table[i][movie - 1];
+        
+        assert(user_feature_table[i][user - 1] < 50 && user_feature_table[i][user - 1] > -50);
+        assert(movie_feature_table[i][movie - 1] < 50 && movie_feature_table[i][movie - 1] > -50);
+    }
     
-    double temp_user_feature = user_feature_table[num_feature][user - 1];
-    user_feature_table[num_feature][user - 1] += learning_rate * error * movie_feature_table[num_feature][movie - 1];
-    movie_feature_table[num_feature][movie - 1] += learning_rate * error * temp_user_feature;
-    
-    assert(user_feature_table[num_feature][user - 1] < 50 && user_feature_table[num_feature][user - 1] > -50);
-    assert(movie_feature_table[num_feature][movie - 1] < 50 && movie_feature_table[num_feature][movie - 1] > -50);
+    return ratingPredict;
 }
 
 
@@ -95,6 +105,7 @@ void computeSVD(double learning_rate, int num_features, int* train_data, double*
     NUMFEATURES = num_features;
     movieAvs = movieAverages;
     userOffs = userOffsets;
+    LRATE = learning_rate;
     
     initializeFeatureVectors();
     
@@ -103,6 +114,8 @@ void computeSVD(double learning_rate, int num_features, int* train_data, double*
 
     clock_t start, end;
     double duration;
+    
+    int ratingPrediction;
     
     for(int i = 0; i < epochs; i++) {
         start = clock();
@@ -114,10 +127,8 @@ void computeSVD(double learning_rate, int num_features, int* train_data, double*
             movie = train_data[4 * j + 1];
             rating = train_data[4 * j + 3];
             
-            for(int k = 0; k < num_features; k++) {
-                trainFeature(learning_rate, user, movie, rating, k);
-            }
-            sum += pow((rating - predictRating(user, movie)), 2);
+            ratingPrediction = trainFeatures(user, movie, rating);
+            sum += pow(rating - ratingPrediction, 2);
             
             if((j + 1) % 1000000 == 0) {
                 printf("%d test points trained!\n", j + 1);
