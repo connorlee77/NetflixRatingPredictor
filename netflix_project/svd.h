@@ -10,9 +10,9 @@
 #define __netflix_project__svd__
 
 #include <stdio.h>
-#include "dataManager.h"
 #include <assert.h>
 #include <math.h>
+#include <time.h>
 
 extern const float GLOBAL_AVG_SET1;
 extern const float GLOBAL_AVG_SET2;
@@ -29,9 +29,9 @@ extern double **movie_feature_table;
 void initializeFeatureVectors();
 void train();
 double predictRating(int user, int movie);
-void trainFeature(double learning_rate, int user, int movie, int rating, int num_feature);
-void computeSVD(double learning_rate, int num_features, int* train_data, int epochs);
-
+int trainFeatures(int user, int movie, int rating, int num_feature);
+//void computeSVD(double learning_rate, int num_features, int* train_data, int epochs);
+void computeSVD(double learning_rate, int num_features, int* train_data, double* movieAverages, double* userOffsets, int epochs);
 
 
 #endif /* defined(__netflix_project__svd__) */

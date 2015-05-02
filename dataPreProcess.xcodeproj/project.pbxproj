@@ -7,14 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		552D0EDA1AEA2A800082D855 /* dataManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 552D0ED71AEA1E610082D855 /* dataManager.cpp */; };
-		552D0EF01AEC40530082D855 /* svd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 552D0EEE1AEC40530082D855 /* svd.cpp */; };
-		552D0EF31AECD5690082D855 /* errorManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 552D0EF11AECD5690082D855 /* errorManager.cpp */; };
-		558FD3801ADFAB8C00953B06 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 558FD37F1ADFAB8C00953B06 /* main.cpp */; };
+		C88CECDA1AF2335900F122BC /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C88CECD91AF2335900F122BC /* main.cpp */; };
+		C88CECE21AF2352400F122BC /* split_set.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C88CECE01AF2352400F122BC /* split_set.cpp */; };
+		C88CECE51AF2387100F122BC /* averages.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C88CECE31AF2387100F122BC /* averages.cpp */; };
+		C8C6AB841AF2E43B000B5377 /* binaryPreProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C8C6AB821AF2E43B000B5377 /* binaryPreProcess.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		558FD37A1ADFAB8C00953B06 /* CopyFiles */ = {
+		C88CECD41AF2335900F122BC /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -26,18 +26,18 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		552D0ED71AEA1E610082D855 /* dataManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = dataManager.cpp; sourceTree = "<group>"; };
-		552D0ED81AEA1E610082D855 /* dataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = dataManager.h; sourceTree = "<group>"; };
-		552D0EEE1AEC40530082D855 /* svd.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = svd.cpp; sourceTree = "<group>"; };
-		552D0EEF1AEC40530082D855 /* svd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = svd.h; sourceTree = "<group>"; };
-		552D0EF11AECD5690082D855 /* errorManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = errorManager.cpp; sourceTree = "<group>"; };
-		552D0EF21AECD5690082D855 /* errorManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = errorManager.h; sourceTree = "<group>"; };
-		558FD37C1ADFAB8C00953B06 /* netflix_project */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = netflix_project; sourceTree = BUILT_PRODUCTS_DIR; };
-		558FD37F1ADFAB8C00953B06 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		C88CECD61AF2335900F122BC /* dataPreProcess */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = dataPreProcess; sourceTree = BUILT_PRODUCTS_DIR; };
+		C88CECD91AF2335900F122BC /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		C88CECE01AF2352400F122BC /* split_set.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = split_set.cpp; sourceTree = "<group>"; };
+		C88CECE11AF2352400F122BC /* split_set.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = split_set.h; sourceTree = "<group>"; };
+		C88CECE31AF2387100F122BC /* averages.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = averages.cpp; sourceTree = "<group>"; };
+		C88CECE41AF2387100F122BC /* averages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = averages.h; sourceTree = "<group>"; };
+		C8C6AB821AF2E43B000B5377 /* binaryPreProcess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = binaryPreProcess.cpp; sourceTree = "<group>"; };
+		C8C6AB831AF2E43B000B5377 /* binaryPreProcess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = binaryPreProcess.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		558FD3791ADFAB8C00953B06 /* Frameworks */ = {
+		C88CECD31AF2335900F122BC /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -47,103 +47,103 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		558FD3731ADFAB8C00953B06 = {
+		C88CECCD1AF2335900F122BC = {
 			isa = PBXGroup;
 			children = (
-				558FD37E1ADFAB8C00953B06 /* netflix_project */,
-				558FD37D1ADFAB8C00953B06 /* Products */,
+				C88CECD81AF2335900F122BC /* dataPreProcess */,
+				C88CECD71AF2335900F122BC /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		558FD37D1ADFAB8C00953B06 /* Products */ = {
+		C88CECD71AF2335900F122BC /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				558FD37C1ADFAB8C00953B06 /* netflix_project */,
+				C88CECD61AF2335900F122BC /* dataPreProcess */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		558FD37E1ADFAB8C00953B06 /* netflix_project */ = {
+		C88CECD81AF2335900F122BC /* dataPreProcess */ = {
 			isa = PBXGroup;
 			children = (
-				558FD37F1ADFAB8C00953B06 /* main.cpp */,
-				552D0ED71AEA1E610082D855 /* dataManager.cpp */,
-				552D0ED81AEA1E610082D855 /* dataManager.h */,
-				552D0EEE1AEC40530082D855 /* svd.cpp */,
-				552D0EEF1AEC40530082D855 /* svd.h */,
-				552D0EF11AECD5690082D855 /* errorManager.cpp */,
-				552D0EF21AECD5690082D855 /* errorManager.h */,
+				C88CECD91AF2335900F122BC /* main.cpp */,
+				C88CECE31AF2387100F122BC /* averages.cpp */,
+				C88CECE41AF2387100F122BC /* averages.h */,
+				C8C6AB821AF2E43B000B5377 /* binaryPreProcess.cpp */,
+				C8C6AB831AF2E43B000B5377 /* binaryPreProcess.h */,
+				C88CECE01AF2352400F122BC /* split_set.cpp */,
+				C88CECE11AF2352400F122BC /* split_set.h */,
 			);
-			path = netflix_project;
+			path = dataPreProcess;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		558FD37B1ADFAB8C00953B06 /* netflix_project */ = {
+		C88CECD51AF2335900F122BC /* dataPreProcess */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 558FD3831ADFAB8C00953B06 /* Build configuration list for PBXNativeTarget "netflix_project" */;
+			buildConfigurationList = C88CECDD1AF2335900F122BC /* Build configuration list for PBXNativeTarget "dataPreProcess" */;
 			buildPhases = (
-				558FD3781ADFAB8C00953B06 /* Sources */,
-				558FD3791ADFAB8C00953B06 /* Frameworks */,
-				558FD37A1ADFAB8C00953B06 /* CopyFiles */,
+				C88CECD21AF2335900F122BC /* Sources */,
+				C88CECD31AF2335900F122BC /* Frameworks */,
+				C88CECD41AF2335900F122BC /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = netflix_project;
-			productName = netflix_project;
-			productReference = 558FD37C1ADFAB8C00953B06 /* netflix_project */;
+			name = dataPreProcess;
+			productName = dataPreProcess;
+			productReference = C88CECD61AF2335900F122BC /* dataPreProcess */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		558FD3741ADFAB8C00953B06 /* Project object */ = {
+		C88CECCE1AF2335900F122BC /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0610;
-				ORGANIZATIONNAME = "Connor Lee";
+				LastUpgradeCheck = 0630;
+				ORGANIZATIONNAME = "Roshan Agrawal";
 				TargetAttributes = {
-					558FD37B1ADFAB8C00953B06 = {
-						CreatedOnToolsVersion = 6.1;
+					C88CECD51AF2335900F122BC = {
+						CreatedOnToolsVersion = 6.3.1;
 					};
 				};
 			};
-			buildConfigurationList = 558FD3771ADFAB8C00953B06 /* Build configuration list for PBXProject "netflix_project" */;
+			buildConfigurationList = C88CECD11AF2335900F122BC /* Build configuration list for PBXProject "dataPreProcess" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 			);
-			mainGroup = 558FD3731ADFAB8C00953B06;
-			productRefGroup = 558FD37D1ADFAB8C00953B06 /* Products */;
+			mainGroup = C88CECCD1AF2335900F122BC;
+			productRefGroup = C88CECD71AF2335900F122BC /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				558FD37B1ADFAB8C00953B06 /* netflix_project */,
+				C88CECD51AF2335900F122BC /* dataPreProcess */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		558FD3781ADFAB8C00953B06 /* Sources */ = {
+		C88CECD21AF2335900F122BC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				552D0EF31AECD5690082D855 /* errorManager.cpp in Sources */,
-				552D0EDA1AEA2A800082D855 /* dataManager.cpp in Sources */,
-				558FD3801ADFAB8C00953B06 /* main.cpp in Sources */,
-				552D0EF01AEC40530082D855 /* svd.cpp in Sources */,
+				C8C6AB841AF2E43B000B5377 /* binaryPreProcess.cpp in Sources */,
+				C88CECDA1AF2335900F122BC /* main.cpp in Sources */,
+				C88CECE21AF2352400F122BC /* split_set.cpp in Sources */,
+				C88CECE51AF2387100F122BC /* averages.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		558FD3811ADFAB8C00953B06 /* Debug */ = {
+		C88CECDB1AF2335900F122BC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -161,9 +161,11 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -183,7 +185,7 @@
 			};
 			name = Debug;
 		};
-		558FD3821ADFAB8C00953B06 /* Release */ = {
+		C88CECDC1AF2335900F122BC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -200,11 +202,12 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = YES;
+				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -217,14 +220,14 @@
 			};
 			name = Release;
 		};
-		558FD3841ADFAB8C00953B06 /* Debug */ = {
+		C88CECDE1AF2335900F122BC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
 		};
-		558FD3851ADFAB8C00953B06 /* Release */ = {
+		C88CECDF1AF2335900F122BC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -234,25 +237,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		558FD3771ADFAB8C00953B06 /* Build configuration list for PBXProject "netflix_project" */ = {
+		C88CECD11AF2335900F122BC /* Build configuration list for PBXProject "dataPreProcess" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				558FD3811ADFAB8C00953B06 /* Debug */,
-				558FD3821ADFAB8C00953B06 /* Release */,
+				C88CECDB1AF2335900F122BC /* Debug */,
+				C88CECDC1AF2335900F122BC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		558FD3831ADFAB8C00953B06 /* Build configuration list for PBXNativeTarget "netflix_project" */ = {
+		C88CECDD1AF2335900F122BC /* Build configuration list for PBXNativeTarget "dataPreProcess" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				558FD3841ADFAB8C00953B06 /* Debug */,
-				558FD3851ADFAB8C00953B06 /* Release */,
+				C88CECDE1AF2335900F122BC /* Debug */,
+				C88CECDF1AF2335900F122BC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 558FD3741ADFAB8C00953B06 /* Project object */;
+	rootObject = C88CECCE1AF2335900F122BC /* Project object */;
 }

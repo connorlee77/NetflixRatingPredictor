@@ -8,87 +8,66 @@
 
 #include "dataManager.h"
 
+long BASE_SIZE = 94362233;
+const int TOTAL_USERS = 458293;
+const int TOTAL_MOVIES = 17770;
 
-void splitDataSet() {
-    split_set obj = split_set("um/all.idx", "um/all.dta");
-    obj.parse_guide_data_set();
-    printf("%s", "done");
-}
-
-
-int* fillTrainingData() {
-    std::ifstream data;
-    std::string line;
+int* fillTrainingData(){
     
-    long BASE_SIZE = 94362233/6;
+    ifstream inBinFile;
+    inBinFile.open(outSampleBinaryData, ios::in|ios::binary);
+    
+    if(!inBinFile.is_open()) {
+        fprintf(stderr, "binary file was not opened!");
+    }
+    
     int* trainingData = new int[4 * BASE_SIZE];
     
-    data.open(inSampleDataFile, std::ios::in);
-    int pointCount = 0, col = 0, val = 0;
+    inBinFile.seekg (0, ios::beg);
     
-    while(getline(data, line) && pointCount < BASE_SIZE) {
-        
-        std::istringstream lineIn(line);
-
-        while(lineIn) {
-            if(lineIn >> val) {
-                trainingData[4 * pointCount + col] = val;
-            }
-            col++;
-        }
-        
-        if((pointCount + 1) % 100000 == 0) {
-            printf("%d test points inputted!\n", pointCount);
-        }
-        
-        col = 0;
-        pointCount++;
-    }
+    inBinFile.read(reinterpret_cast<char*> (trainingData), sizeof(int) * 4 * BASE_SIZE);
+    
+    inBinFile.close();
     
     return trainingData;
 }
 
-
-double getGlobalAverage(std::vector<testPoint *> ratings) {
+double* getMovieAverages(){
     
-    double g_avg = 0.0;
+    ifstream inBinFile;
+    inBinFile.open(movieAveragesFile, ios::in|ios::binary);
     
-    for(int i = 0; i < ratings.size(); i++) {
-        g_avg += (double) ratings[i] -> getRating();
+    if(!inBinFile.is_open()) {
+        fprintf(stderr, "binary file was not opened!");
     }
     
-    return g_avg / ratings.size();
+    double* movieAverageArray = new double[TOTAL_MOVIES];
+    
+    inBinFile.seekg (0, ios::beg);
+    
+    inBinFile.read(reinterpret_cast<char*> (movieAverageArray), sizeof(double) * TOTAL_MOVIES);
+    
+    inBinFile.close();
+    return movieAverageArray;
+
 }
 
+double* getUserOffsets(){
+    ifstream inBinFile;
+    inBinFile.open(userOffsetFile, ios::in|ios::binary);
+    
+    if(!inBinFile.is_open()) {
+        fprintf(stderr, "binary file was not opened!");
+    }
+    
+    double* userOffsetArray = new double[TOTAL_USERS];
+    
+    inBinFile.seekg (0, ios::beg);
+    
+    inBinFile.read(reinterpret_cast<char*> (userOffsetArray), sizeof(double) * TOTAL_USERS);
+    
+    inBinFile.close();
+    
+    return userOffsetArray;
 
-void roundAll(std::string qual_filePath, std::string qual_out) {
-    std::ifstream data;
-    std::string line;
-    
-    std::ofstream roundOut;
-    double rounded;
-    
-    //Connor's file path
-    roundOut.open(qual_filePath, std::ios::app);
-    
-    if(!roundOut.is_open()) {
-        fprintf(stderr, "qualOut was not opened!");
-    }
-    
-    data.open(qual_out, std::ios::in);
-    while(getline(data, line)) {
-        
-        std::istringstream lineIn(line);
-        
-        while(lineIn) {
-            double val = 0;
-            if(lineIn >> val) {
-                rounded = std::round(val);
-                roundOut << rounded << "\n";
-            }
-        }
-        
-        
-    }
-    roundOut.close();
 }

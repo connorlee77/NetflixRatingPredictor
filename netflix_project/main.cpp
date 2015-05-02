@@ -7,31 +7,44 @@
 //
 
 #include <iostream>
+#include "dataManager.h"
 #include "svd.h"
 #include "errorManager.h"
+#include <time.h>
 
 int main(int argc, const char * argv[]) {
+    
+    
+    clock_t start, end;
+    double duration;
+    start = clock();
     
     //Store the training data in train_data
     int* trainingData = fillTrainingData();
     
+    end = clock();
+    duration=(end-start)/CLOCKS_PER_SEC;
+    printf("Reading data took %f seconds\n",duration);
+    
+    start = clock();
+    double* movieAverages = getMovieAverages();
+    
+    end = clock();
+    duration=(end-start)/CLOCKS_PER_SEC;
+    printf("Reading movieAverages took %f seconds\n",duration);
+    
+    start = clock();
+    double* userOffsets = getUserOffsets();
+    end = clock();
+    duration=(end-start)/CLOCKS_PER_SEC;
+    printf("Reading userOffsets took %f seconds\n",duration);
     
     //Set the length of the feature vectors
     int num_features = 15;
-    int epochs = 80;
-    computeSVD(0.001, num_features, trainingData, epochs);
+    int epochs = 5;
+    computeSVD(0.001, num_features, trainingData, movieAverages, userOffsets, epochs);
     
-    /*
-    //printf("test: %f\n", predictRating(1, 1109, num_features));
-    
-    //double err = getSampleError(train_data, num_features);
-    //printf("\nEin: %f\n", err);
-    
-    
-    predictQual(num_features);
-    
-    
-    //roundAll("/Users/ConnorLee/Desktop/netflix/rounded.dta", "/Users/ConnorLee/Desktop/netflix/qualOut.dta");
-    */
+    //predictQual(num_features);
+
     return 0;
 }

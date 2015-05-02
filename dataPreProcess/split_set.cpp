@@ -11,7 +11,7 @@
 split_set::split_set(std::string plan, std::string data) {
     guide = get_path(plan);
     data_set = get_path(data);
-
+    
     curr_line = 0;
 }
 
@@ -72,7 +72,7 @@ void split_set::parse_guide_data_set() {
         if(step % 100000 == 0) {
             printf("%d\n", step);
         }
-            
+        
         set_num = std::stoi(set_str);
         if(set_num == 1) {
             file1 << line << "\n";
@@ -95,3 +95,8 @@ void split_set::parse_guide_data_set() {
     data.close();
 }
 
+void splitDataSet() {
+    split_set obj = split_set("um/all.idx", "um/all.dta");
+    obj.parse_guide_data_set();
+    printf("%s", "done");
+}
