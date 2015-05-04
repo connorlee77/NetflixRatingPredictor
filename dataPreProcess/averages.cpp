@@ -35,22 +35,22 @@ int** createSparseMatrix(int* trainingData) {
     return trainingDataMatrix;
 }
 
-double calculateGlobalAverage(int* trainingData){
-    double BASE_SIZE = 94362233;
-    double sum = 0.0;
+float calculateGlobalAverage(int* trainingData){
+    long BASE_SIZE = 94362233;
+    int sum = 0;
     for(int i = 0; i < BASE_SIZE; i++){
         sum += trainingData[i * 4 + 3];
         //printf("%d\n", trainingData[i * 4 + 3]);
     }
     
-    double average = sum/BASE_SIZE;
+    float average = (float) sum/BASE_SIZE;
     
     printf("%f\n", average);
     
     return average;
 }
 
-void printOutUserOffest(int** trainingDataMatrix, double globalAverage){
+void printOutUserOffset(int** trainingDataMatrix, float globalAverage){
     ofstream data;
     data.open(outUserOffsetBin, ios::out|ios::binary);
     
@@ -58,21 +58,21 @@ void printOutUserOffest(int** trainingDataMatrix, double globalAverage){
         fprintf(stderr, "userOffset was not opened!");
     }
     
-    double sum;
+    int sum, val;
     int count;
     for(int i = 0; i < TOTAL_USERS; i++){
-        sum = 0.0;
+        sum = 0;
         count = 0;
         for(int j = 0; j < TOTAL_MOVIES; j++){
-            int val = trainingDataMatrix[i][j];
+            val = trainingDataMatrix[i][j];
             if(val != 0){
                 sum += val;
                 count++;
             }
         }
         
-        double outVal = sum/count - globalAverage;
-        data.write(reinterpret_cast<char*> (&outVal), sizeof(double));
+        float outVal = (float) (sum/count - globalAverage);
+        data.write(reinterpret_cast<char*> (&outVal), sizeof(float));
     }
 }
 
@@ -85,18 +85,19 @@ void printOutMovieAverage(int** trainingDataMatrix){
         fprintf(stderr, "userOffset was not opened!");
     }
     
+    int sum, count, val;
     
     for(int i = 0; i < TOTAL_MOVIES; i++){
-        double sum = 0.0;
-        int count = 0;
+        sum = 0;
+        count = 0;
         for(int j = 0; j < TOTAL_USERS; j++){
-            int val = trainingDataMatrix[j][i];
+            val = trainingDataMatrix[j][i];
             if(val != 0){
                 sum += val;
                 count++;
             }
         }
-        double outVal = sum/count;
-        data.write(reinterpret_cast<char*> (&outVal), sizeof(double));
+        float outVal = (float) sum/count;
+        data.write(reinterpret_cast<char*> (&outVal), sizeof(float));
     }
 }

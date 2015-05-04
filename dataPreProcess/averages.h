@@ -30,8 +30,8 @@ using namespace std;
 //#define inSampleDataFile "/Users/ConnorLee/Desktop/netflix/file1.dta"
 
 int** createSparseMatrix(int* trainingData);
-double calculateGlobalAverage(int* trainingData);
-void printOutUserOffest(int** trainingDataMatrix, double globalAverage);
+float calculateGlobalAverage(int* trainingData);
+void printOutUserOffset(int** trainingDataMatrix, float globalAverage);
 void printOutMovieAverage(int** trainingDataMatrix);
 
 #endif /* defined(__dataPreProcess__averages__) */

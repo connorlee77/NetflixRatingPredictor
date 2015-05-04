@@ -16,52 +16,67 @@ const int TOTAL_USERS = 458293;
 const int TOTAL_MOVIES = 17770;
 
 int NUMFEATURES;
-double LRATE;
+float LRATE;
 
-double **user_feature_table;
-double **movie_feature_table;
-double *movieAvs;
-double *userOffs;
+float **user_feature_table;
+float **movie_feature_table;
 
+int *dataArray;
 
 void initializeFeatureVectors() {
     
-    user_feature_table = new double *[NUMFEATURES + 1];
-    movie_feature_table = new double *[NUMFEATURES + 1];
-    
-    //user_feature_table = new double *[NUMFEATURES];
-    //movie_feature_table = new double *[NUMFEATURES];
+    user_feature_table = new float *[NUMFEATURES + 1];
+    movie_feature_table = new float *[NUMFEATURES + 1];
     
     for(int i = 0; i < NUMFEATURES; i++) {
         
-        user_feature_table[i] = new double[TOTAL_USERS];
+        user_feature_table[i] = new float[TOTAL_USERS];
         
-        for(int k = 0; k < TOTAL_USERS; k++) {
-            user_feature_table[i][k] = 0.1;
-            
-            //user_feature_table[i][k] = (GLOBAL_AVG_SET2 + userOffs[k])/NUMFEATURES;
-        }
+        std::fill(user_feature_table[i], user_feature_table[i] + TOTAL_USERS, 0.1);
     }
     
-    user_feature_table[NUMFEATURES] = userOffs;
+    ifstream inUserBinFile;
+    inUserBinFile.open(userOffsetFile, ios::in|ios::binary);
+    
+    if(!inUserBinFile.is_open()) {
+        fprintf(stderr, "binary file was not opened!");
+    }
+    
+    user_feature_table[NUMFEATURES] = new float[TOTAL_USERS];
+    
+    inUserBinFile.seekg (0, ios::beg);
+    
+    inUserBinFile.read(reinterpret_cast<char*> (user_feature_table[NUMFEATURES]), sizeof(float) * TOTAL_USERS);
+    
+    inUserBinFile.close();
     
     for(int i = 0; i < NUMFEATURES; i++) {
         
-        movie_feature_table[i] = new double[TOTAL_MOVIES];
+        movie_feature_table[i] = new float[TOTAL_MOVIES];
         
-        for(int k = 0; k < TOTAL_MOVIES; k++) {
-            movie_feature_table[i][k] = 0.1;
-            //movie_feature_table[i][k] = movieAvs[k]/NUMFEATURES;
-        }
+        std::fill(movie_feature_table[i], movie_feature_table[i] + TOTAL_MOVIES, 0.1);
     }
     
-    movie_feature_table[NUMFEATURES] = movieAvs;
+    ifstream inMovieBinFile;
+    inMovieBinFile.open(movieAveragesFile, ios::in|ios::binary);
+    
+    if(!inMovieBinFile.is_open()) {
+        fprintf(stderr, "binary file was not opened!");
+    }
+    
+    movie_feature_table[NUMFEATURES] = new float[TOTAL_MOVIES];
+    
+    inMovieBinFile.seekg (0, ios::beg);
+    
+    inMovieBinFile.read(reinterpret_cast<char*> (movie_feature_table[NUMFEATURES]), sizeof(float) * TOTAL_MOVIES);
+    
+    inMovieBinFile.close();
 }
 
 
-double predictRating(int user, int movie) {
+float predictRating(int user, int movie) {
     
-    double sum = 0.0;
+    float sum = 0.0;
     
     for(int i = 0; i < NUMFEATURES; i++) {
         sum += (user_feature_table[i][user - 1] * movie_feature_table[i][movie - 1]);
@@ -74,72 +89,67 @@ double predictRating(int user, int movie) {
     return sum;
 }
 
-/* Train feature #num_features */
-int trainFeatures(int user, int movie, int rating) {
+void trainFeatures() {
+    float error, userVal, movieVal, adjustUser, adjustMovie, ratingPredict;
+    int user, movie, rating;
     
-    double error, temp_user_adjustment, userVal, movieVal;
-    double ratingPredict = predictRating(user, movie);
-    for(int i = 0; i < NUMFEATURES; i++){
-        error = rating - ratingPredict;
-        userVal = user_feature_table[i][user - 1];
-        movieVal = movie_feature_table[i][movie - 1];
-        ratingPredict -= userVal * movieVal;
+    for(int j = 0; j < BASE_SIZE; j++) {
+        user = dataArray[4 * j];
+        movie = dataArray[4 * j + 1];
+        rating = dataArray[4 * j + 3];
+    
+        ratingPredict = predictRating(user, movie);
+        for(int i = 0; i < NUMFEATURES; i++){
+            userVal = user_feature_table[i][user - 1];
+            movieVal = movie_feature_table[i][movie - 1];
+            error = LRATE * (rating - ratingPredict);
+            ratingPredict -= (userVal * movieVal);
         
-        user_feature_table[i][user - 1] += LRATE * error * movieVal;
-        movie_feature_table[i][movie - 1] += LRATE * error * userVal;
+            adjustUser = userVal + error * movieVal;
+            adjustMovie = movieVal + error * userVal;
         
-        ratingPredict += user_feature_table[i][user - 1] * movie_feature_table[i][movie - 1];
+            user_feature_table[i][user - 1] = adjustUser;
+            movie_feature_table[i][movie - 1] = adjustMovie;
         
-        assert(user_feature_table[i][user - 1] < 50 && user_feature_table[i][user - 1] > -50);
-        assert(movie_feature_table[i][movie - 1] < 50 && movie_feature_table[i][movie - 1] > -50);
+            ratingPredict += (adjustUser * adjustMovie);
+        
+            assert(adjustUser < 50 && adjustUser > -50);
+            assert(adjustMovie < 50 && adjustMovie > -50);
+        }
+        
+        if((j + 1) % 1000000 == 0) {
+            printf("%d test points trained!\n", j + 1);
+        }
+        
     }
-    
-    return ratingPredict;
 }
 
-
-void computeSVD(double learning_rate, int num_features, int* train_data, double* movieAverages, double* userOffsets, int epochs) {
+void computeSVD(float learning_rate, int num_features, int* train_data, int epochs) {
     
     long BASE_SIZE = 94362233;
     
     NUMFEATURES = num_features;
-    movieAvs = movieAverages;
-    userOffs = userOffsets;
     LRATE = learning_rate;
+    dataArray = train_data;
     
     initializeFeatureVectors();
     
     int user, movie, rating;
-    double curr_rmse;
+    float curr_rmse;
 
-    clock_t start, end;
-    double duration;
-    
-    int ratingPrediction;
+    float start, end;
+    float duration;
     
     for(int i = 0; i < epochs; i++) {
         start = clock();
-        double sum = 0.0;
         printf("Training epoch %d\n", i + 1);
-        for(int j = 0; j < BASE_SIZE; j++) {
-            
-            user = train_data[4 * j];
-            movie = train_data[4 * j + 1];
-            rating = train_data[4 * j + 3];
-            
-            ratingPrediction = trainFeatures(user, movie, rating);
-            sum += pow(rating - ratingPrediction, 2);
-            
-            if((j + 1) % 1000000 == 0) {
-                printf("%d test points trained!\n", j + 1);
-            }
-            
-        }
+        trainFeatures();
+        
         end = clock();
         
         duration=(end-start)/CLOCKS_PER_SEC;
         printf("Epoch %d took %f seconds\n",i + 1, duration);
-        curr_rmse = sqrt((sum / BASE_SIZE));
-        printf("Epoch %d, rsme: %f\n", i + 1, curr_rmse);
+        //curr_rmse = sqrt((sum / BASE_SIZE));
+        //printf("Epoch %d, rsme: %f\n", i + 1, curr_rmse);
     }
 }

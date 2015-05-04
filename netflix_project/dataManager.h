@@ -32,7 +32,7 @@ using namespace std;
 //#define inSampleDataFile "/Users/ConnorLee/Desktop/netflix/file1.dta"
 
 int* fillTrainingData();
-double* getMovieAverages();
-double* getUserOffsets();
+float* getMovieAverages();
+float* getUserOffsets();
 
 #endif /* defined(__netflix_project__dataManager__) */

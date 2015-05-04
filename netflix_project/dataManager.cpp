@@ -32,7 +32,7 @@ int* fillTrainingData(){
     return trainingData;
 }
 
-double* getMovieAverages(){
+float* getMovieAverages(){
     
     ifstream inBinFile;
     inBinFile.open(movieAveragesFile, ios::in|ios::binary);
@@ -41,18 +41,18 @@ double* getMovieAverages(){
         fprintf(stderr, "binary file was not opened!");
     }
     
-    double* movieAverageArray = new double[TOTAL_MOVIES];
+    float* movieAverageArray = new float[TOTAL_MOVIES];
     
     inBinFile.seekg (0, ios::beg);
     
-    inBinFile.read(reinterpret_cast<char*> (movieAverageArray), sizeof(double) * TOTAL_MOVIES);
+    inBinFile.read(reinterpret_cast<char*> (movieAverageArray), sizeof(float) * TOTAL_MOVIES);
     
     inBinFile.close();
     return movieAverageArray;
 
 }
 
-double* getUserOffsets(){
+float* getUserOffsets(){
     ifstream inBinFile;
     inBinFile.open(userOffsetFile, ios::in|ios::binary);
     
@@ -60,11 +60,11 @@ double* getUserOffsets(){
         fprintf(stderr, "binary file was not opened!");
     }
     
-    double* userOffsetArray = new double[TOTAL_USERS];
+    float* userOffsetArray = new float[TOTAL_USERS];
     
     inBinFile.seekg (0, ios::beg);
     
-    inBinFile.read(reinterpret_cast<char*> (userOffsetArray), sizeof(double) * TOTAL_USERS);
+    inBinFile.read(reinterpret_cast<char*> (userOffsetArray), sizeof(float) * TOTAL_USERS);
     
     inBinFile.close();
     

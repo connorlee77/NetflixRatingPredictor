@@ -15,7 +15,7 @@
 int main(int argc, const char * argv[]) {
     
     
-    clock_t start, end;
+    float start, end;
     double duration;
     start = clock();
     
@@ -26,25 +26,12 @@ int main(int argc, const char * argv[]) {
     duration=(end-start)/CLOCKS_PER_SEC;
     printf("Reading data took %f seconds\n",duration);
     
-    start = clock();
-    double* movieAverages = getMovieAverages();
-    
-    end = clock();
-    duration=(end-start)/CLOCKS_PER_SEC;
-    printf("Reading movieAverages took %f seconds\n",duration);
-    
-    start = clock();
-    double* userOffsets = getUserOffsets();
-    end = clock();
-    duration=(end-start)/CLOCKS_PER_SEC;
-    printf("Reading userOffsets took %f seconds\n",duration);
-    
     //Set the length of the feature vectors
     int num_features = 15;
     int epochs = 5;
-    computeSVD(0.001, num_features, trainingData, movieAverages, userOffsets, epochs);
+    computeSVD(0.001, num_features, trainingData, epochs);
     
-    //predictQual(num_features);
+    predictQual(num_features);
 
     return 0;
 }

@@ -7,14 +7,14 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>63565367-C685-4375-B368-2927AD2F9F37</string>
 	<key>IDESourceControlProjectName</key>
-	<string>dataPreProcess</string>
+	<string>project</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>2A0B9DA78046E7DA8FE0D8BB4F2F6967BC4FF07E</key>
 		<string>https://github.com/connorlee77/UMRatingPredictor.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>dataPreProcess.xcodeproj</string>
+	<string>dataPreProcess.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>2A0B9DA78046E7DA8FE0D8BB4F2F6967BC4FF07E</key>

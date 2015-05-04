@@ -17,7 +17,7 @@ int main(int argc, const char * argv[]) {
 
     //writeArrayToBinary();
     
-    clock_t start, end;
+    float start, end;
     double duration;
     start = clock();
     
@@ -28,6 +28,13 @@ int main(int argc, const char * argv[]) {
     
     printf("Reading data took %f seconds\n",duration);
     
+    start = clock();
+    
+    float globalAverage = calculateGlobalAverage(trainingData);
+    
+    end = clock();
+    duration=(end-start)/CLOCKS_PER_SEC;
+    printf("Calculating global average took %f seconds\n",duration);
     
     start = clock();
     int** sparseMatrix = createSparseMatrix(trainingData);
@@ -36,19 +43,10 @@ int main(int argc, const char * argv[]) {
     duration=(end-start)/CLOCKS_PER_SEC;
     
     printf("Storing data in sparse matrix took %f seconds\n",duration);
-    
 
     start = clock();
-    
-    double globalAverage = calculateGlobalAverage(trainingData);
-    
-    end = clock();
-    duration=(end-start)/CLOCKS_PER_SEC;
-    printf("Calculating global average took %f seconds\n",duration);
-/*
-    start = clock();
 
-    printOutUserOffest(sparseMatrix, globalAverage);
+    printOutUserOffset(sparseMatrix, globalAverage);
     
     end = clock();
     duration=(end-start)/CLOCKS_PER_SEC;
@@ -59,7 +57,7 @@ int main(int argc, const char * argv[]) {
     end = clock();
     duration=(end-start)/CLOCKS_PER_SEC;
     printf("Printing Movie Averages took %f seconds\n",duration);
-*/
+
     
     return 0;
 }

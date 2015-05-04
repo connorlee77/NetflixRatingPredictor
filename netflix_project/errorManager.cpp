@@ -56,7 +56,7 @@ void predictQual(int num_features){
         }
         pointCount++;
         
-        double predictedRating = predictRating(user, movie);
+        float predictedRating = predictRating(user, movie);
         if(predictedRating < 1)
             predictedRating = 1;
         else if (predictedRating > 5)
