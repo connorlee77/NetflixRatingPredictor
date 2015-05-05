@@ -24,7 +24,8 @@ float **movie_feature_table;
 int *dataArray;
 
 void initializeFeatureVectors() {
-    
+    srand (static_cast <unsigned> (time(0)));
+    float randInit;
     user_feature_table = new float *[TOTAL_USERS];
     movie_feature_table = new float *[TOTAL_MOVIES];
     
@@ -42,7 +43,9 @@ void initializeFeatureVectors() {
         
         user_feature_table[i] = new float[NUMFEATURES + 1];
         
-        std::fill(user_feature_table[i], user_feature_table[i] + NUMFEATURES, 0.1f);
+        randInit = -0.1f + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(0.2f)));
+        
+        std::fill(user_feature_table[i], user_feature_table[i] + NUMFEATURES, randInit);
         inUserBinFile.read(reinterpret_cast<char*> (user_feature_table[i] + NUMFEATURES), sizeof(float));
     }
     
@@ -62,7 +65,8 @@ void initializeFeatureVectors() {
         
         movie_feature_table[i] = new float[NUMFEATURES + 1];
         
-        std::fill(movie_feature_table[i], movie_feature_table[i] + NUMFEATURES, 0.1f);
+        randInit = -0.1f + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(0.2f)));
+        std::fill(movie_feature_table[i], movie_feature_table[i] + NUMFEATURES, randInit);
         inMovieBinFile.read(reinterpret_cast<char*> (movie_feature_table[i] + NUMFEATURES), sizeof(float));
     }
     
@@ -80,7 +84,7 @@ float predictRating(int user, int movie) {
     
     //printf("Baseline: %f, %f\n", user_feature_table[user - 1][NUMFEATURES], movie_feature_table[movie - 1][NUMFEATURES]);
     
-    sum += user_feature_table[user - 1][NUMFEATURES] + movie_feature_table[movie - 1][NUMFEATURES];
+    sum += user_feature_table[user - 1][NUMFEATURES] + movie_feature_table[movie - 1][NUMFEATURES] + GLOBAL_AVG_SET1;
     
     assert(isfinite(sum));
     

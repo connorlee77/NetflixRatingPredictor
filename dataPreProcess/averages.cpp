@@ -11,7 +11,10 @@
 int TOTAL_USERS = 458293;
 int TOTAL_MOVIES = 17770;
 
-int** createSparseMatrix(int* trainingData) {
+double LAMBDA_ONE = 25;
+double LAMBDA_TWO = 10;
+
+int** createUserSparseMatrix(int* trainingData) {
     long BASE_SIZE = 94362233;
     std::ifstream data;
     std::string line;
@@ -35,6 +38,31 @@ int** createSparseMatrix(int* trainingData) {
     return trainingDataMatrix;
 }
 
+int** createMovieSparseMatrix(int* trainingData) {
+    long BASE_SIZE = 94362233;
+    std::ifstream data;
+    std::string line;
+    
+    int **trainingDataMatrix = new int *[TOTAL_MOVIES];
+    
+    for(int i = 0; i < TOTAL_MOVIES; i++) {
+        trainingDataMatrix[i] = new int [TOTAL_USERS];
+    }
+    
+    
+    for(int i = 0; i < BASE_SIZE; i++){
+        
+        trainingDataMatrix[trainingData[i * 4 + 1] - 1][trainingData[i * 4] - 1] = trainingData[i * 4 + 3];
+        
+        if((i + 1) % 10000000 == 0) {
+            printf("%d test points added to sparse matrix\n", i + 1);
+        }
+    }
+    
+    return trainingDataMatrix;
+}
+
+
 float calculateGlobalAverage(int* trainingData){
     long BASE_SIZE = 94362233;
     int sum = 0;
@@ -50,54 +78,75 @@ float calculateGlobalAverage(int* trainingData){
     return average;
 }
 
-void printOutUserOffset(int** trainingDataMatrix, float globalAverage){
-    ofstream data;
-    data.open(outUserOffsetBin, ios::out|ios::binary);
+float* getMovieAverages(int** trainingDataMatrix, float globalAverage){
     
-    if(!data.is_open()) {
-        fprintf(stderr, "userOffset was not opened!");
-    }
-    
-    int sum, val;
-    int count;
-    for(int i = 0; i < TOTAL_USERS; i++){
-        sum = 0;
-        count = 0;
-        for(int j = 0; j < TOTAL_MOVIES; j++){
-            val = trainingDataMatrix[i][j];
-            if(val != 0){
-                sum += val;
-                count++;
-            }
-        }
-        
-        float outVal = (float) (sum/count - globalAverage);
-        data.write(reinterpret_cast<char*> (&outVal), sizeof(float));
-    }
-}
-
-void printOutMovieAverage(int** trainingDataMatrix){
+    float* movieAverages = new float[TOTAL_MOVIES];
     std::ofstream data;
     
+    remove(outMovieAveragesBin);
     data.open(outMovieAveragesBin, ios::out|ios::binary);
     
     if(!data.is_open()) {
         fprintf(stderr, "userOffset was not opened!");
     }
     
-    int sum, count, val;
+    float sum;
+    int count, val;
     
     for(int i = 0; i < TOTAL_MOVIES; i++){
-        sum = 0;
+        sum = 0.0;
         count = 0;
         for(int j = 0; j < TOTAL_USERS; j++){
-            val = trainingDataMatrix[j][i];
+            val = trainingDataMatrix[i][j];
             if(val != 0){
-                sum += val;
+                sum += (float) (val - globalAverage);
                 count++;
             }
         }
-        float outVal = (float) sum/count;
+        float outVal = (float) sum/(count + LAMBDA_ONE);
+        movieAverages[i] = outVal;
         data.write(reinterpret_cast<char*> (&outVal), sizeof(float));
+        
+        if((i + 1) % 1000 == 0) {
+            printf("%d movie baselines calculated\n", i + 1);
+        }
     }
+    
+    data.close();
+    
+    return movieAverages;
+}
+
+void getUserOffsets(int** trainingDataMatrix, float globalAverage, float* movieAverages){
+    ofstream data;
+    
+    remove(outUserOffsetBin);
+    data.open(outUserOffsetBin, ios::out|ios::binary);
+    
+    if(!data.is_open()) {
+        fprintf(stderr, "userOffset was not opened!");
+    }
+    
+    float sum;
+    int val, count;
+    for(int i = 0; i < TOTAL_USERS; i++){
+        sum = 0.0;
+        count = 0;
+        for(int j = 0; j < TOTAL_MOVIES; j++){
+            val = trainingDataMatrix[i][j];
+            if(val != 0){
+                sum += (float) (val - globalAverage - movieAverages[j]);
+                count++;
+            }
+        }
+        
+        float outVal = (float) sum/(count + LAMBDA_TWO);
+        data.write(reinterpret_cast<char*> (&outVal), sizeof(float));
+        
+        if((i + 1) % 10000 == 0) {
+            printf("%d user baselines calculated\n", i + 1);
+        }
+    }
+    
+    data.close();
 }
