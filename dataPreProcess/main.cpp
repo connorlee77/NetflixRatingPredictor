@@ -15,10 +15,17 @@
 
 int main(int argc, const char * argv[]) {
 
-    //writeArrayToBinary();
-    
     float start, end;
     double duration;
+    
+    start = clock();
+    writeArrayToBinary(file5, file5Binary);
+    
+    end = clock();
+    duration=(end-start)/CLOCKS_PER_SEC;
+    
+    printf("Converting data to binary took %f seconds\n",duration);
+    /*
     start = clock();
     
     int* trainingData = readArrayFromBinary();
@@ -57,7 +64,7 @@ int main(int argc, const char * argv[]) {
     end = clock();
     duration=(end-start)/CLOCKS_PER_SEC;
     printf("Printing Movie Averages took %f seconds\n",duration);
-
+*/
     
     return 0;
 }

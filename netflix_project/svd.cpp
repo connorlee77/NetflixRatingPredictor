@@ -96,20 +96,16 @@ void trainFeatures() {
         movie = dataArray[4 * j + 1];
         rating = dataArray[4 * j + 3];
     
-        ratingPredict = predictRating(user, movie);
+        error = LRATE * (rating - predictRating(user, movie));
         for(int i = 0; i < NUMFEATURES; i++){
             userVal = user_feature_table[user - 1][i];
             movieVal = movie_feature_table[movie - 1][i];
-            error = LRATE * (rating - ratingPredict);
-            ratingPredict -= (userVal * movieVal);
         
             adjustUser = userVal + error * movieVal;
             adjustMovie = movieVal + error * userVal;
         
             user_feature_table[user - 1][i] = adjustUser;
             movie_feature_table[movie - 1][i] = adjustMovie;
-        
-            ratingPredict += (adjustUser * adjustMovie);
         
             assert(adjustUser < 50 && adjustUser > -50);
             assert(adjustMovie < 50 && adjustMovie > -50);
@@ -118,13 +114,10 @@ void trainFeatures() {
         if((j + 1) % 1000000 == 0) {
             printf("%d test points trained!\n", j + 1);
         }
-        
     }
 }
 
 void computeSVD(float learning_rate, int num_features, int* train_data, int epochs) {
-    
-    
     NUMFEATURES = num_features;
     LRATE = learning_rate;
     dataArray = train_data;

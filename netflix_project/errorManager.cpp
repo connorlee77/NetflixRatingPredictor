@@ -8,16 +8,30 @@
 
 #include "errorManager.h"
 
-void predictQual(int num_features){
+void predictQual(){
     
-    std::ifstream data;
-    std::string line;
+    long QUAL_SIZE = 2749898;
+    
+    ifstream inBinFile;
+    inBinFile.open(qualInFile, ios::in|ios::binary);
+    
+    if(!inBinFile.is_open()) {
+        fprintf(stderr, "binary file was not opened!");
+    }
+    
+    int* qualData = new int[4 * QUAL_SIZE];
+    
+    inBinFile.seekg (0, ios::beg);
+    
+    inBinFile.read(reinterpret_cast<char*> (qualData), sizeof(int) * 4 * QUAL_SIZE);
+    
+    inBinFile.close();
+
     
     std::ofstream qualOut;
-    
-    //Roshan's file path
    
-    qualOut.open("/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/qualOut.dta", std::ios::app);
+    remove(qualOutFile);
+    qualOut.open(qualOutFile, std::ios::app);
     
     //Connor's file path
     //qualOut.open("/Users/ConnorLee/Desktop/netflix/qualOut.dta", std::ios::app);
@@ -26,42 +40,20 @@ void predictQual(int num_features){
         fprintf(stderr, "qualOut was not opened!");
     }
     
-    data.open(qualDataFile, std::ios::in);
-    int pointCount = 1;
-    while(getline(data, line)) {
+    for(int i = 0; i < QUAL_SIZE; i++){    
+        float predictedRating = predictRating(qualData[i * 4], qualData[i * 4 + 1]);
         
-        int col = 0;
-        std::istringstream lineIn(line);
-        
-        int user = 0, movie = 0;
-        
-        while(lineIn) {
-            int val = 0;
-            
-            if(lineIn >> val) {
-                
-                if(col == 0) {
-                    user = val;
-                }
-                else if(col == 1){
-                    movie = val;
-                }
-            
-            }
-            col++;
-        }
-        
-        if(pointCount % 100000 == 0) {
-            printf("%d testing points evaluated!\n", pointCount);
-        }
-        pointCount++;
-        
-        float predictedRating = predictRating(user, movie);
         if(predictedRating < 1)
             predictedRating = 1;
         else if (predictedRating > 5)
             predictedRating = 5;
+        
         qualOut << predictedRating << "\n";
+        
+        if((i + 1) % 1000000 == 0) {
+            printf("%d qual points evaulated!\n", i + 1);
+        }
     }
+
     qualOut.close();
 }

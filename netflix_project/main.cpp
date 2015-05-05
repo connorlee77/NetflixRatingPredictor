@@ -27,11 +27,11 @@ int main(int argc, const char * argv[]) {
     printf("Reading data took %f seconds\n",duration);
     
     //Set the length of the feature vectors
-    int num_features = 15;
-    int epochs = 5;
+    int num_features = 80;
+    int epochs = 1;
     computeSVD(0.001, num_features, trainingData, epochs);
     
-    predictQual(num_features);
+    predictQual();
 
     return 0;
 }
