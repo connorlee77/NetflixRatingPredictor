@@ -8,23 +8,21 @@
 
 #include "binaryPreProcess.h"
 
-using namespace std;
-
 long BASE_SIZE = 94362233;
 
-void writeArrayToBinary(){
+void writeArrayToBinary(string inFileName, string outFileName){
     
     std::ifstream data;
     std::string line;
     
     ofstream outBinFile;
-    outBinFile.open(outSampleBinaryData, ios::out|ios::binary);
+    outBinFile.open(outFileName, ios::out|ios::binary);
     
     if(!outBinFile.is_open()) {
         fprintf(stderr, "binary file was not opened!");
     }
     
-    data.open(inSampleDataFile, std::ios::in);
+    data.open(inFileName, std::ios::in);
     if(!data.is_open()) {
         fprintf(stderr, "input data file was not opened!");
     }
@@ -56,7 +54,7 @@ int* readArrayFromBinary(){
     int* trainingData = new int[4 * BASE_SIZE];
     
     ifstream inBinFile;
-    inBinFile.open(outSampleBinaryData, ios::in|ios::binary);
+    inBinFile.open(file1Binary, ios::in|ios::binary);
     
     if(!inBinFile.is_open()) {
         fprintf(stderr, "binary file was not opened!");

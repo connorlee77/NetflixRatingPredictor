@@ -67,10 +67,10 @@
 			isa = PBXGroup;
 			children = (
 				C88CECD91AF2335900F122BC /* main.cpp */,
-				C88CECE31AF2387100F122BC /* averages.cpp */,
-				C88CECE41AF2387100F122BC /* averages.h */,
 				C8C6AB821AF2E43B000B5377 /* binaryPreProcess.cpp */,
 				C8C6AB831AF2E43B000B5377 /* binaryPreProcess.h */,
+				C88CECE31AF2387100F122BC /* averages.cpp */,
+				C88CECE41AF2387100F122BC /* averages.h */,
 				C88CECE01AF2352400F122BC /* split_set.cpp */,
 				C88CECE11AF2352400F122BC /* split_set.h */,
 			);

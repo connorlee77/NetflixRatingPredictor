@@ -19,15 +19,19 @@
 #include <fstream>
 #include <sstream>
 
+using namespace std;
+
 // change in sample data file here!
 
 // Roshan's path
-#define inSampleDataFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file1.dta"
-#define outSampleBinaryData "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file1binary.bin"
+#define file1 "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file1.dta"
+#define file5 "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file5.dta"
+#define file1Binary "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file1binary.bin"
+#define file5Binary "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file5binary.bin"
 
 // Connor's path
 //#define inSampleDataFile "/Users/ConnorLee/Desktop/netflix/file1.dta"
 
-void writeArrayToBinary();
+void writeArrayToBinary(string inFileName, string outFileName);
 int* readArrayFromBinary();
 #endif /* defined(__dataPreProcess__binaryPreProcess__) */

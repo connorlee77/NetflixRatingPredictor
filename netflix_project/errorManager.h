@@ -17,10 +17,12 @@
 #include <sstream>
 #include "svd.h"
 
-#define qualDataFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file5.dta"
+#define qualInFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file5binary.bin"
+
+#define qualOutFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/qualOut.dta"
 
 //#define qualDataFile "/Users/ConnorLee/Desktop/netflix/file5.dta"
 
 
-void predictQual(int num_features);
+void predictQual();
 #endif /* defined(__netflix_project__errorManager__) */
