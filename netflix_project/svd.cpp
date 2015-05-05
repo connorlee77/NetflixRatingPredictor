@@ -25,50 +25,46 @@ int *dataArray;
 
 void initializeFeatureVectors() {
     
-    user_feature_table = new float *[NUMFEATURES + 1];
-    movie_feature_table = new float *[NUMFEATURES + 1];
-    
-    for(int i = 0; i < NUMFEATURES; i++) {
-        
-        user_feature_table[i] = new float[TOTAL_USERS];
-        
-        std::fill(user_feature_table[i], user_feature_table[i] + TOTAL_USERS, 0.1);
-    }
+    user_feature_table = new float *[TOTAL_USERS];
+    movie_feature_table = new float *[TOTAL_MOVIES];
     
     ifstream inUserBinFile;
     inUserBinFile.open(userOffsetFile, ios::in|ios::binary);
     
-    if(!inUserBinFile.is_open()) {
-        fprintf(stderr, "binary file was not opened!");
-    }
     
-    user_feature_table[NUMFEATURES] = new float[TOTAL_USERS];
+    if(!inUserBinFile.is_open()) {
+        fprintf(stderr, "binary file was not opened!\n");
+    }
     
     inUserBinFile.seekg (0, ios::beg);
     
-    inUserBinFile.read(reinterpret_cast<char*> (user_feature_table[NUMFEATURES]), sizeof(float) * TOTAL_USERS);
+    for(int i = 0; i < TOTAL_USERS; i++) {
+        
+        user_feature_table[i] = new float[NUMFEATURES + 1];
+        
+        std::fill(user_feature_table[i], user_feature_table[i] + NUMFEATURES, 0.1f);
+        inUserBinFile.read(reinterpret_cast<char*> (user_feature_table[i] + NUMFEATURES), sizeof(float));
+    }
     
     inUserBinFile.close();
     
-    for(int i = 0; i < NUMFEATURES; i++) {
-        
-        movie_feature_table[i] = new float[TOTAL_MOVIES];
-        
-        std::fill(movie_feature_table[i], movie_feature_table[i] + TOTAL_MOVIES, 0.1);
-    }
     
     ifstream inMovieBinFile;
     inMovieBinFile.open(movieAveragesFile, ios::in|ios::binary);
     
     if(!inMovieBinFile.is_open()) {
-        fprintf(stderr, "binary file was not opened!");
+        fprintf(stderr, "binary file was not opened!\n");
     }
-    
-    movie_feature_table[NUMFEATURES] = new float[TOTAL_MOVIES];
     
     inMovieBinFile.seekg (0, ios::beg);
     
-    inMovieBinFile.read(reinterpret_cast<char*> (movie_feature_table[NUMFEATURES]), sizeof(float) * TOTAL_MOVIES);
+    for(int i = 0; i < TOTAL_MOVIES; i++) {
+        
+        movie_feature_table[i] = new float[NUMFEATURES + 1];
+        
+        std::fill(movie_feature_table[i], movie_feature_table[i] + NUMFEATURES, 0.1f);
+        inMovieBinFile.read(reinterpret_cast<char*> (movie_feature_table[i] + NUMFEATURES), sizeof(float));
+    }
     
     inMovieBinFile.close();
 }
@@ -79,10 +75,12 @@ float predictRating(int user, int movie) {
     float sum = 0.0;
     
     for(int i = 0; i < NUMFEATURES; i++) {
-        sum += (user_feature_table[i][user - 1] * movie_feature_table[i][movie - 1]);
+        sum += (user_feature_table[user - 1][i] * movie_feature_table[movie - 1][i]);
     }
     
-    sum += user_feature_table[NUMFEATURES][user - 1] + movie_feature_table[NUMFEATURES][movie - 1];
+    //printf("Baseline: %f, %f\n", user_feature_table[user - 1][NUMFEATURES], movie_feature_table[movie - 1][NUMFEATURES]);
+    
+    sum += user_feature_table[user - 1][NUMFEATURES] + movie_feature_table[movie - 1][NUMFEATURES];
     
     assert(isfinite(sum));
     
@@ -100,16 +98,16 @@ void trainFeatures() {
     
         ratingPredict = predictRating(user, movie);
         for(int i = 0; i < NUMFEATURES; i++){
-            userVal = user_feature_table[i][user - 1];
-            movieVal = movie_feature_table[i][movie - 1];
+            userVal = user_feature_table[user - 1][i];
+            movieVal = movie_feature_table[movie - 1][i];
             error = LRATE * (rating - ratingPredict);
             ratingPredict -= (userVal * movieVal);
         
             adjustUser = userVal + error * movieVal;
             adjustMovie = movieVal + error * userVal;
         
-            user_feature_table[i][user - 1] = adjustUser;
-            movie_feature_table[i][movie - 1] = adjustMovie;
+            user_feature_table[user - 1][i] = adjustUser;
+            movie_feature_table[movie - 1][i] = adjustMovie;
         
             ratingPredict += (adjustUser * adjustMovie);
         
@@ -126,16 +124,12 @@ void trainFeatures() {
 
 void computeSVD(float learning_rate, int num_features, int* train_data, int epochs) {
     
-    long BASE_SIZE = 94362233;
     
     NUMFEATURES = num_features;
     LRATE = learning_rate;
     dataArray = train_data;
     
     initializeFeatureVectors();
-    
-    int user, movie, rating;
-    float curr_rmse;
 
     float start, end;
     float duration;
