@@ -116,3 +116,40 @@ void getUserOffsets(int** trainingDataMatrix, float globalAverage, float* movieA
     
     data.close();
 }
+
+void getUserTimes(int* allData){
+    ofstream data;
+    
+    remove(outUserTimeAverages);
+    data.open(outUserTimeAverages, ios::out|ios::binary);
+    
+    if(!data.is_open()) {
+        fprintf(stderr, "outUserTimeAverages was not opened!");
+    }
+
+    long All_SIZE = 102416306;
+    
+    int * userTimeSums = new int[TOTAL_USERS];
+    int * userTimeCounts = new int[TOTAL_USERS];
+    int user, date;
+    float outVal;
+    for(int i = 0; i < All_SIZE; i++){
+        user = allData[i * 4];
+        date = allData[i * 4 + 2];
+        userTimeSums[user - 1] += date;
+        userTimeCounts[user - 1]++;
+    }
+    
+    for(int i = 0; i < TOTAL_USERS; i++){
+        outVal = (float) userTimeSums[i]/userTimeCounts[i];
+        data.write(reinterpret_cast<char*> (&outVal), sizeof(float));
+        
+        if((i + 1) % 10000 == 0) {
+            printf("%d user time averages calculated\n", i + 1);
+            printf("Sample average: %f\n",outVal);
+        }
+    }
+    
+    
+    data.close();
+}

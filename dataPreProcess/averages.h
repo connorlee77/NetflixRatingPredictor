@@ -25,6 +25,7 @@ using namespace std;
 #define inSampleDataFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file1.dta"
 #define outUserOffsetBin "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/userOffsets.bin"
 #define outMovieAveragesBin "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/movieAverages.bin"
+#define outUserTimeAverages "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/userTimeAverages.bin"
 
 // Connor's path
 //#define inSampleDataFile "/Users/ConnorLee/Desktop/netflix/file1.dta"
@@ -33,5 +34,5 @@ void fillInMatrices(int* trainingData, int** userDataMatrix, int** movieDataMatr
 float calculateGlobalAverage(int* trainingData);
 float* getMovieAverages(int** trainingDataMatrix, float globalAverage);
 void getUserOffsets(int** trainingDataMatrix, float globalAverage, float* movieAverages);
-
+void getUserTimes(int* allData);
 #endif /* defined(__dataPreProcess__averages__) */

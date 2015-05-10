@@ -15,8 +15,32 @@
 
 int main(int argc, const char * argv[]) {
 
+    long BASE_SIZE = 94362233;
+    long ALL_SIZE = 102416306;
     float start, end;
     double duration;
+    
+    start = clock();
+    int* allData = readArrayFromBinary(allFileBinary, ALL_SIZE, 4);
+    
+    end = clock();
+    duration=(end-start)/CLOCKS_PER_SEC;
+    printf("Loading data from binary took %f seconds\n",duration);
+    
+    start = clock();
+    getUserTimes(allData);
+    
+    end = clock();
+    duration=(end-start)/CLOCKS_PER_SEC;
+    printf("Calculating user time offsets took %f seconds\n",duration);
+
+    /*
+    start = clock();
+    writeArrayToBinary(allFile, allFileBinary);
+    
+    end = clock();
+    duration=(end-start)/CLOCKS_PER_SEC;
+    */
     
     /*
     start = clock();
@@ -27,18 +51,17 @@ int main(int argc, const char * argv[]) {
     
     
     printf("Converting data to binary took %f seconds\n",duration);
-     */
+
     
     start = clock();
     
-    int* trainingData = readArrayFromBinary();
+    int* trainingData = readArrayFromBinary(file1Binary, BASE_SIZE, 4);
 
     end = clock();
     duration=(end-start)/CLOCKS_PER_SEC;
     
     printf("Reading data took %f seconds\n",duration);
     
-    /*
     start = clock();
     
     float globalAverage = calculateGlobalAverage(trainingData);
@@ -46,8 +69,6 @@ int main(int argc, const char * argv[]) {
     end = clock();
     duration=(end-start)/CLOCKS_PER_SEC;
     printf("Calculating global average took %f seconds\n",duration);
-    
-    */
     
     float globalAverage = 3.608609;
     
@@ -101,6 +122,6 @@ int main(int argc, const char * argv[]) {
     }
     
     delete [] userDataMatrix;
-    
+    */
     return 0;
 }

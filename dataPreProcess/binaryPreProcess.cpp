@@ -49,12 +49,12 @@ void writeArrayToBinary(string inFileName, string outFileName){
 }
 
 
-int* readArrayFromBinary(){
+int* readArrayFromBinary(string fileName, long rows, int cols){
     
-    int* trainingData = new int[4 * BASE_SIZE];
+    int* trainingData = new int[rows * cols];
     
     ifstream inBinFile;
-    inBinFile.open(file1Binary, ios::in|ios::binary);
+    inBinFile.open(fileName, ios::in|ios::binary);
     
     if(!inBinFile.is_open()) {
         fprintf(stderr, "binary file was not opened!");
@@ -62,7 +62,7 @@ int* readArrayFromBinary(){
     
     inBinFile.seekg (0, ios::beg);
     
-    inBinFile.read(reinterpret_cast<char*> (trainingData), sizeof(int) * 4 * BASE_SIZE);
+    inBinFile.read(reinterpret_cast<char*> (trainingData), sizeof(int) * rows * cols);
 
     inBinFile.close();
     

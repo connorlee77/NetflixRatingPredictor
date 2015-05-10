@@ -11,7 +11,7 @@
 
 #include <stdio.h>
 #include <assert.h>
-#include <math.h>
+#include <cmath>
 #include <time.h>
 
 #include <iostream>
@@ -23,6 +23,7 @@ using namespace std;
 
 #define movieAveragesFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/movieAverages.bin"
 #define userOffsetFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/userOffsets.bin"
+#define outUserTimeAverages "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/userTimeAverages.bin"
 
 extern const float GLOBAL_AVG_SET1;
 extern const float GLOBAL_AVG_SET2;
