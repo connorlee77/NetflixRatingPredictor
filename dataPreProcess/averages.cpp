@@ -14,52 +14,16 @@ int TOTAL_MOVIES = 17770;
 double LAMBDA_ONE = 25;
 double LAMBDA_TWO = 10;
 
-int** createUserSparseMatrix(int* trainingData) {
+void fillInMatrices(int* trainingData, int** userDataMatrix, int** movieDataMatrix){
     long BASE_SIZE = 94362233;
-    std::ifstream data;
-    std::string line;
-    
-    int **trainingDataMatrix = new int *[TOTAL_USERS];
-    
-    for(int i = 0; i < TOTAL_USERS; i++) {
-        trainingDataMatrix[i] = new int [TOTAL_MOVIES];
-    }
-    
-   
     for(int i = 0; i < BASE_SIZE; i++){
+        userDataMatrix[trainingData[i * 4] - 1][trainingData[i * 4 + 1] - 1] = trainingData[i * 4 + 3];
+        movieDataMatrix[trainingData[i * 4 + 1] - 1][trainingData[i * 4] - 1] = trainingData[i * 4 + 3];
         
-        trainingDataMatrix[trainingData[i * 4] - 1][trainingData[i * 4 + 1] - 1] = trainingData[i * 4 + 3];
-        
-        if((i + 1) % 10000000 == 0) {
-            printf("%d test points added to sparse matrix\n", i + 1);
+        if((i + 1) % 1000000 == 0) {
+            printf("%d test points added to sparse matrices\n", i + 1);
         }
     }
-    
-    return trainingDataMatrix;
-}
-
-int** createMovieSparseMatrix(int* trainingData) {
-    long BASE_SIZE = 94362233;
-    std::ifstream data;
-    std::string line;
-    
-    int **trainingDataMatrix = new int *[TOTAL_MOVIES];
-    
-    for(int i = 0; i < TOTAL_MOVIES; i++) {
-        trainingDataMatrix[i] = new int [TOTAL_USERS];
-    }
-    
-    
-    for(int i = 0; i < BASE_SIZE; i++){
-        
-        trainingDataMatrix[trainingData[i * 4 + 1] - 1][trainingData[i * 4] - 1] = trainingData[i * 4 + 3];
-        
-        if((i + 1) % 10000000 == 0) {
-            printf("%d test points added to sparse matrix\n", i + 1);
-        }
-    }
-    
-    return trainingDataMatrix;
 }
 
 
@@ -109,6 +73,7 @@ float* getMovieAverages(int** trainingDataMatrix, float globalAverage){
         
         if((i + 1) % 1000 == 0) {
             printf("%d movie baselines calculated\n", i + 1);
+            printf("Sample prediction: %f\n",outVal);
         }
     }
     
@@ -145,6 +110,7 @@ void getUserOffsets(int** trainingDataMatrix, float globalAverage, float* movieA
         
         if((i + 1) % 10000 == 0) {
             printf("%d user baselines calculated\n", i + 1);
+            printf("Sample prediction: %f\n",outVal);
         }
     }
     

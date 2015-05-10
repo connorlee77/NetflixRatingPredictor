@@ -41,7 +41,7 @@ void predictQual(){
     }
     
     for(int i = 0; i < QUAL_SIZE; i++){    
-        float predictedRating = predictRating(qualData[i * 4], qualData[i * 4 + 1]);
+        float predictedRating = predictRating(qualData[i * 4], qualData[i * 4 + 1], qualData[i * 4 + 2]);
         
         if(predictedRating < 1)
             predictedRating = 1;
@@ -50,10 +50,11 @@ void predictQual(){
         
         qualOut << predictedRating << "\n";
         
-        if((i + 1) % 1000000 == 0) {
+        if((i + 1) % 100000 == 0) {
             printf("%d qual points evaulated!\n", i + 1);
         }
     }
 
     qualOut.close();
+    delete [] qualData;
 }

@@ -29,8 +29,7 @@ using namespace std;
 // Connor's path
 //#define inSampleDataFile "/Users/ConnorLee/Desktop/netflix/file1.dta"
 
-int** createUserSparseMatrix(int* trainingData);
-int** createMovieSparseMatrix(int* trainingData);
+void fillInMatrices(int* trainingData, int** userDataMatrix, int** movieDataMatrix);
 float calculateGlobalAverage(int* trainingData);
 float* getMovieAverages(int** trainingDataMatrix, float globalAverage);
 void getUserOffsets(int** trainingDataMatrix, float globalAverage, float* movieAverages);

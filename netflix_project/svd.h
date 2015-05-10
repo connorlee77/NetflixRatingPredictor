@@ -36,10 +36,7 @@ extern float **user_feature_table;
 extern float **movie_feature_table;
 
 void initializeFeatureVectors();
-void train();
-float predictRating(int user, int movie);
-void trainFeatures(int user, int movie, int rating, int num_feature);
-//void computeSVD(float learning_rate, int num_features, int* train_data, int epochs);
+float predictRating(int user, int movie, int date);
 void computeSVD(float learning_rate, int num_features, int* train_data, int epochs);
 
 

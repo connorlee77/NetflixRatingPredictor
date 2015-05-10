@@ -7,21 +7,31 @@
 //
 
 #include "svd.h"
-#include <limits.h>
 
 const float GLOBAL_AVG_SET1 = 3.608609;
 const float GLOBAL_AVG_SET2 = 3.608859;
 
 const int TOTAL_USERS = 458293;
 const int TOTAL_MOVIES = 17770;
-
+const int TOTAl_DAYS = 2243;
 int NUMFEATURES;
-float LRATE;
 
 float **user_feature_table;
 float **movie_feature_table;
+float *movieTimeBins;
 
 int *dataArray;
+
+float LRATE;
+
+float REG_A = 0.0255;
+float LEARNING_A = 2 * 0.00267;
+
+float REG_D = 0.0255;
+float LEARNING_D = 2 * 0.000488;
+
+float REG_E = 0.1;
+float LEARNING_E = 2 * 0.00005;
 
 void initializeFeatureVectors() {
     srand (static_cast <unsigned> (time(0)));
@@ -43,7 +53,7 @@ void initializeFeatureVectors() {
         
         user_feature_table[i] = new float[NUMFEATURES + 1];
         
-        randInit = -0.1f + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(0.2f)));
+        randInit = static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(0.1f)));
         
         std::fill(user_feature_table[i], user_feature_table[i] + NUMFEATURES, randInit);
         inUserBinFile.read(reinterpret_cast<char*> (user_feature_table[i] + NUMFEATURES), sizeof(float));
@@ -65,16 +75,20 @@ void initializeFeatureVectors() {
         
         movie_feature_table[i] = new float[NUMFEATURES + 1];
         
-        randInit = -0.1f + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(0.2f)));
+        randInit = static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(0.1f)));
         std::fill(movie_feature_table[i], movie_feature_table[i] + NUMFEATURES, randInit);
         inMovieBinFile.read(reinterpret_cast<char*> (movie_feature_table[i] + NUMFEATURES), sizeof(float));
     }
     
     inMovieBinFile.close();
+    
+    movieTimeBins = new float[30];
+    randInit = static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(0.1f)));
+    std::fill(movieTimeBins, movieTimeBins + 30, randInit);
 }
 
 
-float predictRating(int user, int movie) {
+float predictRating(int user, int movie, int date) {
     
     float sum = 0.0;
     
@@ -82,48 +96,16 @@ float predictRating(int user, int movie) {
         sum += (user_feature_table[user - 1][i] * movie_feature_table[movie - 1][i]);
     }
     
-    //printf("Baseline: %f, %f\n", user_feature_table[user - 1][NUMFEATURES], movie_feature_table[movie - 1][NUMFEATURES]);
-    
-    sum += user_feature_table[user - 1][NUMFEATURES] + movie_feature_table[movie - 1][NUMFEATURES] + GLOBAL_AVG_SET1;
+    sum += user_feature_table[user - 1][NUMFEATURES] + movie_feature_table[movie - 1][NUMFEATURES] + GLOBAL_AVG_SET1 + movieTimeBins[(int) (date/TOTAl_DAYS) * 30];
     
     assert(isfinite(sum));
     
     return sum;
 }
 
-void trainFeatures() {
-    float error, userVal, movieVal, adjustUser, adjustMovie, ratingPredict;
-    int user, movie, rating;
-    
-    for(int j = 0; j < BASE_SIZE; j++) {
-        user = dataArray[4 * j];
-        movie = dataArray[4 * j + 1];
-        rating = dataArray[4 * j + 3];
-    
-        error = LRATE * (rating - predictRating(user, movie));
-        for(int i = 0; i < NUMFEATURES; i++){
-            userVal = user_feature_table[user - 1][i];
-            movieVal = movie_feature_table[movie - 1][i];
-        
-            adjustUser = userVal + error * movieVal;
-            adjustMovie = movieVal + error * userVal;
-        
-            user_feature_table[user - 1][i] = adjustUser;
-            movie_feature_table[movie - 1][i] = adjustMovie;
-        
-            assert(adjustUser < 50 && adjustUser > -50);
-            assert(adjustMovie < 50 && adjustMovie > -50);
-        }
-        
-        if((j + 1) % 1000000 == 0) {
-            printf("%d test points trained!\n", j + 1);
-        }
-    }
-}
-
 void computeSVD(float learning_rate, int num_features, int* train_data, int epochs) {
+    LRATE = 2 * learning_rate;
     NUMFEATURES = num_features;
-    LRATE = learning_rate;
     dataArray = train_data;
     
     initializeFeatureVectors();
@@ -131,16 +113,64 @@ void computeSVD(float learning_rate, int num_features, int* train_data, int epoc
     float start, end;
     float duration;
     
-    for(int i = 0; i < epochs; i++) {
+    float sum, error, userVal, adjustUser, adjustMovie;
+    int user, movie, rating, date, randUser, randFeature, randMovie, movieBin;
+    
+    for(int k = 0; k < epochs; k++) {
         start = clock();
-        printf("Training epoch %d\n", i + 1);
-        trainFeatures();
+        printf("Training epoch %d\n", k + 1);
+        for(int j = 0; j < BASE_SIZE; j++) {
+            user = dataArray[4 * j];
+            movie = dataArray[4 * j + 1];
+            date = dataArray[4 * j + 2];
+            rating = dataArray[4 * j + 3];
+            
+            error = rating - predictRating(user, movie, date);
+            for(int i = 0; i < NUMFEATURES; i++){
+                userVal = user_feature_table[user - 1][i];
+                
+                user_feature_table[user - 1][i] += LRATE * error * movie_feature_table[movie - 1][i];
+                movie_feature_table[movie - 1][i] += LRATE * error * userVal;
+            }
+            
+            user_feature_table[user - 1][NUMFEATURES] += LEARNING_A * (error - REG_A * user_feature_table[user - 1][NUMFEATURES]);
+            movie_feature_table[movie - 1][NUMFEATURES] += LEARNING_D * (error - REG_D * movie_feature_table[movie - 1][NUMFEATURES]);
+            
+            movieBin = (date/TOTAl_DAYS) * 30;
+            movieTimeBins[movieBin] += LEARNING_E * (error - REG_E * movieTimeBins[movieBin]);
+            
+            if((j + 1) % 1000000 == 0) {
+                printf("%d test points trained.\n", j + 1);
+            }
+        }
         
+        /*
+        sum = 0.0;
+        
+        for (int j = 0; j < BASE_SIZE; j++) {
+            user = dataArray[4 * j];
+            movie = dataArray[4 * j + 1];
+            rating = dataArray[4 * j + 3];
+            sum += powf(rating - predictRating(user, movie), 2);
+        }
+        */
+        
+        for(int i = 0; i < 10000; i++){
+            randUser = rand() % TOTAL_USERS;
+            randMovie = rand() % TOTAL_MOVIES;
+            randFeature = rand() % (NUMFEATURES + 1);
+            
+            adjustUser = user_feature_table[randUser][randFeature];
+            assert(adjustUser < 50 && adjustUser > -50);
+            
+            adjustMovie = movie_feature_table[randMovie][randFeature];
+            assert(adjustMovie < 50 && adjustMovie > -50);
+        }
         end = clock();
-        
         duration=(end-start)/CLOCKS_PER_SEC;
-        printf("Epoch %d took %f seconds\n",i + 1, duration);
-        //curr_rmse = sqrt((sum / BASE_SIZE));
-        //printf("Epoch %d, rsme: %f\n", i + 1, curr_rmse);
+        //printf("Epoch %d took %f seconds. Its RMSE is %f\n",k + 1, duration, powf(sum/BASE_SIZE, 0.5));
+        printf("Epoch %d took %f seconds.\n",k + 1, duration);
+        
+        LRATE = 0.9 * LRATE;
     }
 }
