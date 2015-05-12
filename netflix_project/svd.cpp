@@ -258,9 +258,9 @@ float predictRating(int user, int movie, int date) {
         sign = -1;
     CURR_USER_TIME_DEVIATION = sign * pow(abs(timeDeviation), BETA);
     CURR_USER_TIME_DEVIATION_SCALING_FACTOR = user_time_deviation_scaling_table[user - 1];
-    CURR_USER_TIME_DEPENDENT_DEVIATION = user_time_dependent_deviation_table[user - 1][date];
+    CURR_USER_TIME_DEPENDENT_DEVIATION = user_time_dependent_deviation_table[user - 1][date - 1];
     CURR_USER_CONSTANT_TIME_DEPENDENT_BASELINE_SCALING_FACTOR = user_constant_time_dependent_baseline_scaling_table[user - 1];
-    CURR_USER_VARYING_TIME_DEPENDENT_BASELINE_SCALING_FACTOR = user_varying_time_dependent_baseline_scaling_table[user - 1][date];
+    CURR_USER_VARYING_TIME_DEPENDENT_BASELINE_SCALING_FACTOR = user_varying_time_dependent_baseline_scaling_table[user - 1][date - 1];
     
     CURR_MOVIE_RATING_DEVIATION = movie_rating_deviation_table[movie - 1];
     CURR_MOVIE_TIME_BIN = ((float) date/ (float) TOTAL_DAYS) * 30;
@@ -337,13 +337,13 @@ void computeSVD(float learning_rate, int num_features, int epochs, int* train_da
             user_time_deviation_scaling_table[user - 1] += LEARNING_B * (CURR_USER_TIME_DEVIATION * error - REG_B * CURR_USER_TIME_DEVIATION_SCALING_FACTOR);
             
             //Train user time dependent deviation
-            user_time_dependent_deviation_table[user - 1][date] += LEARNING_C * (error - REG_C * CURR_USER_TIME_DEPENDENT_DEVIATION);
+            user_time_dependent_deviation_table[user - 1][date - 1] += LEARNING_C * (error - REG_C * CURR_USER_TIME_DEPENDENT_DEVIATION);
             
             //Train user constant time dependent baseline scaling factor
             user_constant_time_dependent_baseline_scaling_table[user - 1] += LEARNING_F * ((CURR_MOVIE_RATING_DEVIATION + CURR_MOVIE_TIME_CHANGING_BIAS) * error - REG_F * (CURR_USER_CONSTANT_TIME_DEPENDENT_BASELINE_SCALING_FACTOR - 1.0f));
             
             //Train user varying time dependent baseline scaling factor
-            user_varying_time_dependent_baseline_scaling_table[user - 1][date] += LEARNING_G * ((CURR_MOVIE_RATING_DEVIATION + CURR_MOVIE_TIME_CHANGING_BIAS) * error - REG_G * CURR_USER_VARYING_TIME_DEPENDENT_BASELINE_SCALING_FACTOR);
+            user_varying_time_dependent_baseline_scaling_table[user - 1][date - 1] += LEARNING_G * ((CURR_MOVIE_RATING_DEVIATION + CURR_MOVIE_TIME_CHANGING_BIAS) * error - REG_G * CURR_USER_VARYING_TIME_DEPENDENT_BASELINE_SCALING_FACTOR);
             
             //Train movie rating deviation
             movie_rating_deviation_table[movie - 1] += LEARNING_D * ((CURR_USER_CONSTANT_TIME_DEPENDENT_BASELINE_SCALING_FACTOR + CURR_USER_VARYING_TIME_DEPENDENT_BASELINE_SCALING_FACTOR) * error - REG_D * CURR_MOVIE_RATING_DEVIATION);
