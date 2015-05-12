@@ -255,7 +255,7 @@ float predictRating(int user, int movie, int date) {
     /*
      * Include global average, user rating deviation, and movie rating deviation
      */
-    sum += GLOBAL_AVG_SET1 + CURR_USER_RATING_DEVIATION + CURR_USER_TIME_DEVIATION_SCALING_FACTOR * CURR_USER_TIME_DEVIATION + CURR_USER_TIME_DEPENDENT_DEVIATION + CURR_MOVIE_RATING_DEVIATION + CURR_MOVIE_TIME_CHANGING_BIAS;
+    sum += GLOBAL_AVG_SET1 + CURR_USER_RATING_DEVIATION + CURR_USER_TIME_DEVIATION_SCALING_FACTOR * CURR_USER_TIME_DEVIATION + CURR_USER_TIME_DEPENDENT_DEVIATION + (CURR_MOVIE_RATING_DEVIATION + CURR_MOVIE_TIME_CHANGING_BIAS) * CURR_USER_CONSTANT_TIME_DEPENDENT_BASELINE_SCALING_FACTOR;
     
     /*
      * Print prediction information if wanted
@@ -324,11 +324,14 @@ void computeSVD(float learning_rate, int num_features, int epochs, int* train_da
             //Train user time dependent deviation
             user_time_dependent_deviation_table[user - 1][date] += LEARNING_C * (error - REG_C * CURR_USER_TIME_DEPENDENT_DEVIATION);
             
+            //Train user constant time dependent baseline scaling factor
+            user_constant_time_dependent_baseline_scaling_table[user - 1] += LEARNING_F * ((CURR_MOVIE_RATING_DEVIATION + CURR_MOVIE_TIME_CHANGING_BIAS) * error - REG_F * (CURR_USER_CONSTANT_TIME_DEPENDENT_BASELINE_SCALING_FACTOR - 1.0f));
+            
             //Train movie rating deviation
-            movie_rating_deviation_table[movie - 1] += LEARNING_D * (error - REG_D * CURR_MOVIE_RATING_DEVIATION);
+            movie_rating_deviation_table[movie - 1] += LEARNING_D * (CURR_USER_CONSTANT_TIME_DEPENDENT_BASELINE_SCALING_FACTOR * error - REG_D * CURR_MOVIE_RATING_DEVIATION);
             
             //Train movie time changing bias
-            movie_time_changing_bias_table[movie - 1][CURR_MOVIE_TIME_BIN] += LEARNING_E * (error - REG_E * CURR_MOVIE_TIME_CHANGING_BIAS);
+            movie_time_changing_bias_table[movie - 1][CURR_MOVIE_TIME_BIN] += LEARNING_E * (CURR_USER_CONSTANT_TIME_DEPENDENT_BASELINE_SCALING_FACTOR * error - REG_E * CURR_MOVIE_TIME_CHANGING_BIAS);
             
             if((j + 1) % 1000000 == 0) {
                 printf("%d test points trained.\n", j + 1);
