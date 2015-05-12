@@ -7,29 +7,28 @@
 //
 
 #include "dataManager.h"
-
-long BASE_SIZE = 94362233;
 const int TOTAL_USERS = 458293;
 const int TOTAL_MOVIES = 17770;
 
-int* fillTrainingData(){
+int* fillData(string file, int rows, int cols){
     
     ifstream inBinFile;
-    inBinFile.open(outSampleBinaryData, ios::in|ios::binary);
+    inBinFile.open(file, ios::in|ios::binary);
     
     if(!inBinFile.is_open()) {
         fprintf(stderr, "binary file was not opened!");
+        exit(0);
     }
     
-    int* trainingData = new int[4 * BASE_SIZE];
+    int* dataArray = new int[rows * cols];
     
     inBinFile.seekg (0, ios::beg);
     
-    inBinFile.read(reinterpret_cast<char*> (trainingData), sizeof(int) * 4 * BASE_SIZE);
+    inBinFile.read(reinterpret_cast<char*> (dataArray), sizeof(int) * rows * cols);
     
     inBinFile.close();
     
-    return trainingData;
+    return dataArray;
 }
 
 float* getMovieAverages(){

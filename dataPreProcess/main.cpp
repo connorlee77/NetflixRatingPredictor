@@ -15,10 +15,12 @@
 
 int main(int argc, const char * argv[]) {
 
-    long BASE_SIZE = 94362233;
-    long ALL_SIZE = 102416306;
     float start, end;
     double duration;
+    
+    /*
+    long BASE_SIZE = 94362233;
+    long ALL_SIZE = 102416306;
     
     start = clock();
     int* allData = readArrayFromBinary(allFileBinary, ALL_SIZE, 4);
@@ -33,14 +35,15 @@ int main(int argc, const char * argv[]) {
     end = clock();
     duration=(end-start)/CLOCKS_PER_SEC;
     printf("Calculating user time offsets took %f seconds\n",duration);
-
-    /*
+    */
+    
+    
     start = clock();
-    writeArrayToBinary(allFile, allFileBinary);
+    writeArrayToBinary(file4, file4Binary);
     
     end = clock();
     duration=(end-start)/CLOCKS_PER_SEC;
-    */
+    
     
     /*
     start = clock();
