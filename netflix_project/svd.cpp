@@ -46,6 +46,8 @@ int NUMFEATURES;
 
 float **user_feature_table;
 float *user_rating_deviation_table;
+float *user_mean_rating_date_table;
+float *user_time_deviation_scaling_table;
 
 float **movie_feature_table;
 float *movie_rating_deviation_table;
@@ -54,6 +56,8 @@ float **movie_time_changing_bias_table;
 int *dataArray;
 
 float CURR_USER_RATING_DEVIATION;
+float CURR_USER_TIME_DEVIATION;
+float CURR_USER_TIME_DEVIATION_SCALING_FACTOR;
 
 float CURR_MOVIE_RATING_DEVIATION;
 int CURR_MOVIE_TIME_BIN;
@@ -92,7 +96,7 @@ void initializeFeatureVectors() {
     ifstream userRatingDeviationStream;
     userRatingDeviationStream.open(userRatingDeviationFile, ios::in|ios::binary);
     if(!userRatingDeviationStream.is_open()) {
-        fprintf(stderr, "user binary file was not opened!\n");
+        fprintf(stderr, "user rating deviation binary file was not opened!\n");
         exit(0);
     }
     userRatingDeviationStream.seekg (0, ios::beg);
@@ -106,11 +110,40 @@ void initializeFeatureVectors() {
     
     
     /*
+     * Initialize user_mean_rating_date_table
+     */
+    user_mean_rating_date_table = new float[TOTAL_USERS];
+    ifstream userMeanRatingDateStream;
+    userMeanRatingDateStream.open(userMeanTimeRatingFile, ios::in|ios::binary);
+    if(!userMeanRatingDateStream.is_open()) {
+        fprintf(stderr, "user mean rating rate binary file was not opened!\n");
+        exit(0);
+    }
+    userMeanRatingDateStream.seekg (0, ios::beg);
+    
+    userMeanRatingDateStream.read(reinterpret_cast<char*> (user_mean_rating_date_table), sizeof(float) * TOTAL_USERS);
+    
+    userMeanRatingDateStream.close();
+    /*
+     * End initialization of user_mean_rating_date_table
+     */
+    
+    /*
+     * Initialize user_time_deviation_scaling_table
+     */
+    user_time_deviation_scaling_table = new float[TOTAL_USERS];
+    /*
+     * End initialization of user_time_deviation_scaling_table
+     */
+    
+    /*
      * Print sample user values, if wanted
      */
     if(printVectorInitInfo){
         printf("Sample user features, first: %f, last: %f\n", user_feature_table[TOTAL_USERS - 1][0], user_feature_table[TOTAL_USERS - 1][NUMFEATURES - 1]);
         printf("Sample user rating deviation: %f\n", user_rating_deviation_table[TOTAL_USERS - 1]);
+        printf("Sample user mean rating date: %f\n", user_mean_rating_date_table[TOTAL_USERS - 1]);
+        printf("Sample user time deviation scaling factor: %f\n", user_time_deviation_scaling_table[TOTAL_USERS - 1]);
     }
 
     
@@ -172,7 +205,8 @@ void initializeFeatureVectors() {
 
 
 float predictRating(int user, int movie, int date) {
-    float sum = 0.0;
+    float sum = 0.0, timeDeviation;
+    int sign = 1;
     
     /*
      * Include prediction using user and movie features
@@ -182,16 +216,20 @@ float predictRating(int user, int movie, int date) {
     }
     
     CURR_USER_RATING_DEVIATION = user_rating_deviation_table[user - 1];
+    timeDeviation = date - user_mean_rating_date_table[movie - 1];
+    if(timeDeviation < 0)
+        sign = -1;
+    CURR_USER_TIME_DEVIATION = sign * pow(abs(timeDeviation), BETA);
+    CURR_USER_TIME_DEVIATION_SCALING_FACTOR = user_time_deviation_scaling_table[user - 1];
+    
     CURR_MOVIE_RATING_DEVIATION = movie_rating_deviation_table[movie - 1];
-    
     CURR_MOVIE_TIME_BIN = ((float) date/ (float) TOTAL_DAYS) * 30;
-    
     CURR_MOVIE_TIME_CHANGING_BIAS = movie_time_changing_bias_table[movie - 1][CURR_MOVIE_TIME_BIN];
     
     /*
      * Include global average, user rating deviation, and movie rating deviation
      */
-    sum += GLOBAL_AVG_SET1 + CURR_USER_RATING_DEVIATION + CURR_MOVIE_RATING_DEVIATION + CURR_MOVIE_TIME_CHANGING_BIAS;
+    sum += GLOBAL_AVG_SET1 + CURR_USER_RATING_DEVIATION + CURR_USER_TIME_DEVIATION_SCALING_FACTOR * CURR_USER_TIME_DEVIATION + CURR_MOVIE_RATING_DEVIATION + CURR_MOVIE_TIME_CHANGING_BIAS;
     
     /*
      * Print prediction information if wanted
@@ -200,7 +238,10 @@ float predictRating(int user, int movie, int date) {
         printf("User, movie, date: %d %d %d\n", user, movie, date);
         
         printf("User rating deviation: %f\n", CURR_USER_RATING_DEVIATION);
-    
+        printf("User non-adjusted time deviation: %f\n", timeDeviation);
+        printf("User adjusted time deviation: %f\n", CURR_USER_TIME_DEVIATION);
+        printf("User time deviation scaling factor: %f\n", CURR_USER_TIME_DEVIATION_SCALING_FACTOR);
+        
         printf("Movie rating deviation: %f\n", CURR_MOVIE_RATING_DEVIATION);
         printf("Movie time bin: %d\n", CURR_MOVIE_TIME_BIN);
         printf("Movie time changing bias: %f\n", CURR_MOVIE_TIME_CHANGING_BIAS);
@@ -249,6 +290,9 @@ void computeSVD(float learning_rate, int num_features, int epochs, int* train_da
             //Train user rating deviation
             user_rating_deviation_table[user - 1] += LEARNING_A * (error - REG_A * CURR_USER_RATING_DEVIATION);
             
+            //Train user time deviation scaling factor
+            user_time_deviation_scaling_table[user - 1] += LEARNING_B * (CURR_USER_TIME_DEVIATION * error - REG_B * CURR_USER_TIME_DEVIATION_SCALING_FACTOR);
+            
             //Train movie rating deviation
             movie_rating_deviation_table[movie - 1] += LEARNING_D * (error - REG_D * CURR_MOVIE_RATING_DEVIATION);
             
@@ -266,7 +310,7 @@ void computeSVD(float learning_rate, int num_features, int epochs, int* train_da
         for(int i = 0; i < 10000; i++){
             randUser = rand() % TOTAL_USERS;
             randMovie = rand() % TOTAL_MOVIES;
-            randFeature = rand() % (NUMFEATURES);
+            randFeature = rand() % NUMFEATURES;
             
             adjustUser = user_feature_table[randUser][randFeature];
             assert(adjustUser < 50 && adjustUser > -50);
