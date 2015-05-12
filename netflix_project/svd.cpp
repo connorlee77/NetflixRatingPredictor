@@ -40,6 +40,8 @@ const float REG_H = 0.000000011;
 const float LEARNING_H = 0.00236;
 
 const float BETA = 0.4;
+const float LOG_BASE = 6.76;
+const int highVal = 2651;
 
 float LRATE;
 int NUMFEATURES;
@@ -51,10 +53,12 @@ float *user_time_deviation_scaling_table;
 float **user_time_dependent_deviation_table;
 float *user_constant_time_dependent_baseline_scaling_table;
 float **user_varying_time_dependent_baseline_scaling_table;
+int **user_frequency_table;
 
 float **movie_feature_table;
 float *movie_rating_deviation_table;
 float **movie_time_changing_bias_table;
+float **movie_frequency_bias_table;
 
 int *dataArray;
 
@@ -68,6 +72,8 @@ float CURR_USER_VARYING_TIME_DEPENDENT_BASELINE_SCALING_FACTOR;
 float CURR_MOVIE_RATING_DEVIATION;
 int CURR_MOVIE_TIME_BIN;
 float CURR_MOVIE_TIME_CHANGING_BIAS;
+int CURR_ADJUSTED_FREQUENCY;
+float CURR_MOVIE_FREQUENCY_BIAS;
 
 bool printVectorInitInfo = 0;
 bool printPredictionInfo = 0;
@@ -171,16 +177,45 @@ void initializeFeatureVectors() {
      */
     
     /*
+     * Initialize user_frequency_table
+     */
+    user_frequency_table = new int*[TOTAL_USERS];
+    
+    ifstream userFrequencyStream;
+    userFrequencyStream.open(userFrequenciesFile, ios::in|ios::binary);
+    if(!userFrequencyStream.is_open()) {
+        fprintf(stderr, "user frequency binary file was not opened!\n");
+        exit(0);
+    }
+    userFrequencyStream.seekg(0, ios::beg);
+    
+    for(int i = 0; i < TOTAL_USERS; i++){
+        user_frequency_table[i] = new int[TOTAL_DAYS];
+        userFrequencyStream.read(reinterpret_cast<char*> (user_frequency_table[i]), sizeof(int) * TOTAL_DAYS);
+    }
+    userFrequencyStream.close();
+    /*
+     * End initialization of user_frequency_table
+     */
+    
+    /*
      * Print sample user values, if wanted
      */
+    int randUser = rand() % TOTAL_USERS;
+    int randDay = rand() % TOTAL_DAYS;
     if(printVectorInitInfo){
-        printf("Sample user features, first: %f, last: %f\n", user_feature_table[TOTAL_USERS - 1][0], user_feature_table[TOTAL_USERS - 1][NUMFEATURES - 1]);
-        printf("Sample user rating deviation: %f\n", user_rating_deviation_table[TOTAL_USERS - 1]);
-        printf("Sample user mean rating date: %f\n", user_mean_rating_date_table[TOTAL_USERS - 1]);
-        printf("Sample user time deviation scaling factor: %f\n", user_time_deviation_scaling_table[TOTAL_USERS - 1]);
-        printf("Sample user time dependent deviation, first: %f, last: %f\n", user_time_dependent_deviation_table[TOTAL_USERS - 1][0], user_time_dependent_deviation_table[TOTAL_USERS - 1][TOTAL_DAYS - 1]);
-        printf("Sample user constant time dependent baseline scaling factor: %f\n", user_constant_time_dependent_baseline_scaling_table[TOTAL_USERS - 1]);
-        printf("Sample user varying time dependent baseline scaling factors, first: %f, last: %f\n", user_varying_time_dependent_baseline_scaling_table[TOTAL_USERS - 1][0], user_varying_time_dependent_baseline_scaling_table[TOTAL_USERS - 1][TOTAL_DAYS - 1]);
+        printf("Sample user features, first: %f, last: %f\n", user_feature_table[randUser][0], user_feature_table[TOTAL_USERS - 1][NUMFEATURES - 1]);
+        printf("Sample user rating deviation: %f\n", user_rating_deviation_table[randUser]);
+        printf("Sample user mean rating date: %f\n", user_mean_rating_date_table[randUser]);
+        printf("Sample user time deviation scaling factor: %f\n", user_time_deviation_scaling_table[randUser]);
+        printf("Sample user time dependent deviation, first: %f, day %d: %f, last: %f\n", user_time_dependent_deviation_table[TOTAL_USERS - 1][0], randDay + 1, user_time_dependent_deviation_table[TOTAL_USERS - 1][randDay], user_time_dependent_deviation_table[randUser][TOTAL_DAYS - 1]);
+        printf("Sample user constant time dependent baseline scaling factor: %f\n", user_constant_time_dependent_baseline_scaling_table[randUser]);
+        printf("Sample user varying time dependent baseline scaling factors, first: %f, day %d: %f, last: %f\n", user_varying_time_dependent_baseline_scaling_table[randUser][0], randDay + 1, user_varying_time_dependent_baseline_scaling_table[randUser][randDay],user_varying_time_dependent_baseline_scaling_table[randUser][TOTAL_DAYS - 1]);
+        printf("user frequencies for user %d: ", randUser);
+        for(int i = 0; i < TOTAL_DAYS; i++){
+            printf("%d ", user_frequency_table[randUser][i]);
+        }
+        printf("\n");
     }
 
     
@@ -231,12 +266,28 @@ void initializeFeatureVectors() {
      */
     
     /*
+     * Initialize movie_frequency_bias_table
+     */
+    
+    int highestAdjustedVal = (float) log(highVal)/ (float) log(LOG_BASE) + 1;
+    
+    movie_frequency_bias_table = new float*[TOTAL_MOVIES];
+    for (int i = 0; i < TOTAL_MOVIES; i++) {
+        movie_frequency_bias_table[i] = new float[highestAdjustedVal];
+    }
+    /*
+     * End initialization of movie_frequency_bias_table
+     */
+    
+    /*
      * Print sample movie values, if wanted
      */
     if(printVectorInitInfo){
         printf("Sample movie features, first: %f, last: %f\n", movie_feature_table[TOTAL_MOVIES - 1][0], movie_feature_table[TOTAL_MOVIES - 1][NUMFEATURES - 1]);
         printf("Sample movie rating deviation: %f\n", movie_rating_deviation_table[TOTAL_MOVIES - 1]);
         printf("Sample movie time changing bias, first: %f, last: %f\n", movie_time_changing_bias_table[TOTAL_MOVIES - 1][0], movie_time_changing_bias_table[TOTAL_MOVIES - 1][29]);
+        printf("Highest adjust value: %d\n", highestAdjustedVal);
+        printf("Sample movie frequency biases, first: %f, last: %f\n", movie_frequency_bias_table[TOTAL_MOVIES - 1][0], movie_frequency_bias_table[TOTAL_MOVIES - 1][highestAdjustedVal - 1]);
     }
 }
 
@@ -265,11 +316,13 @@ float predictRating(int user, int movie, int date) {
     CURR_MOVIE_RATING_DEVIATION = movie_rating_deviation_table[movie - 1];
     CURR_MOVIE_TIME_BIN = ((float) date/ (float) TOTAL_DAYS) * 30;
     CURR_MOVIE_TIME_CHANGING_BIAS = movie_time_changing_bias_table[movie - 1][CURR_MOVIE_TIME_BIN];
+    CURR_ADJUSTED_FREQUENCY = (float) log(user_frequency_table[user - 1][date - 1])/ (float) log(LOG_BASE);
+    CURR_MOVIE_FREQUENCY_BIAS = movie_frequency_bias_table[movie - 1][CURR_ADJUSTED_FREQUENCY];
     
     /*
      * Include global average, user rating deviation, and movie rating deviation
      */
-    sum += GLOBAL_AVG_SET1 + CURR_USER_RATING_DEVIATION + CURR_USER_TIME_DEVIATION_SCALING_FACTOR * CURR_USER_TIME_DEVIATION + CURR_USER_TIME_DEPENDENT_DEVIATION + (CURR_MOVIE_RATING_DEVIATION + CURR_MOVIE_TIME_CHANGING_BIAS) * (CURR_USER_CONSTANT_TIME_DEPENDENT_BASELINE_SCALING_FACTOR + CURR_USER_VARYING_TIME_DEPENDENT_BASELINE_SCALING_FACTOR);
+    sum += GLOBAL_AVG_SET1 + CURR_USER_RATING_DEVIATION + CURR_USER_TIME_DEVIATION_SCALING_FACTOR * CURR_USER_TIME_DEVIATION + CURR_USER_TIME_DEPENDENT_DEVIATION + (CURR_MOVIE_RATING_DEVIATION + CURR_MOVIE_TIME_CHANGING_BIAS) * (CURR_USER_CONSTANT_TIME_DEPENDENT_BASELINE_SCALING_FACTOR + CURR_USER_VARYING_TIME_DEPENDENT_BASELINE_SCALING_FACTOR) + CURR_MOVIE_FREQUENCY_BIAS;
     
     /*
      * Print prediction information if wanted
@@ -288,6 +341,8 @@ float predictRating(int user, int movie, int date) {
         printf("Movie rating deviation: %f\n", CURR_MOVIE_RATING_DEVIATION);
         printf("Movie time bin: %d\n", CURR_MOVIE_TIME_BIN);
         printf("Movie time changing bias: %f\n", CURR_MOVIE_TIME_CHANGING_BIAS);
+        printf("Adjusted frequency: %d\n", CURR_ADJUSTED_FREQUENCY);
+        printf("Movie frequency bias: %f\n", CURR_MOVIE_FREQUENCY_BIAS);
         
         printf("Rating prediction: %f\n\n", sum);
     }
@@ -299,11 +354,16 @@ void computeSVD(float learning_rate, int num_features, int epochs, int* train_da
     LRATE = learning_rate;
     NUMFEATURES = num_features;
     dataArray = train_data;
-    
-    initializeFeatureVectors();
 
     float start, end;
     float duration;
+    
+    start = clock();
+    initializeFeatureVectors();
+    end = clock();
+    duration=(end-start)/CLOCKS_PER_SEC;
+    
+    printf("Feature initialization took %f seconds\n", duration);
     
     float sum, error, userVal, adjustUser, adjustMovie, oldTrainRMSE = 1.0f, newTrainRMSE, oldProbeRMSE = 1.0f, newProbeRMSE;
     int user, movie, rating, date, randUser, randFeature, randMovie;
@@ -350,6 +410,9 @@ void computeSVD(float learning_rate, int num_features, int epochs, int* train_da
             
             //Train movie time changing bias
             movie_time_changing_bias_table[movie - 1][CURR_MOVIE_TIME_BIN] += LEARNING_E * ((CURR_USER_CONSTANT_TIME_DEPENDENT_BASELINE_SCALING_FACTOR + CURR_USER_VARYING_TIME_DEPENDENT_BASELINE_SCALING_FACTOR) * error - REG_E * CURR_MOVIE_TIME_CHANGING_BIAS);
+            
+            //Train movie frequency bias
+            movie_frequency_bias_table[movie - 1][CURR_ADJUSTED_FREQUENCY] += LEARNING_H * (error - REG_H * CURR_MOVIE_FREQUENCY_BIAS);
             
             if((j + 1) % 1000000 == 0) {
                 printf("%d test points trained.\n", j + 1);

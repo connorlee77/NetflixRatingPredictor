@@ -175,6 +175,7 @@ void getUserFrequencies(int* allData){
     
     int user, date;
     int outVal = 0;
+    int highVal = 0;
     for(int i = 0; i < All_SIZE; i++){
         user = allData[i * 4];
         date = allData[i * 4 + 2];
@@ -189,6 +190,9 @@ void getUserFrequencies(int* allData){
         for(int j = 0; j < TOTAL_DAYS; j++){
             outVal = userTimeFrequencies[i][j];
             data.write(reinterpret_cast<char*> (&outVal), sizeof(int));
+            if(outVal > highVal){
+                highVal = outVal;
+            }
         }
         if((i + 1) % 1000000 == 0) {
             printf("%d user frequencies calculated\n", i + 1);
@@ -196,6 +200,7 @@ void getUserFrequencies(int* allData){
         }
     }
     
+    printf("The highest frequency encounter was %d\n", highVal);
     
     data.close();
 }

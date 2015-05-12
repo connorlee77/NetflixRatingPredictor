@@ -24,6 +24,7 @@ using namespace std;
 #define userRatingDeviationFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/userOffsets.bin"
 #define movieRatingDeviationFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/movieAverages.bin"
 #define userMeanTimeRatingFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/userTimeAverages.bin"
+#define userFrequenciesFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/userFrequencies.bin"
 
 
 extern const float GLOBAL_AVG_SET1;
@@ -39,11 +40,12 @@ extern float *user_time_deviation_scaling_table;
 extern float **user_time_dependent_deviation_table;
 extern float *user_constant_time_dependent_baseline_scaling_table;
 extern float **user_varying_time_dependent_baseline_scaling_table;
+extern int **user_frequency_table;
 
-extern float **movie_feature_table;
 extern float **movie_feature_table;
 extern float *movie_rating_deviation_table;
 extern float **movie_time_changing_bias_table;
+extern float **movie_frequency_bias_table;
 
 extern const long BASE_SIZE;
 extern const long PROBE_SIZE;
