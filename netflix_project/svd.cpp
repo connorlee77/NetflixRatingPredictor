@@ -63,6 +63,7 @@ float CURR_USER_TIME_DEVIATION;
 float CURR_USER_TIME_DEVIATION_SCALING_FACTOR;
 float CURR_USER_TIME_DEPENDENT_DEVIATION;
 float CURR_USER_CONSTANT_TIME_DEPENDENT_BASELINE_SCALING_FACTOR;
+float CURR_USER_VARYING_TIME_DEPENDENT_BASELINE_SCALING_FACTOR;
 
 float CURR_MOVIE_RATING_DEVIATION;
 int CURR_MOVIE_TIME_BIN;
@@ -159,6 +160,17 @@ void initializeFeatureVectors() {
      */
     
     /*
+     * Initialize user_varying_time_dependent_baseline_scaling_table
+     */
+    user_varying_time_dependent_baseline_scaling_table = new float*[TOTAL_USERS];
+    for (int i = 0; i < TOTAL_USERS; i++) {
+        user_varying_time_dependent_baseline_scaling_table[i] = new float[TOTAL_DAYS];
+    }
+    /*
+     * End initialization of user_varying_time_dependent_baseline_scaling_table
+     */
+    
+    /*
      * Print sample user values, if wanted
      */
     if(printVectorInitInfo){
@@ -168,6 +180,7 @@ void initializeFeatureVectors() {
         printf("Sample user time deviation scaling factor: %f\n", user_time_deviation_scaling_table[TOTAL_USERS - 1]);
         printf("Sample user time dependent deviation, first: %f, last: %f\n", user_time_dependent_deviation_table[TOTAL_USERS - 1][0], user_time_dependent_deviation_table[TOTAL_USERS - 1][TOTAL_DAYS - 1]);
         printf("Sample user constant time dependent baseline scaling factor: %f\n", user_constant_time_dependent_baseline_scaling_table[TOTAL_USERS - 1]);
+        printf("Sample user varying time dependent baseline scaling factors, first: %f, last: %f\n", user_varying_time_dependent_baseline_scaling_table[TOTAL_USERS - 1][0], user_varying_time_dependent_baseline_scaling_table[TOTAL_USERS - 1][TOTAL_DAYS - 1]);
     }
 
     
@@ -247,6 +260,7 @@ float predictRating(int user, int movie, int date) {
     CURR_USER_TIME_DEVIATION_SCALING_FACTOR = user_time_deviation_scaling_table[user - 1];
     CURR_USER_TIME_DEPENDENT_DEVIATION = user_time_dependent_deviation_table[user - 1][date];
     CURR_USER_CONSTANT_TIME_DEPENDENT_BASELINE_SCALING_FACTOR = user_constant_time_dependent_baseline_scaling_table[user - 1];
+    CURR_USER_VARYING_TIME_DEPENDENT_BASELINE_SCALING_FACTOR = user_varying_time_dependent_baseline_scaling_table[user - 1][date];
     
     CURR_MOVIE_RATING_DEVIATION = movie_rating_deviation_table[movie - 1];
     CURR_MOVIE_TIME_BIN = ((float) date/ (float) TOTAL_DAYS) * 30;
@@ -255,7 +269,7 @@ float predictRating(int user, int movie, int date) {
     /*
      * Include global average, user rating deviation, and movie rating deviation
      */
-    sum += GLOBAL_AVG_SET1 + CURR_USER_RATING_DEVIATION + CURR_USER_TIME_DEVIATION_SCALING_FACTOR * CURR_USER_TIME_DEVIATION + CURR_USER_TIME_DEPENDENT_DEVIATION + (CURR_MOVIE_RATING_DEVIATION + CURR_MOVIE_TIME_CHANGING_BIAS) * CURR_USER_CONSTANT_TIME_DEPENDENT_BASELINE_SCALING_FACTOR;
+    sum += GLOBAL_AVG_SET1 + CURR_USER_RATING_DEVIATION + CURR_USER_TIME_DEVIATION_SCALING_FACTOR * CURR_USER_TIME_DEVIATION + CURR_USER_TIME_DEPENDENT_DEVIATION + (CURR_MOVIE_RATING_DEVIATION + CURR_MOVIE_TIME_CHANGING_BIAS) * (CURR_USER_CONSTANT_TIME_DEPENDENT_BASELINE_SCALING_FACTOR + CURR_USER_VARYING_TIME_DEPENDENT_BASELINE_SCALING_FACTOR);
     
     /*
      * Print prediction information if wanted
@@ -269,6 +283,7 @@ float predictRating(int user, int movie, int date) {
         printf("User time deviation scaling factor: %f\n", CURR_USER_TIME_DEVIATION_SCALING_FACTOR);
         printf("User time dependent deviation: %f\n", CURR_USER_TIME_DEPENDENT_DEVIATION);
         printf("User constant time dependent baseline scaling factor: %f\n", CURR_USER_CONSTANT_TIME_DEPENDENT_BASELINE_SCALING_FACTOR);
+        printf("User varying time dependent baseline scaling factor: %f\n", CURR_USER_VARYING_TIME_DEPENDENT_BASELINE_SCALING_FACTOR);
         
         printf("Movie rating deviation: %f\n", CURR_MOVIE_RATING_DEVIATION);
         printf("Movie time bin: %d\n", CURR_MOVIE_TIME_BIN);
@@ -327,11 +342,14 @@ void computeSVD(float learning_rate, int num_features, int epochs, int* train_da
             //Train user constant time dependent baseline scaling factor
             user_constant_time_dependent_baseline_scaling_table[user - 1] += LEARNING_F * ((CURR_MOVIE_RATING_DEVIATION + CURR_MOVIE_TIME_CHANGING_BIAS) * error - REG_F * (CURR_USER_CONSTANT_TIME_DEPENDENT_BASELINE_SCALING_FACTOR - 1.0f));
             
+            //Train user varying time dependent baseline scaling factor
+            user_varying_time_dependent_baseline_scaling_table[user - 1][date] += LEARNING_G * ((CURR_MOVIE_RATING_DEVIATION + CURR_MOVIE_TIME_CHANGING_BIAS) * error - REG_G * CURR_USER_VARYING_TIME_DEPENDENT_BASELINE_SCALING_FACTOR);
+            
             //Train movie rating deviation
-            movie_rating_deviation_table[movie - 1] += LEARNING_D * (CURR_USER_CONSTANT_TIME_DEPENDENT_BASELINE_SCALING_FACTOR * error - REG_D * CURR_MOVIE_RATING_DEVIATION);
+            movie_rating_deviation_table[movie - 1] += LEARNING_D * ((CURR_USER_CONSTANT_TIME_DEPENDENT_BASELINE_SCALING_FACTOR + CURR_USER_VARYING_TIME_DEPENDENT_BASELINE_SCALING_FACTOR) * error - REG_D * CURR_MOVIE_RATING_DEVIATION);
             
             //Train movie time changing bias
-            movie_time_changing_bias_table[movie - 1][CURR_MOVIE_TIME_BIN] += LEARNING_E * (CURR_USER_CONSTANT_TIME_DEPENDENT_BASELINE_SCALING_FACTOR * error - REG_E * CURR_MOVIE_TIME_CHANGING_BIAS);
+            movie_time_changing_bias_table[movie - 1][CURR_MOVIE_TIME_BIN] += LEARNING_E * ((CURR_USER_CONSTANT_TIME_DEPENDENT_BASELINE_SCALING_FACTOR + CURR_USER_VARYING_TIME_DEPENDENT_BASELINE_SCALING_FACTOR) * error - REG_E * CURR_MOVIE_TIME_CHANGING_BIAS);
             
             if((j + 1) % 1000000 == 0) {
                 printf("%d test points trained.\n", j + 1);
