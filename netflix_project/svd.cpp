@@ -49,11 +49,15 @@ float *user_rating_deviation_table;
 
 float **movie_feature_table;
 float *movie_rating_deviation_table;
+float **movie_time_changing_bias_table;
 
 int *dataArray;
 
 float CURR_USER_RATING_DEVIATION;
+
 float CURR_MOVIE_RATING_DEVIATION;
+int CURR_MOVIE_TIME_BIN;
+float CURR_MOVIE_TIME_CHANGING_BIAS;
 
 bool printVectorInitInfo = 0;
 bool printPredictionInfo = 0;
@@ -145,6 +149,16 @@ void initializeFeatureVectors() {
      * End initialization of movie_rating_deviation_table
      */
     
+    /*
+     * Initialize movie_time_changing_bias_table
+     */
+    movie_time_changing_bias_table = new float*[TOTAL_MOVIES];
+    for(int i = 0; i < TOTAL_MOVIES; i++) {
+        movie_time_changing_bias_table[i] = new float[30];
+    }
+    /*
+     * End initialization of movie_time_changing_bias_table
+     */
     
     /*
      * Print sample movie values, if wanted
@@ -152,6 +166,7 @@ void initializeFeatureVectors() {
     if(printVectorInitInfo){
         printf("Sample movie features, first: %f, last: %f\n", movie_feature_table[TOTAL_MOVIES - 1][0], movie_feature_table[TOTAL_MOVIES - 1][NUMFEATURES - 1]);
         printf("Sample movie rating deviation: %f\n", movie_rating_deviation_table[TOTAL_MOVIES - 1]);
+        printf("Sample movie time changing bias, first: %f, last: %f\n", movie_time_changing_bias_table[TOTAL_MOVIES - 1][0], movie_time_changing_bias_table[TOTAL_MOVIES - 1][29]);
     }
 }
 
@@ -169,10 +184,14 @@ float predictRating(int user, int movie, int date) {
     CURR_USER_RATING_DEVIATION = user_rating_deviation_table[user - 1];
     CURR_MOVIE_RATING_DEVIATION = movie_rating_deviation_table[movie - 1];
     
+    CURR_MOVIE_TIME_BIN = ((float) date/ (float) TOTAL_DAYS) * 30;
+    
+    CURR_MOVIE_TIME_CHANGING_BIAS = movie_time_changing_bias_table[movie - 1][CURR_MOVIE_TIME_BIN];
+    
     /*
      * Include global average, user rating deviation, and movie rating deviation
      */
-    sum += GLOBAL_AVG_SET1 + CURR_USER_RATING_DEVIATION + CURR_MOVIE_RATING_DEVIATION;
+    sum += GLOBAL_AVG_SET1 + CURR_USER_RATING_DEVIATION + CURR_MOVIE_RATING_DEVIATION + CURR_MOVIE_TIME_CHANGING_BIAS;
     
     /*
      * Print prediction information if wanted
@@ -183,11 +202,14 @@ float predictRating(int user, int movie, int date) {
         printf("User rating deviation: %f\n", CURR_USER_RATING_DEVIATION);
     
         printf("Movie rating deviation: %f\n", CURR_MOVIE_RATING_DEVIATION);
-    
+        printf("Movie time bin: %d\n", CURR_MOVIE_TIME_BIN);
+        printf("Movie time changing bias: %f\n", CURR_MOVIE_TIME_CHANGING_BIAS);
+        
         printf("Rating prediction: %f\n\n", sum);
     }
     return sum;
 }
+
 
 void computeSVD(float learning_rate, int num_features, int epochs, int* train_data, int* probe_data) {
     LRATE = learning_rate;
@@ -229,6 +251,9 @@ void computeSVD(float learning_rate, int num_features, int epochs, int* train_da
             
             //Train movie rating deviation
             movie_rating_deviation_table[movie - 1] += LEARNING_D * (error - REG_D * CURR_MOVIE_RATING_DEVIATION);
+            
+            //Train movie time chaning bias
+            movie_time_changing_bias_table[movie - 1][CURR_MOVIE_TIME_BIN] = LEARNING_E * (error - REG_E * CURR_MOVIE_TIME_CHANGING_BIAS);
             
             if((j + 1) % 1000000 == 0) {
                 printf("%d test points trained.\n", j + 1);
