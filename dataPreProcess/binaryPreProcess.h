@@ -25,13 +25,17 @@ using namespace std;
 
 // Roshan's path
 #define file1 "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file1.dta"
+#define file4 "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file4.dta"
 #define file5 "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file5.dta"
+#define allFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/all.dta"
 #define file1Binary "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file1binary.bin"
 #define file5Binary "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file5binary.bin"
+#define file4Binary "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file4binary.bin"
+#define allFileBinary "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/allBinary.bin"
 
 // Connor's path
 //#define inSampleDataFile "/Users/ConnorLee/Desktop/netflix/file1.dta"
 
 void writeArrayToBinary(string inFileName, string outFileName);
-int* readArrayFromBinary();
+int* readArrayFromBinary(string fileName, long rows, int cols);
 #endif /* defined(__dataPreProcess__binaryPreProcess__) */

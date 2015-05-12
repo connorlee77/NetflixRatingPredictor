@@ -18,17 +18,46 @@ int main(int argc, const char * argv[]) {
     float start, end;
     double duration;
     
+    long BASE_SIZE = 94362233;
+    long ALL_SIZE = 102416306;
+    
+    start = clock();
+    int* allData = readArrayFromBinary(allFileBinary, ALL_SIZE, 4);
+    
+    end = clock();
+    duration=(end-start)/CLOCKS_PER_SEC;
+    printf("Loading data from binary took %f seconds\n",duration);
+    
+    start = clock();
+    getUserFrequencies(allData);
+    
+    end = clock();
+    duration=(end-start)/CLOCKS_PER_SEC;
+    printf("Calculating user time offsets took %f seconds\n",duration);
+    
+    
+    /*
+    start = clock();
+    writeArrayToBinary(file4, file4Binary);
+    
+    end = clock();
+    duration=(end-start)/CLOCKS_PER_SEC;
+    */
+    
+    /*
     start = clock();
     writeArrayToBinary(file5, file5Binary);
     
     end = clock();
     duration=(end-start)/CLOCKS_PER_SEC;
     
+    
     printf("Converting data to binary took %f seconds\n",duration);
-    /*
+
+    
     start = clock();
     
-    int* trainingData = readArrayFromBinary();
+    int* trainingData = readArrayFromBinary(file1Binary, BASE_SIZE, 4);
 
     end = clock();
     duration=(end-start)/CLOCKS_PER_SEC;
@@ -43,28 +72,58 @@ int main(int argc, const char * argv[]) {
     duration=(end-start)/CLOCKS_PER_SEC;
     printf("Calculating global average took %f seconds\n",duration);
     
+    float globalAverage = 3.608609;
+    
+    int TOTAL_USERS = 458293;
+    int TOTAL_MOVIES = 17770;
+    
+    int **userDataMatrix = new int *[TOTAL_USERS];
+    
+    for(int i = 0; i < TOTAL_USERS; i++) {
+        userDataMatrix[i] = new int [TOTAL_MOVIES];
+    }
+    
+    int **movieDataMatrix = new int *[TOTAL_MOVIES];
+    
+    for(int i = 0; i < TOTAL_MOVIES; i++) {
+        movieDataMatrix[i] = new int [TOTAL_USERS];
+    }
+    
     start = clock();
-    int** sparseMatrix = createSparseMatrix(trainingData);
+    fillInMatrices(trainingData, userDataMatrix, movieDataMatrix);
     
     end = clock();
     duration=(end-start)/CLOCKS_PER_SEC;
     
-    printf("Storing data in sparse matrix took %f seconds\n",duration);
+    printf("Storing data in sparse matrices took %f seconds\n",duration);
 
+    delete [] trainingData;
+    
+    start = clock();
+    float * movieAverages = getMovieAverages(movieDataMatrix, globalAverage);
+    end = clock();
+    duration=(end-start)/CLOCKS_PER_SEC;
+    printf("Getting Movie Averages took %f seconds\n",duration);
+    
+    for(int i = 0; i < TOTAL_MOVIES; i++) {
+        delete [] movieDataMatrix[i];
+    }
+    
+    delete [] movieDataMatrix;
+    
     start = clock();
 
-    printOutUserOffset(sparseMatrix, globalAverage);
+    getUserOffsets(userDataMatrix, globalAverage, movieAverages);
     
     end = clock();
     duration=(end-start)/CLOCKS_PER_SEC;
-    printf("Printing User Offsets took %f seconds\n",duration);
+    printf("Getting User Offsets took %f seconds\n",duration);
     
-    start = clock();
-    printOutMovieAverage(sparseMatrix);
-    end = clock();
-    duration=(end-start)/CLOCKS_PER_SEC;
-    printf("Printing Movie Averages took %f seconds\n",duration);
-*/
+    for(int i = 0; i < TOTAL_USERS; i++) {
+        delete [] userDataMatrix[i];
+    }
     
+    delete [] userDataMatrix;
+    */
     return 0;
 }
