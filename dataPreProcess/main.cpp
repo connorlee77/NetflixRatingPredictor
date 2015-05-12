@@ -18,7 +18,6 @@ int main(int argc, const char * argv[]) {
     float start, end;
     double duration;
     
-    /*
     long BASE_SIZE = 94362233;
     long ALL_SIZE = 102416306;
     
@@ -30,20 +29,20 @@ int main(int argc, const char * argv[]) {
     printf("Loading data from binary took %f seconds\n",duration);
     
     start = clock();
-    getUserTimes(allData);
+    getUserFrequencies(allData);
     
     end = clock();
     duration=(end-start)/CLOCKS_PER_SEC;
     printf("Calculating user time offsets took %f seconds\n",duration);
-    */
     
     
+    /*
     start = clock();
     writeArrayToBinary(file4, file4Binary);
     
     end = clock();
     duration=(end-start)/CLOCKS_PER_SEC;
-    
+    */
     
     /*
     start = clock();

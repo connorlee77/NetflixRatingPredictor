@@ -10,6 +10,7 @@
 
 int TOTAL_USERS = 458293;
 int TOTAL_MOVIES = 17770;
+int TOTAL_DAYS = 2243;
 
 double LAMBDA_ONE = 25;
 double LAMBDA_TWO = 10;
@@ -147,6 +148,51 @@ void getUserTimes(int* allData){
         if((i + 1) % 10000 == 0) {
             printf("%d user time averages calculated\n", i + 1);
             printf("Sample average: %f\n",outVal);
+        }
+    }
+    
+    
+    data.close();
+}
+
+void getUserFrequencies(int* allData){
+    ofstream data;
+    
+    remove(userFrequencies);
+    data.open(userFrequencies, ios::out|ios::binary);
+    
+    if(!data.is_open()) {
+        fprintf(stderr, "userFrequencies was not opened!");
+    }
+    
+    long All_SIZE = 102416306;
+    
+    int **userTimeFrequencies = new int*[TOTAL_USERS];
+    
+    for (int i = 0; i < TOTAL_USERS; i++) {
+        userTimeFrequencies[i] = new int[TOTAL_DAYS];
+    }
+    
+    int user, date;
+    int outVal = 0;
+    for(int i = 0; i < All_SIZE; i++){
+        user = allData[i * 4];
+        date = allData[i * 4 + 2];
+        userTimeFrequencies[user - 1][date - 1]++;
+        
+        if((i + 1) % 1000000 == 0) {
+            printf("%d values inputted\n", i + 1);
+        }
+    }
+    
+    for(int i = 0; i < TOTAL_USERS; i++){
+        for(int j = 0; j < TOTAL_DAYS; j++){
+            outVal = userTimeFrequencies[i][j];
+            data.write(reinterpret_cast<char*> (&outVal), sizeof(int));
+        }
+        if((i + 1) % 1000000 == 0) {
+            printf("%d user frequencies calculated\n", i + 1);
+            printf("Sample frequency: %d\n", outVal);
         }
     }
     
