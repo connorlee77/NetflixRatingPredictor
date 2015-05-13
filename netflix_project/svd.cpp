@@ -44,6 +44,7 @@ const float LOG_BASE = 6.76;
 const int highVal = 2651;
 
 float LRATE;
+float REG = 0.0015;
 int NUMFEATURES;
 
 float **user_feature_table;
@@ -155,12 +156,15 @@ void initializeFeatureVectors() {
     for (int i = 0; i < TOTAL_USERS; i++) {
         user_time_dependent_deviation_table[i] = new float[TOTAL_DAYS];
     }
+    /*
+     * End initialization of user_time_dependent_deviation_table
+     */
     
     /*
      * Initialize user_constant_time_dependent_baseline_scaling_table
      */
     user_constant_time_dependent_baseline_scaling_table = new float[TOTAL_USERS];
-    std::fill(user_constant_time_dependent_baseline_scaling_table, user_constant_time_dependent_baseline_scaling_table + TOTAL_USERS + 1, 1.0f);
+    std::fill(user_constant_time_dependent_baseline_scaling_table, user_constant_time_dependent_baseline_scaling_table + TOTAL_USERS, 1.0f);
     /*
      * End initialization of user_constant_time_dependent_baseline_scaling_table
      */
@@ -204,7 +208,7 @@ void initializeFeatureVectors() {
     int randUser = rand() % TOTAL_USERS;
     int randDay = rand() % TOTAL_DAYS;
     if(printVectorInitInfo){
-        printf("Sample user features, first: %f, last: %f\n", user_feature_table[randUser][0], user_feature_table[TOTAL_USERS - 1][NUMFEATURES - 1]);
+        printf("Sample user features, first: %f, last: %f\n", user_feature_table[randUser][0], user_feature_table[randUser][NUMFEATURES - 1]);
         printf("Sample user rating deviation: %f\n", user_rating_deviation_table[randUser]);
         printf("Sample user mean rating date: %f\n", user_mean_rating_date_table[randUser]);
         printf("Sample user time deviation scaling factor: %f\n", user_time_deviation_scaling_table[randUser]);
@@ -304,7 +308,7 @@ float predictRating(int user, int movie, int date) {
     }
     
     CURR_USER_RATING_DEVIATION = user_rating_deviation_table[user - 1];
-    timeDeviation = date - user_mean_rating_date_table[movie - 1];
+    timeDeviation = date - user_mean_rating_date_table[user - 1];
     if(timeDeviation < 0)
         sign = -1;
     CURR_USER_TIME_DEVIATION = sign * pow(abs(timeDeviation), BETA);
@@ -320,7 +324,7 @@ float predictRating(int user, int movie, int date) {
     CURR_MOVIE_FREQUENCY_BIAS = movie_frequency_bias_table[movie - 1][CURR_ADJUSTED_FREQUENCY];
     
     /*
-     * Include global average, user rating deviation, and movie rating deviation
+     * Include all baseline predictors
      */
     sum += GLOBAL_AVG_SET1 + CURR_USER_RATING_DEVIATION + CURR_USER_TIME_DEVIATION_SCALING_FACTOR * CURR_USER_TIME_DEVIATION + CURR_USER_TIME_DEPENDENT_DEVIATION + (CURR_MOVIE_RATING_DEVIATION + CURR_MOVIE_TIME_CHANGING_BIAS) * (CURR_USER_CONSTANT_TIME_DEPENDENT_BASELINE_SCALING_FACTOR + CURR_USER_VARYING_TIME_DEPENDENT_BASELINE_SCALING_FACTOR) + CURR_MOVIE_FREQUENCY_BIAS;
     
@@ -365,7 +369,7 @@ void computeSVD(float learning_rate, int num_features, int epochs, int* train_da
     
     printf("Feature initialization took %f seconds\n", duration);
     
-    float sum, error, userVal, adjustUser, adjustMovie, oldTrainRMSE = 1.0f, newTrainRMSE, oldProbeRMSE = 1.0f, newProbeRMSE;
+    float sum, error, userVal, movieVal, adjustUser, adjustMovie, oldTrainRMSE = 1.0f, newTrainRMSE, oldProbeRMSE = 1.0f, newProbeRMSE;
     int user, movie, rating, date, randUser, randFeature, randMovie;
     
     for(int k = 0; k < epochs; k++) {
@@ -385,9 +389,10 @@ void computeSVD(float learning_rate, int num_features, int epochs, int* train_da
             //Train user and movie features
             for(int i = 0; i < NUMFEATURES; i++){
                 userVal = user_feature_table[user - 1][i];
+                movieVal = movie_feature_table[movie - 1][i];
                 
-                user_feature_table[user - 1][i] += LRATE * error * movie_feature_table[movie - 1][i];
-                movie_feature_table[movie - 1][i] += LRATE * error * userVal;
+                user_feature_table[user - 1][i] += LRATE * (error * movieVal - REG * userVal);
+                movie_feature_table[movie - 1][i] += LRATE * (error * userVal - REG * movieVal);
             }
             
             //Train user rating deviation
@@ -477,7 +482,7 @@ void computeSVD(float learning_rate, int num_features, int epochs, int* train_da
             fprintf(stderr, "Probe RMSE went up. Training done.\n");
             break;
         }
-        if(newProbeRMSE - oldProbeRMSE > -0.0002){
+        if(newProbeRMSE - oldProbeRMSE > -0.0001){
             fprintf(stderr, "Probe RMSE drop is miniscule. Training done.\n");
             break;
         }
