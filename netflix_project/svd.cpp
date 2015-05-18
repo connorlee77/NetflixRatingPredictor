@@ -92,7 +92,7 @@ void initializeFeatureVectors() {
     for(int i = 0; i < TOTAL_USERS; i++) {
         user_feature_table[i] = new float[NUMFEATURES];
         
-        randInit = static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(0.1f)));
+        randInit = static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(0.001f)));
         
         std::fill(user_feature_table[i], user_feature_table[i] + NUMFEATURES, randInit);
     }
@@ -230,7 +230,7 @@ void initializeFeatureVectors() {
     for(int i = 0; i < TOTAL_MOVIES; i++) {
         movie_feature_table[i] = new float[NUMFEATURES];
         
-        randInit = static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(0.1f)));
+        randInit = static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(0.001f)));
         std::fill(movie_feature_table[i], movie_feature_table[i] + NUMFEATURES, randInit);
     }
     /*
