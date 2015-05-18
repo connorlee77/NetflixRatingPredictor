@@ -31,9 +31,9 @@ int main(int argc, const char * argv[]) {
     printf("Reading data took %f seconds\n",duration);
     
     //Set the length of the feature vectors
-    int num_features = 20;
-    int epochs = 40;
-    computeSVD(0.008, num_features, epochs, trainingData, probeData);
+    int num_features = 80;
+    int epochs = 150;
+    computeSVD(0.001, num_features, epochs, trainingData, probeData);
 
     delete [] trainingData;
     

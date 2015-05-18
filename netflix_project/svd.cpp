@@ -44,7 +44,7 @@ const float LOG_BASE = 6.76;
 const int highVal = 2651;
 
 float LRATE;
-float REG = 0.0015;
+float REG = 0.02;
 int NUMFEATURES;
 
 float **user_feature_table;
@@ -78,7 +78,7 @@ float CURR_MOVIE_FREQUENCY_BIAS;
 
 bool printVectorInitInfo = 0;
 bool printPredictionInfo = 0;
-bool printTrainRMSE = 0;
+bool printTrainRMSE = 1;
 
 void initializeFeatureVectors() {
     srand (static_cast <unsigned> (time(0)));
@@ -419,9 +419,6 @@ void computeSVD(float learning_rate, int num_features, int epochs, int* train_da
             //Train movie frequency bias
             movie_frequency_bias_table[movie - 1][CURR_ADJUSTED_FREQUENCY] += LEARNING_H * (error - REG_H * CURR_MOVIE_FREQUENCY_BIAS);
             
-            if((j + 1) % 1000000 == 0) {
-                printf("%d test points trained.\n", j + 1);
-            }
         }
 
         /*

@@ -19,12 +19,12 @@ void writeArrayToBinary(string inFileName, string outFileName){
     outBinFile.open(outFileName, ios::out|ios::binary);
     
     if(!outBinFile.is_open()) {
-        fprintf(stderr, "binary file was not opened!");
+        fprintf(stderr, "%s was not opened!", outFileName.c_str());
     }
     
     data.open(inFileName, std::ios::in);
     if(!data.is_open()) {
-        fprintf(stderr, "input data file was not opened!");
+        fprintf(stderr, "%s was not opened!", inFileName.c_str());
     }
     int pointCount = 0, val = 0;
     
@@ -39,11 +39,13 @@ void writeArrayToBinary(string inFileName, string outFileName){
         }
         
         if((pointCount + 1) % 1000000 == 0) {
-            printf("%d test points written to binary file\n", pointCount +1);
+            printf("%d test points written to %s\n", pointCount + 1, outFileName.c_str());
         }
         
         pointCount++;
     }
+    
+    printf("Write to %s successful!", outFileName.c_str());
     
     outBinFile.close();
 }

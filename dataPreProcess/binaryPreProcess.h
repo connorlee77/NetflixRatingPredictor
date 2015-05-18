@@ -24,17 +24,25 @@ using namespace std;
 // change in sample data file here!
 
 // Roshan's paths
-#define file1 "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file1.dta"
-#define file4 "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file4.dta"
-#define file5 "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file5.dta"
-#define allFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/all.dta"
-#define file1Binary "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file1binary.bin"
-#define file5Binary "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file5binary.bin"
-#define file4Binary "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file4binary.bin"
-#define allFileBinary "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/allBinary.bin"
+//#define file1 "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file1.dta"
+//#define file4 "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file4.dta"
+//#define file5 "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file5.dta"
+//#define allFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/all.dta"
+//#define file1Binary "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file1binary.bin"
+//#define file5Binary "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file5binary.bin"
+//#define file4Binary "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file4binary.bin"
+//#define allFileBinary "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/allBinary.bin"
 
 // Connor's path
-//#define inSampleDataFile "/Users/ConnorLee/Desktop/netflix/file1.dta"
+#define file1 "/Users/ConnorLee/Desktop/netflix/file1.dta"
+#define file4 "/Users/ConnorLee/Desktop/netflix/file4.dta"
+#define file5 "/Users/ConnorLee/Desktop/netflix/file5.dta"
+#define allFile "/Users/ConnorLee/Desktop/netflix/all.dta"
+#define file1Binary "/Users/ConnorLee/Desktop/netflix/file1binary.bin"
+#define file5Binary "/Users/ConnorLee/Desktop/netflix/file5binary.bin"
+#define file4Binary "/Users/ConnorLee/Desktop/netflix/file4binary.bin"
+#define allFileBinary "/Users/ConnorLee/Desktop/netflix/allBinary.bin"
+
 
 void writeArrayToBinary(string inFileName, string outFileName);
 int* readArrayFromBinary(string fileName, long rows, int cols);

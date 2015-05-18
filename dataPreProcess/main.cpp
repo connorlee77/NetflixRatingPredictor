@@ -25,7 +25,12 @@ int main(int argc, const char * argv[]) {
     
     start = clock();
     
+    writeArrayToBinary(allFile, allFileBinary);
+    writeArrayToBinary(file1, file1Binary);
+    writeArrayToBinary(file4, file4Binary);
+    writeArrayToBinary(file5, file5Binary);
     
+    /*
     int * trainingData = new int[BASE_SIZE * 4];
     trainingData = readArrayFromBinary(file1Binary, BASE_SIZE, 4);
     
@@ -63,7 +68,7 @@ int main(int argc, const char * argv[]) {
     }
     
     delete [] userDataMatrix;
-    
+    */
     
     int * allData = new int[ALL_SIZE * 4];
     allData = readArrayFromBinary(allFileBinary, ALL_SIZE, 4);
