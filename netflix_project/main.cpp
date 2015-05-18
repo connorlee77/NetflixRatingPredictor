@@ -34,10 +34,10 @@ int main(int argc, const char * argv[]) {
     int num_features = 20;
     int epochs = 40;
     computeSVD(0.008, num_features, epochs, trainingData, probeData);
-    
-    predictQual();
 
     delete [] trainingData;
+    
+    predictQual();
     delete [] probeData;
     
     for(int i = 0; i < TOTAL_USERS; i++){

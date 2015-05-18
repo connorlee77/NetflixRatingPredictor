@@ -16,10 +16,15 @@ double LAMBDA_ONE = 25;
 double LAMBDA_TWO = 10;
 
 void fillInMatrices(int* trainingData, int** userDataMatrix, int** movieDataMatrix){
+    
     long BASE_SIZE = 94362233;
+    int user, movie, rating;
     for(int i = 0; i < BASE_SIZE; i++){
-        userDataMatrix[trainingData[i * 4] - 1][trainingData[i * 4 + 1] - 1] = trainingData[i * 4 + 3];
-        movieDataMatrix[trainingData[i * 4 + 1] - 1][trainingData[i * 4] - 1] = trainingData[i * 4 + 3];
+        user = trainingData[i * 4];
+        movie = trainingData[i * 4 + 1];
+        rating = trainingData[i * 4 + 3];
+        userDataMatrix[user - 1][movie - 1] = rating;
+        movieDataMatrix[movie - 1][user - 1] = rating;
         
         if((i + 1) % 1000000 == 0) {
             printf("%d test points added to sparse matrices\n", i + 1);
@@ -151,6 +156,8 @@ void getUserTimes(int* allData){
         }
     }
     
+    delete [] userTimeSums;
+    delete [] userTimeCounts;
     
     data.close();
 }
@@ -201,6 +208,12 @@ void getUserFrequencies(int* allData){
     }
     
     printf("The highest frequency encounter was %d\n", highVal);
+    
+    
+    for (int i = 0; i < TOTAL_USERS; i++) {
+        delete userTimeFrequencies[i];
+    }
+    delete [] userTimeFrequencies;
     
     data.close();
 }
