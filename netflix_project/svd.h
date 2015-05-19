@@ -56,9 +56,9 @@ extern float **movie_frequency_bias_table;
 extern const long BASE_SIZE;
 extern const long PROBE_SIZE;
 
+float getRandom();
 void initializeFeatureVectors();
 float predictRating(int user, int movie, int date);
 void computeSVD(float learning_rate, int num_features, int epochs, int* train_data, int* probe_data);
-
 
 #endif /* defined(__netflix_project__svd__) */
