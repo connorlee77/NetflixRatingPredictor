@@ -17,21 +17,39 @@ const int TOTAL_DAYS = 2243;
 
 float LRATE;
 float LRATE_BASE;
-const float TAU = 13;
+const float TAU = 15;
 const float C_FACTOR = 0.02;
 float REG = 0.002;
 
 float LEARNING_A;
 const float LEARNING_A_BASE = 0.00567;
-const float TAU_A = 13;
+const float TAU_A = 15;
 const float C_FACTOR_A = 0.01;
-const float REG_A = 0.0255;
+float REG_A = 0.0255;
 
 float LEARNING_D;
 const float LEARNING_D_BASE = 0.00188;
-const float TAU_D = 13;
+const float TAU_D = 15;
 const float C_FACTOR_D = 0.01;
 float REG_D = 0.0255;
+
+//float LRATE;
+//float LRATE_BASE;
+//const float TAU = 13;
+//const float C_FACTOR = 0.02;
+//float REG = 0.002;
+//
+//float LEARNING_A;
+//const float LEARNING_A_BASE = 0.00567;
+//const float TAU_A = 13;
+//const float C_FACTOR_A = 0.01;
+//float REG_A = 0.0255;
+//
+//float LEARNING_D;
+//const float LEARNING_D_BASE = 0.00188;
+//const float TAU_D = 13;
+//const float C_FACTOR_D = 0.01;
+//float REG_D = 0.0255;
 
 int regHard = 1;
 
@@ -385,6 +403,7 @@ float predictRating(int user, int movie, int date) {
 }
 
 
+
 void computeSVD(float learning_rate, int num_features, int epochs, int* train_data, int* probe_data) {
     LRATE_BASE = learning_rate;
     NUMFEATURES = num_features;
@@ -416,6 +435,12 @@ void computeSVD(float learning_rate, int num_features, int epochs, int* train_da
         adjustLearn = (C_FACTOR_D/LEARNING_D_BASE) * ((float) k/TAU_D);
         LEARNING_D = LEARNING_D_BASE * (1 + adjustLearn)/(1 + adjustLearn + (float) (k * k)/ TAU_D);
         
+        if(oldProbeRMSE < 0.917) {
+            REG = 0.015;
+            REG_A = 0.03;
+            REG_D = 0.03;
+        }
+        
         start = clock();
         printf("Training epoch %d\n", k + 1);
         /*
@@ -428,7 +453,6 @@ void computeSVD(float learning_rate, int num_features, int epochs, int* train_da
             rating = dataArray[4 * j + 3];
             
             error = rating - predictRating(user, movie, date);
-
             
             //Train user and movie features
             for(int i = 0; i < NUMFEATURES; i++){
@@ -524,9 +548,6 @@ void computeSVD(float learning_rate, int num_features, int epochs, int* train_da
             break;
         }
         
-        if(newProbeRMSE < 0.918) {
-            REG = 0.015;
-        }
         
         oldProbeRMSE = newProbeRMSE;
     }
