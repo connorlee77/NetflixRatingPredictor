@@ -25,58 +25,63 @@ int main(int argc, const char * argv[]) {
     
     start = clock();
     
-    writeArrayToBinary(allFile, allFileBinary);
-    writeArrayToBinary(file1, file1Binary);
-    writeArrayToBinary(file4, file4Binary);
-    writeArrayToBinary(file5, file5Binary);
+    splitDataSet();
+    writeArrayToBinary(file123, file123Binary);
+    writeArrayToBinary(file1234, file1234Binary);
+
     
-    /*
-    int * trainingData = new int[BASE_SIZE * 4];
-    trainingData = readArrayFromBinary(file1Binary, BASE_SIZE, 4);
+//    writeArrayToBinary(allFile, allFileBinary);
+//    writeArrayToBinary(file1, file1Binary);
+//    writeArrayToBinary(file4, file4Binary);
+//    writeArrayToBinary(file5, file5Binary);
     
-    int** userDataMatrix;
-    int** movieDataMatrix;
     
-    userDataMatrix = new int*[TOTAL_USERS];
-    for(int i = 0; i < TOTAL_USERS; i++){
-        userDataMatrix[i] = new int[TOTAL_MOVIES];
-    }
-    
-    movieDataMatrix = new int*[TOTAL_MOVIES];
-    for(int i = 0; i < TOTAL_MOVIES; i++){
-        movieDataMatrix[i] = new int[TOTAL_USERS];
-    }
-    
-    fillInMatrices(trainingData, userDataMatrix, movieDataMatrix);
-    
-    float globalAverage = calculateGlobalAverage(trainingData);
-    
-    delete [] trainingData;
-    
-    float * movieAverages = getMovieAverages(movieDataMatrix, globalAverage);
-    
-    for(int i = 0; i < TOTAL_MOVIES; i++){
-        delete [] movieDataMatrix[i];
-    }
-    
-    delete [] movieDataMatrix;
-    
-    getUserOffsets(userDataMatrix, globalAverage, movieAverages);
-    
-    for(int i = 0; i < TOTAL_USERS; i++){
-        delete [] userDataMatrix[i];
-    }
-    
-    delete [] userDataMatrix;
-    */
-    
-    int * allData = new int[ALL_SIZE * 4];
-    allData = readArrayFromBinary(allFileBinary, ALL_SIZE, 4);
-    
-    getUserTimes(allData);
-    getUserFrequencies(allData);
-    
-    delete [] allData;
+//    int * trainingData = new int[BASE_SIZE * 4];
+//    trainingData = readArrayFromBinary(file1Binary, BASE_SIZE, 4);
+//    
+//    int** userDataMatrix;
+//    int** movieDataMatrix;
+//    
+//    userDataMatrix = new int*[TOTAL_USERS];
+//    for(int i = 0; i < TOTAL_USERS; i++){
+//        userDataMatrix[i] = new int[TOTAL_MOVIES];
+//    }
+//    
+//    movieDataMatrix = new int*[TOTAL_MOVIES];
+//    for(int i = 0; i < TOTAL_MOVIES; i++){
+//        movieDataMatrix[i] = new int[TOTAL_USERS];
+//    }
+//    
+//    fillInMatrices(trainingData, userDataMatrix, movieDataMatrix);
+//    
+//    float globalAverage = calculateGlobalAverage(trainingData);
+//    
+//    delete [] trainingData;
+//    
+//    float * movieAverages = getMovieAverages(movieDataMatrix, globalAverage);
+//    
+//    for(int i = 0; i < TOTAL_MOVIES; i++){
+//        delete [] movieDataMatrix[i];
+//    }
+//    
+//    delete [] movieDataMatrix;
+//    
+//    getUserOffsets(userDataMatrix, globalAverage, movieAverages);
+//    
+//    for(int i = 0; i < TOTAL_USERS; i++){
+//        delete [] userDataMatrix[i];
+//    }
+//    
+//    delete [] userDataMatrix;
+//    
+//    
+//    int * allData = new int[ALL_SIZE * 4];
+//    allData = readArrayFromBinary(allFileBinary, ALL_SIZE, 4);
+//    
+//    getUserTimes(allData);
+//    getUserFrequencies(allData);
+//    
+//    delete [] allData;
     
     end = clock();
     

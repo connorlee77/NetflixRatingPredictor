@@ -32,6 +32,8 @@ using namespace std;
 // Connor's path
 #define inSampleDataFile "/Users/ConnorLee/Desktop/netflix/file1.dta"
 #define trainingDataFile "/Users/ConnorLee/Desktop/netflix/file1binary.bin"
+#define trainingDataFullFile "/Users/ConnorLee/Desktop/netflix/file123.bin"
+#define trainingDataWithProbe "/Users/ConnorLee/Desktop/netflix/file1234.bin"
 #define userOffsetFile "/Users/ConnorLee/Desktop/netflix/userOffsets.bin"
 #define movieAveragesFile "/Users/ConnorLee/Desktop/netflix/movieAverages.bin"
 #define probeDataFile "/Users/ConnorLee/Desktop/netflix/file4binary.bin"

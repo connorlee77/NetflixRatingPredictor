@@ -44,23 +44,23 @@ void split_set::parse_guide_data_set() {
         fprintf(stderr, "file 2 was not opened!");
     }
     
-    std::ofstream file3;
-    file3.open(get_path(files[2]), std::ios::app);
-    if(!file3.is_open()) {
-        fprintf(stderr, "file 3 was not opened!");
-    }
-    
-    std::ofstream file4;
-    file4.open(get_path(files[3]), std::ios::app);
-    if(!file4.is_open()) {
-        fprintf(stderr, "file 4 was not opened!");
-    }
-    
-    std::ofstream file5;
-    file5.open(get_path(files[4]), std::ios::app);
-    if(!file5.is_open()) {
-        fprintf(stderr, "file 5 was not opened!");
-    }
+//    std::ofstream file3;
+//    file3.open(get_path(files[2]), std::ios::app);
+//    if(!file3.is_open()) {
+//        fprintf(stderr, "file 3 was not opened!");
+//    }
+//    
+//    std::ofstream file4;
+//    file4.open(get_path(files[3]), std::ios::app);
+//    if(!file4.is_open()) {
+//        fprintf(stderr, "file 4 was not opened!");
+//    }
+//    
+//    std::ofstream file5;
+//    file5.open(get_path(files[4]), std::ios::app);
+//    if(!file5.is_open()) {
+//        fprintf(stderr, "file 5 was not opened!");
+//    }
     
     std::string set_str;
     std::string line;
@@ -76,21 +76,24 @@ void split_set::parse_guide_data_set() {
         set_num = std::stoi(set_str);
         if(set_num == 1) {
             file1 << line << "\n";
+            file2 << line << "\n";
         } else if(set_num == 2) {
+            file1 << line << "\n";
             file2 << line << "\n";
         } else if (set_num == 3) {
-            file3 << line << "\n";
+            file1 << line << "\n";
+            file2 << line << "\n";
         } else if(set_num == 4) {
-            file4 << line << "\n";
+            file2 << line << "\n";
         } else if (set_num == 5) {
-            file5 << line << "\n";
+//            file5 << line << "\n";
         }
     }
     file1.close();
     file2.close();
-    file3.close();
-    file4.close();
-    file5.close();
+//    file3.close();
+//    file4.close();
+//    file5.close();
     plan.close();
     data.close();
 }

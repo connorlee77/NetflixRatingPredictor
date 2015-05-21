@@ -43,6 +43,10 @@ using namespace std;
 #define file4Binary "/Users/ConnorLee/Desktop/netflix/file4binary.bin"
 #define allFileBinary "/Users/ConnorLee/Desktop/netflix/allBinary.bin"
 
+#define file123 "/Users/ConnorLee/Desktop/netflix/file123.dta"
+#define file1234 "/Users/ConnorLee/Desktop/netflix/file1234.dta"
+#define file123Binary "/Users/ConnorLee/Desktop/netflix/file123.bin"
+#define file1234Binary "/Users/ConnorLee/Desktop/netflix/file1234.bin"
 
 void writeArrayToBinary(string inFileName, string outFileName);
 int* readArrayFromBinary(string fileName, long rows, int cols);

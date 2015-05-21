@@ -26,14 +26,14 @@ private:
     std::string guide;
     std::string data_set;
     int curr_line;
-    std::string files[5] = {"file1.dta", "file2.dta", "file3.dta", "file4.dta", "file5.dta"};
+    std::string files[5] = {"file123.dta", "file1234.dta", "file3.dta", "file4.dta", "file5.dta"};
     
 public:
     split_set(std::string guide, std::string data_set);
     void parse_guide_data_set();
     std::string get_path(std::string name);
-    void splitDataSet();
 };
 
+void splitDataSet();
 
 #endif /* defined(__netflix_project__split_set__) */
