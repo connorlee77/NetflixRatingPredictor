@@ -10,8 +10,8 @@
 		552D0EDA1AEA2A800082D855 /* dataManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 552D0ED71AEA1E610082D855 /* dataManager.cpp */; };
 		552D0EF01AEC40530082D855 /* svd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 552D0EEE1AEC40530082D855 /* svd.cpp */; };
 		552D0EF31AECD5690082D855 /* errorManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 552D0EF11AECD5690082D855 /* errorManager.cpp */; };
+		553E45C51B0EB2C1004211CF /* hogNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 553E45C31B0EB2C1004211CF /* hogNode.cpp */; };
 		558FD3801ADFAB8C00953B06 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 558FD37F1ADFAB8C00953B06 /* main.cpp */; };
-		55E3D3EC1B0EABE200A71C37 /* hogwild.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 55E3D3EA1B0EABE200A71C37 /* hogwild.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -33,10 +33,10 @@
 		552D0EEF1AEC40530082D855 /* svd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = svd.h; sourceTree = "<group>"; };
 		552D0EF11AECD5690082D855 /* errorManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = errorManager.cpp; sourceTree = "<group>"; };
 		552D0EF21AECD5690082D855 /* errorManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = errorManager.h; sourceTree = "<group>"; };
+		553E45C31B0EB2C1004211CF /* hogNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = hogNode.cpp; sourceTree = "<group>"; };
+		553E45C41B0EB2C1004211CF /* hogNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hogNode.h; sourceTree = "<group>"; };
 		558FD37C1ADFAB8C00953B06 /* netflix_project */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = netflix_project; sourceTree = BUILT_PRODUCTS_DIR; };
 		558FD37F1ADFAB8C00953B06 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		55E3D3EA1B0EABE200A71C37 /* hogwild.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = hogwild.cpp; sourceTree = "<group>"; };
-		55E3D3EB1B0EABE200A71C37 /* hogwild.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = hogwild.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,8 +71,8 @@
 			children = (
 				558FD37F1ADFAB8C00953B06 /* main.cpp */,
 				552D0EEE1AEC40530082D855 /* svd.cpp */,
-				55E3D3EA1B0EABE200A71C37 /* hogwild.cpp */,
-				55E3D3EB1B0EABE200A71C37 /* hogwild.h */,
+				553E45C31B0EB2C1004211CF /* hogNode.cpp */,
+				553E45C41B0EB2C1004211CF /* hogNode.h */,
 				552D0EEF1AEC40530082D855 /* svd.h */,
 				552D0EF11AECD5690082D855 /* errorManager.cpp */,
 				552D0EF21AECD5690082D855 /* errorManager.h */,
@@ -140,8 +140,8 @@
 			files = (
 				552D0EF31AECD5690082D855 /* errorManager.cpp in Sources */,
 				552D0EDA1AEA2A800082D855 /* dataManager.cpp in Sources */,
-				55E3D3EC1B0EABE200A71C37 /* hogwild.cpp in Sources */,
 				558FD3801ADFAB8C00953B06 /* main.cpp in Sources */,
+				553E45C51B0EB2C1004211CF /* hogNode.cpp in Sources */,
 				552D0EF01AEC40530082D855 /* svd.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

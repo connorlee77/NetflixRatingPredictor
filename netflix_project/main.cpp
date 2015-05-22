@@ -14,7 +14,7 @@
 
 const long BASE_SIZE = 94362233;
 const long PROBE_SIZE = 1374739;
-
+const long IIIsize = 98291668;
 int main(int argc, const char * argv[]) {
     
     
@@ -23,7 +23,7 @@ int main(int argc, const char * argv[]) {
     start = clock();
     
     //Store the training data in train_data
-    int* trainingData = fillData(trainingDataFile, BASE_SIZE, 4);
+    int* trainingData = fillData(trainingDataFullFile, IIIsize, 4);
     int* probeData = fillData(probeDataFile, PROBE_SIZE, 4);
     
     end = clock();
@@ -31,7 +31,7 @@ int main(int argc, const char * argv[]) {
     printf("Reading data took %f seconds\n",duration);
     
     //Set the length of the feature vectors
-    int num_features = 150;
+    int num_features = 40;
     int epochs = 150;
     computeSVD(0.018, num_features, epochs, trainingData, probeData);
     

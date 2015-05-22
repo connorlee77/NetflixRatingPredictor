@@ -13,11 +13,14 @@
 #include <assert.h>
 #include <cmath>
 #include <time.h>
-
+#include <stdlib.h>
 #include <iostream>
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <pthread.h>
+#include <random>
+#include "hogNode.h"
 
 using namespace std;
 
@@ -49,6 +52,9 @@ extern float **movie_frequency_bias_table;
 
 extern const long BASE_SIZE;
 extern const long PROBE_SIZE;
+extern const long IIIsize;
+
+
 
 void initializeFeatureVectors();
 float predictRating(int user, int movie, int date);
