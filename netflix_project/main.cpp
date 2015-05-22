@@ -23,7 +23,7 @@ int main(int argc, const char * argv[]) {
     start = clock();
     
     //Store the training data in train_data
-    int* trainingData = fillData(trainingDataFullFile, IIIsize, 4);
+    int* trainingData = fillData(trainingDataFile, BASE_SIZE, 4);
     int* probeData = fillData(probeDataFile, PROBE_SIZE, 4);
     
     end = clock();

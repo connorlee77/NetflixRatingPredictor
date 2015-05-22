@@ -21,14 +21,21 @@
 #include <pthread.h>
 #include <random>
 #include "hogNode.h"
+#include <vector>
 
 using namespace std;
 
+//Roshan's files
+#define userRatingDeviationFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/userOffsets.bin"
+#define movieRatingDeviationFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/movieAverages.bin"
+#define userMeanTimeRatingFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/userTimeAverages.bin"
+#define userFrequenciesFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/userFrequencies.bin"
+
 //Connor's files
-#define userRatingDeviationFile "/Users/ConnorLee/Desktop/netflix/userOffsets.bin"
-#define movieRatingDeviationFile "/Users/ConnorLee/Desktop/netflix/movieAverages.bin"
-#define userMeanTimeRatingFile "/Users/ConnorLee/Desktop/netflix/userTimeAverages.bin"
-#define userFrequenciesFile "/Users/ConnorLee/Desktop/netflix/userFrequencies.bin"
+//#define userRatingDeviationFile "/Users/ConnorLee/Desktop/netflix/userOffsets.bin"
+//#define movieRatingDeviationFile "/Users/ConnorLee/Desktop/netflix/movieAverages.bin"
+//#define userMeanTimeRatingFile "/Users/ConnorLee/Desktop/netflix/userTimeAverages.bin"
+//#define userFrequenciesFile "/Users/ConnorLee/Desktop/netflix/userFrequencies.bin"
 
 extern const float GLOBAL_AVG_SET1;
 extern const float GLOBAL_AVG_SET2;

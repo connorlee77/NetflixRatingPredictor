@@ -8,6 +8,8 @@
 
 #include "svd.h"
 
+const int NUMTHREADS = 6;
+
 const float GLOBAL_AVG_SET1 = 3.608609;
 const float GLOBAL_AVG_SET2 = 3.608859;
 
@@ -402,8 +404,6 @@ float predictRating(int user, int movie, int date) {
     return sum;
 }
 
-
-
 void *hogwild(void *rates) {
     
     int user, movie, date, rating, start, stop;
@@ -450,7 +450,7 @@ void computeSVD(float learning_rate, int num_features, int epochs, int* train_da
     LRATE_BASE = learning_rate;
     NUMFEATURES = num_features;
     dataArray = train_data;
-    int data_size = (int) IIIsize;
+    int data_size = (int) BASE_SIZE;
     
     float start, end;
     float duration;
@@ -503,26 +503,27 @@ void computeSVD(float learning_rate, int num_features, int epochs, int* train_da
         
         
         /* Hogwild here */
+        std::vector<hogNode*> nodes(NUMTHREADS);
         
-        // If you want to change threads, you need to get the start and end indices for each thread.
-        int end1 = data_size / 2;
-        int end2 = data_size;
+        pthread_t threads[NUMTHREADS];
         
-        hogNode *rates = new hogNode(LRATE, LEARNING_A, LEARNING_D, 0, end1);
-        hogNode *rates1 = new hogNode(LRATE, LEARNING_A, LEARNING_D, end1, end2);
+        int starting = 0, ending = 0;
         
-        pthread_t thread1, thread2;
+        for(int i = 0; i < NUMTHREADS; i++){
+            starting = ending;
+            ending = (i + 1) * data_size/NUMTHREADS;
+            
+            nodes[i] = new hogNode(LRATE, LEARNING_A, LEARNING_D, starting, ending);
+            pthread_create(&threads[i], NULL, hogwild, (void *) nodes[i]);
+        }
         
-        // create threads
-        pthread_create(&thread1, NULL, hogwild, (void *) rates);
-        pthread_create(&thread2, NULL, hogwild, (void *) rates);
+        for(int i = 0; i < NUMTHREADS; i++){
+            pthread_join(threads[i], NULL);
+        }
         
-        // Make them operate concurrently
-        pthread_join(thread1, NULL);
-        pthread_join(thread2, NULL);
-
-        delete rates;
-        delete rates1;
+        for(int i = 0; i < NUMTHREADS; i++){
+            delete nodes[i];
+        }
 
         
         
