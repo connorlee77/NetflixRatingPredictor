@@ -17,7 +17,7 @@ const int TOTAL_DAYS = 2243;
 
 float LRATE;
 float LRATE_BASE;
-const float TAU = 15;
+const float TAU = 20;
 const float C_FACTOR = 0.02;
 float REG = 0.002;
 
@@ -436,9 +436,16 @@ void computeSVD(float learning_rate, int num_features, int epochs, int* train_da
         LEARNING_D = LEARNING_D_BASE * (1 + adjustLearn)/(1 + adjustLearn + (float) (k * k)/ TAU_D);
         
         if(oldProbeRMSE < 0.917) {
-            REG = 0.015;
+//            REG = 0.015;
+//            REG_A = 0.03;
+//            REG_D = 0.03;
+            REG = 0.02;
             REG_A = 0.03;
             REG_D = 0.03;
+            printf("lrate: %f\n", LRATE);
+            printf("lrate: %f\n", LEARNING_A);
+            printf("lrate: %f\n", LEARNING_D);
+            
         }
         
         start = clock();
@@ -446,6 +453,8 @@ void computeSVD(float learning_rate, int num_features, int epochs, int* train_da
         /*
          * Train on every data point
          */
+        
+        /* Hogwild here */
         for(int j = 0; j < BASE_SIZE; j++) {
             user = dataArray[4 * j];
             movie = dataArray[4 * j + 1];
