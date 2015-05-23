@@ -33,7 +33,7 @@ int main(int argc, const char * argv[]) {
     
     //Set the length of the feature vectors
     int num_features = 50;
-    int epochs = 50;
+    int epochs = 15;
     computeSVDPlusPlus(num_features, epochs, trainingData, probeData, IIIsize);
     
     delete [] trainingData;
