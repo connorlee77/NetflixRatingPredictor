@@ -38,28 +38,28 @@ int GLOBALAVG = 3.6033;
 //int TAU_W = 10;
 
 
-float LRATE_UF_BASE = 0.006;
-float REG_UF = 0.080;
+float LRATE_UF_BASE = 0.007;
+float REG_UF = 0.015;
 float C_FACTOR_UF = 0.002;
 int TAU_UF = 10;
 
-float LRATE_MF_BASE = 0.011;
-float REG_MF = 0.006;
+float LRATE_MF_BASE = 0.007;
+float REG_MF = 0.015;
 float C_FACTOR_MF = 0.002;
 int TAU_MF = 10;
 
-float LRATE_M_BASE = 0.003;
-float REG_M = 0.001;
+float LRATE_M_BASE = 0.007;
+float REG_M = 0.005;
 float C_FACTOR_M = 0.01;
 int TAU_M = 10;
 
-float LRATE_U_BASE = 0.012;
-float REG_U = 0.03;
+float LRATE_U_BASE = 0.007;
+float REG_U = 0.005;
 float C_FACTOR_U = 0.01;
 int TAU_U = 10;
 
-float LRATE_W_BASE = 0.001;
-float REG_Y = 0.03;
+float LRATE_W_BASE = 0.007;
+float REG_Y = 0.015;
 float C_FACTOR_W = 0.01;
 int TAU_W = 10;
 
@@ -84,7 +84,7 @@ float *norms;
 int *movieCountByUser;
 
 float pickrandom() {
-    return (0.001 + (rand() / ( RAND_MAX / (0.01 - 0.001)))) * sign();
+    return (0.001 + (rand() / ( RAND_MAX / (0.01 - 0.001))));// * sign();
 }
 
 float bwZ1() {
@@ -109,7 +109,7 @@ void initialize(int *train_data, int rows) {
     for(int i = 0; i < TOTAL_USERS; i++) {
         userFeatures[i] = new float [FEATURES];
         for(int j = 0; j < FEATURES; j++) {
-            check = pickrandom();
+            check = (rand() % 14000 + 2000) * 0.000001235f;
             userFeatures[i][j] = check;
             assert(check != 0 && check < 10 && check > -10);
         }
@@ -121,7 +121,7 @@ void initialize(int *train_data, int rows) {
     for(int i = 0; i < TOTAL_MOVIES; i++) {
         movieFeatures[i] = new float [FEATURES];
         for(int j = 0; j < FEATURES; j++) {
-            check = pickrandom();
+            check = (rand() % 14000 + 2000) * -0.000001235f;
             movieFeatures[i][j] = check;
             assert(check != 0 && check < 10 && check > -10);
         }
@@ -295,29 +295,39 @@ void computeSVDPlusPlus(int num_features, int epochs, int* train_data, int* prob
                 movieFeatures[movie - 1][k] += LRATE_MF * (error * (userVal + curr_norm * currSumY[k]) - REG_MF * movieVal);
                 
                 temp_sum[k] += (error * curr_norm * movieVal);
-                
-                int movie_count = movieCountByUser[user - 1];
-                if(userCount == movie_count) {
-                    float totalSum = 0.0;
-                    for(int j = 0; j < movie_count; j++) {
-                        float *currY = Y[moviesRatedByCurrUser[j] - 1];
-                        
-                        float old = currY[k];
-                        currY[k] += LRATE_W * (temp_sum[k] - REG_Y * currY[k]);
-                        totalSum += (currY[k] - old);
-                    }
-                    currSumY[k] += totalSum;
-                }
+//                temp_sum[k] += LRATE_MF * (error * movieVal - REG_MF * temp_sum[k]);
+//                int movie_count = movieCountByUser[user - 1];
+//                if(userCount == movie_count) {
+//                    float totalSum = 0.0;
+//                    for(int j = 0; j < movie_count; j++) {
+//                        float *currY = Y[moviesRatedByCurrUser[j] - 1];
+//                        
+//                        float old = currY[k];
+//                        currY[k] += LRATE_W * (temp_sum[k] - REG_Y * currY[k]);
+//                        totalSum += (currY[k] - old);
+//                    }
+//                    currSumY[k] += totalSum;
+//                }
             }
-            if(userCount == movieCountByUser[user - 1]) {
-            
+            int movie_count = movieCountByUser[user - 1];
+            if(userCount == movie_count) {
+                for(int j = 0; j < movie_count; j++) {
+                    
+                    float *currY = Y[moviesRatedByCurrUser[j] - 1];
+                    
+                    for(int k = 0; k < FEATURES; k++) {
+                        float old = currY[k];
+                        currY[k] += LRATE_W * (temp_sum[k] - REG_Y * old);
+                        currSumY[k] += (currY[k] - old);
+                    }
+                }
+                
                 for(int z = 0; z < FEATURES; z++) {
                     temp_sum[z] = 0.0;
                 }
             }
             
             prev_user = user;
-            
         }
         
         end = clock();
@@ -356,7 +366,7 @@ void computeSVDPlusPlus(int num_features, int epochs, int* train_data, int* prob
         
         printf("Probe RMSE, old: %f, new %f\n\n", oldProbeRMSE, newProbeRMSE);
         
-        if(oldProbeRMSE - newProbeRMSE < 0.00005){
+        if(oldProbeRMSE - newProbeRMSE < 0.00001){
             fprintf(stderr, "Probe RMSE drop is miniscule. Training done.\n");
             break;
         }

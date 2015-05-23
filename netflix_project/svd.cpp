@@ -12,6 +12,7 @@ const int NUMTHREADS = 6;
 
 const float GLOBAL_AVG_SET1 = 3.608609;
 const float GLOBAL_AVG_SET2 = 3.608859;
+const long IVsize = IIIsize + PROBE_SIZE;
 
 const int TOTAL_USERS = 458293;
 const int TOTAL_MOVIES = 17770;
@@ -21,19 +22,19 @@ float LRATE;
 float LRATE_BASE;
 const float TAU = 20;
 const float C_FACTOR = 0.02;
-float REG = 0.002;
+float REG = 0.0015;
 
 float LEARNING_A;
-const float LEARNING_A_BASE = 0.00567;
+const float LEARNING_A_BASE = 0.01;
 const float TAU_A = 15;
 const float C_FACTOR_A = 0.01;
-float REG_A = 0.0255;
+float REG_A = 0.005;
 
 float LEARNING_D;
-const float LEARNING_D_BASE = 0.00188;
+const float LEARNING_D_BASE = 0.01;
 const float TAU_D = 15;
 const float C_FACTOR_D = 0.01;
-float REG_D = 0.0255;
+float REG_D = 0.005;
 
 //float LRATE;
 //float LRATE_BASE;
@@ -116,8 +117,9 @@ bool printTrainRMSE = 0;
 
 float getRandom() {
     //return 10.0 / 10.0 * ((double) rand() / ((double) RAND_MAX)) - 0.0;
-    int num = ((int) rand()) % 100;
-    return 2.0 * num / 10000.0 - 0.001;
+    //int num = ((int) rand()) % 100;
+    //return 2.0 * num / 10000.0 - 0.001;
+    return ((float) rand() / (RAND_MAX)) * 0.000001235f;
 }
 
 void initializeFeatureVectors() {
@@ -164,6 +166,12 @@ void initializeFeatureVectors() {
     userRatingDeviationStream.read(reinterpret_cast<char*> (user_rating_deviation_table), sizeof(float) * TOTAL_USERS);
     
     userRatingDeviationStream.close();
+    
+    for(int i = 0; i < TOTAL_USERS; i++) {
+        user_rating_deviation_table[i] = 0.0;
+    }
+    
+    
     /*
      * End initialization of user_rating_deviation_table
      */
@@ -278,7 +286,7 @@ void initializeFeatureVectors() {
         movie_feature_table[i] = new float[NUMFEATURES];
         
         for(int j = 0; j < NUMFEATURES; j++) {
-            randomAcc = getRandom();
+            randomAcc = (rand() % 14000 + 2000) * -0.000001235f;
             movie_feature_table[i][j] = randomAcc;
         }
     }
@@ -303,6 +311,10 @@ void initializeFeatureVectors() {
     movieRatingDeviationStream.read(reinterpret_cast<char*> (movie_rating_deviation_table), sizeof(float) * TOTAL_MOVIES);
     
     movieRatingDeviationStream.close();
+    
+    for(int i = 0; i < TOTAL_MOVIES; i++) {
+        movie_rating_deviation_table[i] = 0.0;
+    }
     /*
      * End initialization of movie_rating_deviation_table
      */
@@ -436,11 +448,14 @@ void *hogwild(void *rates) {
         }
         
         //Train user rating deviation
-        user_rating_deviation_table[user - 1] += LEARNING_A * (error - REG_A * CURR_USER_RATING_DEVIATION);
+        float userDev  = user_rating_deviation_table[user - 1];
+        float movieDev = movie_rating_deviation_table[movie - 1];
+        
+        user_rating_deviation_table[user - 1] += LEARNING_A * (error - REG_A * userDev);
 
         
         //Train movie rating deviation
-        movie_rating_deviation_table[movie - 1] += LEARNING_D * (error - REG_D * CURR_MOVIE_RATING_DEVIATION);
+        movie_rating_deviation_table[movie - 1] += LEARNING_D * (error - REG_D * movieDev);
     }
     
     return 0;
@@ -472,7 +487,7 @@ void computeSVD(float learning_rate, int num_features, int epochs, int* train_da
     int user, movie, rating, date, randUser, randFeature, randMovie;
     
     for(int k = 0; k < epochs; k++) {
-        
+        start = clock();
         
         adjustLearn = (C_FACTOR/LRATE_BASE) * ((float) k/TAU);
         LRATE = LRATE_BASE * (1 + adjustLearn)/(1 + adjustLearn + (float) (k * k)/ TAU);
@@ -483,18 +498,18 @@ void computeSVD(float learning_rate, int num_features, int epochs, int* train_da
         adjustLearn = (C_FACTOR_D/LEARNING_D_BASE) * ((float) k/TAU_D);
         LEARNING_D = LEARNING_D_BASE * (1 + adjustLearn)/(1 + adjustLearn + (float) (k * k)/ TAU_D);
         
-//        if(oldProbeRMSE < 0.917) {
-////            REG = 0.015;
-////            REG_A = 0.03;
-////            REG_D = 0.03;
-//            REG = 0.02;
+        if(oldProbeRMSE < 0.92) {
+//            REG = 0.015;
 //            REG_A = 0.03;
 //            REG_D = 0.03;
-//            printf("lrate: %f\n", LRATE);
-//            printf("lrateA: %f\n", LEARNING_A);
-//            printf("lrateD: %f\n", LEARNING_D);
-//            
-//        }
+            REG = 0.02;
+            REG_A = 0.011;
+            REG_D = 0.011;
+            printf("lrate: %f\n", LRATE);
+            printf("lrateA: %f\n", LEARNING_A);
+            printf("lrateD: %f\n", LEARNING_D);
+            
+        }
         
         printf("Training epoch %d\n", k + 1);
         /*
@@ -581,7 +596,7 @@ void computeSVD(float learning_rate, int num_features, int epochs, int* train_da
         
         printf("Probe RMSE, old: %f, new %f\n\n", oldProbeRMSE, newProbeRMSE);
         
-        if(oldProbeRMSE - newProbeRMSE < 0.00005){
+        if(oldProbeRMSE - newProbeRMSE < 0.00003){
             fprintf(stderr, "Probe RMSE drop is miniscule. Training done.\n");
             break;
         }
