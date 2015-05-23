@@ -200,7 +200,7 @@ float predictRatingPLUS(int user, int movie) {
             printf("movieFeatures[movie - 1][i]: %f\n", movieFeatures[movie - 1][i]);
             printf("sumY[user - 1][i]: %f\n", sumY[user - 1][i]);
         }
-        sum += userFeatures[user - 1][i] * movieFeatures[movie - 1][i] + norms[user - 1] * sumY[user - 1][i];
+        sum += movieFeatures[movie - 1][i] * (userFeatures[user - 1][i] + norms[user - 1] * sumY[user - 1][i]);
     }
     if(debug) {
         printf("userBias[user - 1]: %f\n", userBias[user - 1]);
