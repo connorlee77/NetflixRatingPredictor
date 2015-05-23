@@ -446,11 +446,13 @@ void *hogwild(void *rates) {
     return 0;
 }
 
-void computeSVD(float learning_rate, int num_features, int epochs, int* train_data, int* probe_data) {
+
+
+void computeSVD(float learning_rate, int num_features, int epochs, int* train_data, int* probe_data, long size) {
     LRATE_BASE = learning_rate;
     NUMFEATURES = num_features;
     dataArray = train_data;
-    int data_size = (int) BASE_SIZE;
+    int data_size = (int) size;
     
     float start, end;
     float duration;
@@ -494,7 +496,6 @@ void computeSVD(float learning_rate, int num_features, int epochs, int* train_da
 //            
 //        }
         
-        start = clock();
         printf("Training epoch %d\n", k + 1);
         /*
          * Train on every data point
@@ -525,55 +526,6 @@ void computeSVD(float learning_rate, int num_features, int epochs, int* train_da
             delete nodes[i];
         }
 
-        
-        
-
-//        int z = 0;
-//        while(z < data_size) {
-//            int j = uni(rng);
-//            user = dataArray[4 * j];
-//            movie = dataArray[4 * j + 1];
-//            date = dataArray[4 * j + 2];
-//            rating = dataArray[4 * j + 3];
-//            
-//            error = rating - predictRating(user, movie, date);
-//            
-//            //Train user and movie features
-//            for(int i = 0; i < NUMFEATURES; i++){
-//                userVal = user_feature_table[user - 1][i];
-//                movieVal = movie_feature_table[movie - 1][i];
-//
-//                
-//                user_feature_table[user - 1][i] += LRATE * (error * movieVal - REG * userVal);
-//                movie_feature_table[movie - 1][i] += LRATE * (error * userVal - REG * movieVal);
-//            }
-//            
-//            //Train user rating deviation
-//            user_rating_deviation_table[user - 1] += LEARNING_A * (error - REG_A * CURR_USER_RATING_DEVIATION);
-//            
-//            //            //Train user time deviation scaling factor
-//            //            user_time_deviation_scaling_table[user - 1] += LEARNING_B * (CURR_USER_TIME_DEVIATION * error - REG_B * CURR_USER_TIME_DEVIATION_SCALING_FACTOR);
-//            //
-//            //            //Train user time dependent deviation
-//            //            user_time_dependent_deviation_table[user - 1][date - 1] += LEARNING_C * (error - REG_C * CURR_USER_TIME_DEPENDENT_DEVIATION);
-//            //
-//            //            //Train user constant time dependent baseline scaling factor
-//            //            user_constant_time_dependent_baseline_scaling_table[user - 1] += LEARNING_F * ((CURR_MOVIE_RATING_DEVIATION + CURR_MOVIE_TIME_CHANGING_BIAS) * error - REG_F * (CURR_USER_CONSTANT_TIME_DEPENDENT_BASELINE_SCALING_FACTOR - 1.0f));
-//            //
-//            //            //Train user varying time dependent baseline scaling factor
-//            //            user_varying_time_dependent_baseline_scaling_table[user - 1][date - 1] += LEARNING_G * ((CURR_MOVIE_RATING_DEVIATION + CURR_MOVIE_TIME_CHANGING_BIAS) * error - REG_G * CURR_USER_VARYING_TIME_DEPENDENT_BASELINE_SCALING_FACTOR);
-//            
-//            //Train movie rating deviation
-//            movie_rating_deviation_table[movie - 1] += LEARNING_D * (error - REG_D * CURR_MOVIE_RATING_DEVIATION);
-//            
-//            //            //Train movie time changing bias
-//            //            movie_time_changing_bias_table[movie - 1][CURR_MOVIE_TIME_BIN] += LEARNING_E * ((CURR_USER_CONSTANT_TIME_DEPENDENT_BASELINE_SCALING_FACTOR + CURR_USER_VARYING_TIME_DEPENDENT_BASELINE_SCALING_FACTOR) * error - REG_E * CURR_MOVIE_TIME_CHANGING_BIAS);
-//            //
-//            //            //Train movie frequency bias
-//            //            movie_frequency_bias_table[movie - 1][CURR_ADJUSTED_FREQUENCY] += LEARNING_H * (error - REG_H * CURR_MOVIE_FREQUENCY_BIAS);
-//            
-//            z++;
-//        }
         
         /*
          * Check to make sure magnitude of features aren't too large.
