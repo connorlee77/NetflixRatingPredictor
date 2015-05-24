@@ -117,7 +117,7 @@ void initializeFeatureVectorsPlus() {
     for(int i = 0; i < DATASIZE; i++) {
         user = dataArray[4 * i];
         movie = dataArray[4 * i + 1];
-        user_ratings_count_table[user]++;
+        user_ratings_count_table[user - 1]++;
         user_movies_table->at(user - 1).push_back(movie);
     }
     /*
@@ -225,10 +225,6 @@ void *hogwildPlus(void *rates) {
     
     hogNode *curr = (hogNode *)rates;
     
-    float LRATE = curr->getLRATE();
-    float LEARNING_A = curr->getA();
-    float LEARNING_D = curr->getD();
-    
     int prev_user = dataArray[4 * curr->getStart()], movieCount = 0;
     
     for(int j = curr->getStart(); j < curr->getStop(); j++) {
@@ -270,7 +266,7 @@ void *hogwildPlus(void *rates) {
         
         
         //Train movie rating deviation
-        movie_rating_deviation_table[movie - 1] += LEARNING_D * (error - REG_M * movie_rating_deviation_table[movie - 1]);
+        movie_rating_deviation_table[movie - 1] += LRATE_M_BASE * (error - REG_M * movie_rating_deviation_table[movie - 1]);
     }
     
     return 0;
