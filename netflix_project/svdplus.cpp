@@ -57,8 +57,9 @@ float *movie_rating_deviation_table;
 
 float **user_implicit_vector_sum_table;
 float **movie_implicit_vector_table;
-int *user_ratings_count_table;
-matrix * user_movies_table;
+int *user_ratings_count_noqual_table;
+int *user_ratings_count_withqual_table;
+int **user_movies_table;
 float *user_norms_table;
 
 int *dataArray;
@@ -81,7 +82,6 @@ void initializeFeatureVectorsPlus() {
      */
     user_feature_table = new float *[TOTAL_USERS];
     
-    float constant = sqrt(((float) GLOBAL_AVG_SET1) / NUMFEATURES);
     float randomAcc;
     for(int i = 0; i < TOTAL_USERS; i++) {
         user_feature_table[i] = new float[NUMFEATURES];
@@ -110,23 +110,44 @@ void initializeFeatureVectorsPlus() {
     
     
     /*
-     * Initialize user_ratings_count_table
+     * Initialize user_ratings_count_noqual_table
      */
-    user_ratings_count_table = new int[TOTAL_USERS];
-    user_movies_table = new matrix(TOTAL_USERS);
-    
-    int user, movie;
+    user_ratings_count_noqual_table = new int[TOTAL_USERS];
     
     for(int i = 0; i < DATASIZE; i++) {
-        user = dataArray[4 * i];
-        movie = dataArray[4 * i + 1];
-        user_ratings_count_table[user - 1]++;
-        user_movies_table->at(user - 1).push_back(movie);
+        user_ratings_count_noqual_table[dataArray[4 * i] - 1]++;
     }
     /*
-     * End initialization of user_ratings_count_table
+     * End initialization of user_ratings_count_noqual_table
      */
     
+    
+    /*
+     * Initialize user_movies_table and user_ratings_count_withqual_table
+     */
+    user_movies_table = new int*[TOTAL_USERS];
+    user_ratings_count_withqual_table = new int[TOTAL_USERS];
+    
+    int numMovies;
+    
+    ifstream userMovieStream;
+    userMovieStream.open(userMovieFrequenciesFile, ios::in|ios::binary);
+    if(!userMovieStream.is_open()) {
+        fprintf(stderr, "user rating deviation binary file was not opened!\n");
+        exit(0);
+    }
+    userMovieStream.seekg (0, ios::beg);
+    
+    for(int i = 0; i < TOTAL_USERS; i++){
+        userMovieStream.read(reinterpret_cast<char*> (&numMovies), sizeof(int));
+        user_ratings_count_withqual_table[i] = numMovies;
+        user_movies_table[i] = new int[numMovies];
+        userMovieStream.read(reinterpret_cast<char*> (user_movies_table[i]), sizeof(int) * numMovies);
+    }
+    userMovieStream.close();
+    /*
+     * End initialization of user_ratings_count_noqual_table and user_ratings_count_withqual_table
+     */
     
     /*
      * Initialize user_norms_table
@@ -134,7 +155,7 @@ void initializeFeatureVectorsPlus() {
     user_norms_table = new float[TOTAL_USERS];
     
     for(int i = 0; i < TOTAL_USERS; i++) {
-        float curr = (float) user_ratings_count_table[i];
+        float curr = (float) user_ratings_count_withqual_table[i];
         user_norms_table[i] = 1.0/sqrt(curr);
     }
     /*
@@ -251,10 +272,10 @@ void *hogwildPlus(void *rates) {
             userVal = user_feature_table[user - 1][i];
             movieVal = movie_feature_table[movie - 1][i];
             
-            if(movieCount == user_movies_table->at(user - 1).size()){
+            if(movieCount == user_ratings_count_noqual_table[user - 1]){
                 user_implicit_vector_sum_table[user - 1][i] = 0;
-                for(int i = 0; i < user_movies_table->at(user - 1).size(); i++){
-                    currMovie = user_movies_table->at(user - 1)[i];
+                for(int j = 0; j < user_ratings_count_withqual_table[user - 1]; j++){
+                    currMovie = user_movies_table[user - 1][j];
                     float * currImplicitVector = &movie_implicit_vector_table[currMovie - 1][i];
                     *currImplicitVector += LRATE_W_BASE * (movieVal * curr_norm * error - REG_Y * *currImplicitVector);
                     user_implicit_vector_sum_table[user - 1][i] += *currImplicitVector;
