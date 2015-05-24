@@ -25,7 +25,7 @@ int main(int argc, const char * argv[]) {
     start = clock();
     
     //Store the training data in train_data
-    int* trainingData = fillData(trainingDataFullFile, IIIsize, 4);
+    int* trainingData = fillData(trainingDataFile, BASE_SIZE, 4);
     int* probeData = fillData(probeDataFile, PROBE_SIZE, 4);
     
     end = clock();
@@ -33,34 +33,16 @@ int main(int argc, const char * argv[]) {
     printf("Reading data took %f seconds\n",duration);
     
     //Set the length of the feature vectors
-    int num_features = 30;
+    int num_features = 65;
     int epochs = 250;
-    computeSVDPlusPlus(num_features, epochs, trainingData, probeData, IIIsize);
-//    computeSVD(0.018, num_features, epochs, trainingData, probeData, IIIsize);
+    computeSVDPlusPlus(num_features, epochs, trainingData, probeData, BASE_SIZE);
+//    computeSVD(0.018, num_features, epochs, trainingData, probeData, BASE_SIZE);
     delete [] trainingData;
     
-    predictQual();
-//    predictQualPlus();
+  //  predictQual();
+ predictQualPlus();
     
     delete [] probeData;
-    
-    delete [] norms;
-    delete [] userBias;
-    delete [] movieBias;
-    
-    for(int i = 0; i < TOTAL_USERS; i++) {
-        delete userFeatures[i];
-        delete sumY[i];
-    }
-    
-    delete [] sumY;
-    delete [] userFeatures;
-    
-    for(int i = 0; i < TOTAL_MOVIES; i++) {
-        delete movieFeatures[i];
-    }
-    
-    delete [] movieFeatures;
 
 //    for(int i = 0; i < TOTAL_USERS; i++){
 //        delete [] user_feature_table[i];

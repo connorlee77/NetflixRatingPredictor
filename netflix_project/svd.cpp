@@ -8,7 +8,7 @@
 
 #include "svd.h"
 
-const int NUMTHREADS = 6;
+const int NUMTHREADS = 8;
 
 const float GLOBAL_AVG_SET1 = 3.608609;
 const float GLOBAL_AVG_SET2 = 3.608859;

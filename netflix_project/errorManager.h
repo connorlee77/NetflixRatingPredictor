@@ -15,15 +15,15 @@
 #include <string>
 #include <fstream>
 #include <sstream>
-#include "svd.h"
+//#include "svd.h"
 #include "svdplus.h"
 //Roshan's files
-//#define qualInFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file5binary.bin"
-//#define qualOutFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/qualOut.dta"
+#define qualInFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file5binary.bin"
+#define qualOutFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/qualOut.dta"
 
 //Connor's files
-#define qualInFile "/Users/ConnorLee/Desktop/netflix/file5binary.bin"
-#define qualOutFile "/Users/ConnorLee/Desktop/netflix/qualOut.dta"
+//#define qualInFile "/Users/ConnorLee/Desktop/netflix/file5binary.bin"
+//#define qualOutFile "/Users/ConnorLee/Desktop/netflix/qualOut.dta"
 
 
 void predictQual();

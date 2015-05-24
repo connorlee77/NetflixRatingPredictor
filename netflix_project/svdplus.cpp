@@ -1,59 +1,42 @@
-//
-//  svd++.cpp
+
+//  svd.cpp
 //  netflix_project
 //
-//  Created by Connor Lee on 5/22/15.
+//  Created by Connor Lee on 4/25/15.
 //  Copyright (c) 2015 Connor Lee. All rights reserved.
 //
 
 #include "svdplus.h"
 
-/* CHANGE THESE NUMBERS */
-int FEATURES;
-int GLOBALAVG = 3.6033;
+const int NUMTHREADS = 8;
+int DATASIZE;
+int NUMFEATURES;
 
-//float LRATE_UF_BASE = 0.006;
-//float REG_UF = 0.080;
-//float C_FACTOR_UF = 0.01;
-//int TAU_UF = 10;
-//
-//float LRATE_MF_BASE = 0.011;
-//float REG_MF = 0.006;
-//float C_FACTOR_MF = 0.01;
-//int TAU_MF = 10;
-//
-//float LRATE_M_BASE = 0.003;
-//float REG_M = 0.0;
-//float C_FACTOR_M = 0.01;
-//int TAU_M = 10;
-//
-//float LRATE_U_BASE = 0.012;
-//float REG_U = 0.030;
-//float C_FACTOR_U = 0.01;
-//int TAU_U = 10;
-//
-//float LRATE_W_BASE = 0.001;
-//float REG_Y = 0.030;
-//float C_FACTOR_W = 0.01;
-//int TAU_W = 10;
+const float GLOBAL_AVG_SET1 = 3.608609;
+const float GLOBAL_AVG_SET2 = 3.608859;
+const long IVsize = IIIsize + PROBE_SIZE;
 
+const int TOTAL_USERS = 458293;
+const int TOTAL_MOVIES = 17770;
+const int TOTAL_DAYS = 2243;
+float GLOBAL_AVERAGE;
 
-float LRATE_UF_BASE = 0.018;
-float REG_UF = 0.0015;
-float C_FACTOR_UF = 0.02;
+float LRATE_UF_BASE = 0.007;
+float REG_UF = 0.015;
+float C_FACTOR_UF = 0.002;
 int TAU_UF = 10;
 
-float LRATE_MF_BASE = 0.018;
-float REG_MF = 0.0015;
-float C_FACTOR_MF = 0.02;
+float LRATE_MF_BASE = 0.007;
+float REG_MF = 0.015;
+float C_FACTOR_MF = 0.002;
 int TAU_MF = 10;
 
-float LRATE_M_BASE = 0.01;
+float LRATE_M_BASE = 0.007;
 float REG_M = 0.005;
 float C_FACTOR_M = 0.01;
 int TAU_M = 10;
 
-float LRATE_U_BASE = 0.01;
+float LRATE_U_BASE = 0.007;
 float REG_U = 0.005;
 float C_FACTOR_U = 0.01;
 int TAU_U = 10;
@@ -63,264 +46,319 @@ float REG_Y = 0.015;
 float C_FACTOR_W = 0.01;
 int TAU_W = 10;
 
+float **user_feature_table;
+float *user_rating_deviation_table;
 
-int ptrainRMSE = 1;
-int debug = 0;
+float **movie_feature_table;
+float *movie_rating_deviation_table;
 
-const int TOTAL_USERS = 458293;
-const int TOTAL_MOVIES = 17770;
-const int TOTAL_DAYS = 2243;
-const long BASE_SIZE = 94362233;
-const long PROBE_SIZE = 1374739;
-const long IIIsize = 98291668;
+float **user_implicit_vector_sum_table;
+float **movie_implicit_vector_table;
+int *user_ratings_count_table;
+matrix * user_movies_table;
+float *user_norms_table;
 
-float *userBias;
-float *movieBias;
-float **userFeatures;
-float **movieFeatures;
-float **sumY;
-float **Y;
-float *norms;
-int *movieCountByUser;
+int *dataArray;
 
-float pickrandom() {
-    return (0.001 + (rand() / ( RAND_MAX / (0.01 - 0.001))));
+bool printVectorInitInfo = 0;
+bool printPredictionInfo = 0;
+bool printTrainRMSE = 0;
+
+float getRandom() {
+    return ((float) rand() / (RAND_MAX)) * 0.000001235f;
 }
 
-float bwZ1() {
-    return  ((float) rand() / (RAND_MAX)) / 10.0;
-}
-
-float sign()
-{
-    if(((float) rand() / (RAND_MAX)) > 0.5) {
-        return -1.0;
-    } else {
-        return 1.0;
-    }
-}
-
-void initialize(int *train_data, int rows) {
+void initializeFeatureVectorsPlus() {
+    GLOBAL_AVERAGE = GLOBAL_AVG_SET1;
     
-    float check;
+    srand (static_cast <unsigned> (time(0)));
     
-    /* Initialize user features */
-    userFeatures = new float *[TOTAL_USERS];
+    /*
+     * Initialize user_feature_table
+     */
+    user_feature_table = new float *[TOTAL_USERS];
+    
+    float constant = sqrt(((float) GLOBAL_AVG_SET1) / NUMFEATURES);
+    float randomAcc;
     for(int i = 0; i < TOTAL_USERS; i++) {
-        userFeatures[i] = new float [FEATURES];
-        for(int j = 0; j < FEATURES; j++) {
-            check = (rand() % 14000 + 2000) * 0.000001235f;
-            userFeatures[i][j] = check;
-            assert(check != 0 && check < 10 && check > -10);
+        user_feature_table[i] = new float[NUMFEATURES];
+        
+        for(int j = 0; j < NUMFEATURES; j++) {
+            randomAcc = getRandom();
+            user_feature_table[i][j] = randomAcc;
+        }
+        
+    }
+    /*
+     * End initialization of user_feature_table
+     */
+    
+    
+    /*
+     * Initialize user_implicit_vector_sum_table
+     */
+    user_implicit_vector_sum_table = new float*[TOTAL_USERS];
+    for(int i = 0; i < TOTAL_USERS; i++) {
+        user_implicit_vector_sum_table[i] = new float[NUMFEATURES];
+    }
+    /*
+     * End initialization of user_implicit_vector_sum_table
+     */
+    
+    
+    /*
+     * Initialize user_ratings_count_table
+     */
+    user_ratings_count_table = new int[TOTAL_USERS];
+    user_movies_table = new matrix(TOTAL_USERS);
+    
+    int user, movie;
+    
+    for(int i = 0; i < DATASIZE; i++) {
+        user = dataArray[4 * i];
+        movie = dataArray[4 * i + 1];
+        user_ratings_count_table[user]++;
+        user_movies_table->at(user - 1).push_back(movie);
+    }
+    /*
+     * End initialization of user_ratings_count_table
+     */
+    
+    
+    /*
+     * Initialize user_norms_table
+     */
+    user_norms_table = new float[TOTAL_USERS];
+    
+    for(int i = 0; i < TOTAL_USERS; i++) {
+        float curr = (float) user_ratings_count_table[i];
+        user_norms_table[i] = 1.0/sqrt(curr);
+    }
+    /*
+     * End initialization of user_norms_table
+     */
+
+
+    /*
+     * Initialize user_rating_deviation_table
+     */
+    user_rating_deviation_table = new float[TOTAL_USERS];
+    
+    ifstream userRatingDeviationStream;
+    userRatingDeviationStream.open(userRatingDeviationFile, ios::in|ios::binary);
+    if(!userRatingDeviationStream.is_open()) {
+        fprintf(stderr, "user rating deviation binary file was not opened!\n");
+        exit(0);
+    }
+    userRatingDeviationStream.seekg (0, ios::beg);
+    
+    userRatingDeviationStream.read(reinterpret_cast<char*> (user_rating_deviation_table), sizeof(float) * TOTAL_USERS);
+    
+    userRatingDeviationStream.close();
+    /*
+     * End initialization user_rating_deviation_table
+     */
+    
+    
+    /*
+     * Initialize movie_feature_table
+     */
+    movie_feature_table = new float *[TOTAL_MOVIES];
+    for(int i = 0; i < TOTAL_MOVIES; i++) {
+        movie_feature_table[i] = new float[NUMFEATURES];
+        
+        for(int j = 0; j < NUMFEATURES; j++) {
+            randomAcc = (rand() % 14000 + 2000) * -0.000001235f;
+            movie_feature_table[i][j] = randomAcc;
         }
     }
+    /*
+     * End initialization of movie_feature_table
+     */
     
-    
-    /* Initialize movie features */
-    movieFeatures = new float *[TOTAL_MOVIES];
+    /*
+     * Initialize movie_implicit_vector_table
+     */
+    movie_implicit_vector_table = new float *[TOTAL_MOVIES];
     for(int i = 0; i < TOTAL_MOVIES; i++) {
-        movieFeatures[i] = new float [FEATURES];
-        for(int j = 0; j < FEATURES; j++) {
-            check = (rand() % 14000 + 2000) * -0.000001235f;
-            movieFeatures[i][j] = check;
-            assert(check != 0 && check < 10 && check > -10);
-        }
+        movie_implicit_vector_table[i] = new float [NUMFEATURES];
     }
+    /*
+     * End initialization of movie_implicit_vector_table
+     */
+        
+    /*
+     * Initialize movie_rating_deviation_table
+     */
+    movie_rating_deviation_table = new float[TOTAL_MOVIES];
     
-    
-    /* Initialize user bias */
-    userBias = new float [TOTAL_USERS];
-    for(int i = 0; i < TOTAL_USERS; i++) {
-        check = pickrandom();
-        userBias[i] = 0.0;
-        assert(check != 0 && check < 10 && check > -10);
+    ifstream movieRatingDeviationStream;
+    movieRatingDeviationStream.open(movieRatingDeviationFile, ios::in|ios::binary);
+    if(!movieRatingDeviationStream.is_open()) {
+        fprintf(stderr, "binary file was not opened!\n");
+        exit(0);
     }
+    movieRatingDeviationStream.seekg (0, ios::beg);
     
+    movieRatingDeviationStream.read(reinterpret_cast<char*> (movie_rating_deviation_table), sizeof(float) * TOTAL_MOVIES);
     
-    /* Initialize movie bias */
-    movieBias = new float [TOTAL_MOVIES];
-    for(int i = 0; i < TOTAL_MOVIES; i++) {
-        check = pickrandom();
-        movieBias[i] = 0.0;
-        assert(check != 0 && check < 10 && check > -10);
-    }
-    
-//    
-//    /* Initialize movie weights */
-//    Y = new float *[TOTAL_MOVIES];
-//    for(int i = 0; i < TOTAL_MOVIES; i++) {
-//        Y[i] = new float [FEATURES];
-//        for(int j = 0; j < FEATURES; j++) {
-//            check = pickrandom();
-//            Y[i][j] = check;
-//            assert(check != 0 && check < 10 && check > -10);
-//        }
-//    }
-//    
-//    /* Initialize sum of movie weights */
-//    sumY = new float *[TOTAL_USERS];
-//    for(int i = 0; i < TOTAL_USERS; i++) {
-//        sumY[i] = new float [FEATURES];
-//        for(int j = 0; j < FEATURES; j++) {
-//            sumY[i][j] = 0.0;
-//        }
-//    }
-//    
-//    
-//    /* Compute norms */
-//    movieCountByUser = new int[TOTAL_USERS];
-//    norms = new float[TOTAL_USERS];
-//    
-//    for(int i = 0; i < TOTAL_USERS; i++) {
-//        movieCountByUser[i] = 0;
-//    }
-//    
-//    for(int i = 0; i < rows; i++) {
-//        movieCountByUser[train_data[4 * i] - 1] += 1;
-//    }
-//    
-//    for(int i = 0; i < TOTAL_USERS; i++) {
-//        float curr = (float) movieCountByUser[i];
-//        norms[i] = sqrt(curr);
-//    }
-    printf("Done initializing\n\n");
+    movieRatingDeviationStream.close();
 }
-
-
 
 float predictRatingPLUS(int user, int movie) {
-
-    float sum = 0.0;
-    for(int i = 0; i < FEATURES; i++) {
-
-//        sum += movieFeatures[movie - 1][i] * (userFeatures[user - 1][i] + norms[user - 1] * sumY[user - 1][i]);
-        sum += (movieFeatures[movie - 1][i] * userFeatures[user - 1][i]);
+    float sum = GLOBAL_AVERAGE;
+    
+    /*
+     * Include prediction using user and movie features
+     */
+    for(int i = 0; i < NUMFEATURES; i++) {
+        sum += (movie_feature_table[movie - 1][i] * (user_feature_table[user - 1][i] + user_norms_table[user - 1] * user_implicit_vector_sum_table[user - 1][i]));
     }
-
-    return (sum + GLOBALAVG + userBias[user - 1] + movieBias[movie - 1]);
+    
+    sum += user_rating_deviation_table[user - 1] + movie_rating_deviation_table[movie - 1];
+    return sum;
 }
 
-
-void computeSVDPlusPlus(int num_features, int epochs, int* train_data, int* probe_data, long size) {
-    FEATURES = num_features;
-    initialize(train_data, size);
+void *hogwildPlus(void *rates) {
+    int user, movie, date, rating, currMovie;
+    float error, userVal, movieVal, curr_norm;
     
-    int user, movie, rating, *dataArray = train_data, userVal, movieVal, k;
-    float *temp_sum, error, userBiasVal, movieBiasVal, start, end, sum, oldTrainRMSE = 2.0, newTrainRMSE = 2.0, newProbeRMSE = 2.0,
-    oldProbeRMSE= 2.0, adjustLearn;
-    vector<int> moviesRatedByCurrUser;
+    hogNode *curr = (hogNode *)rates;
     
-//    temp_sum = new float[FEATURES];
+    float LRATE = curr->getLRATE();
+    float LEARNING_A = curr->getA();
+    float LEARNING_D = curr->getD();
     
-    int epoch_trained = 0;
-    while(epoch_trained < epochs) {
-        float LRATE_UF = LRATE_UF_BASE;
-        float LRATE_MF = LRATE_MF_BASE;
-        float LRATE_M = LRATE_M_BASE;
-        float LRATE_U = LRATE_U_BASE;
-        float LRATE_W = LRATE_W_BASE;
-        k = epoch_trained + 1;
-        adjustLearn = (C_FACTOR_UF / LRATE_UF_BASE) * ((float) k / TAU_UF);
-        LRATE_UF = LRATE_UF_BASE * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU_UF);
+    int prev_user = dataArray[4 * curr->getStart()], movieCount = 0;
+    
+    for(int j = curr->getStart(); j < curr->getStop(); j++) {
+        user = dataArray[4 * j];
+        movie = dataArray[4 * j + 1];
+        date = dataArray[4 * j + 2];
+        rating = dataArray[4 * j + 3];
         
-        adjustLearn = (C_FACTOR_MF / LRATE_MF_BASE) * ((float) k / TAU_MF);
-        LRATE_MF = LRATE_MF_BASE * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU_MF);
-        
-        adjustLearn = (C_FACTOR_M / LRATE_M_BASE) * ((float) k / TAU_M);
-        LRATE_M = LRATE_M_BASE * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU_M);
-        
-        adjustLearn = (C_FACTOR_U / LRATE_U_BASE) * ((float) k / TAU_U);
-        LRATE_U = LRATE_U_BASE * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU_U);
-        
-        adjustLearn = (C_FACTOR_W/LRATE_W_BASE) * ((float) k / TAU_W);
-        LRATE_W = LRATE_W_BASE * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU_W);
-        
-        printf("Starting Epoch %d!\n", epoch_trained + 1);
-        start = clock();
-        
-        int prev_user = 1, userCount = 0;
-        
-        
-//        for(int f = 0; f < FEATURES; f++) {
-//            temp_sum[f] = 0.0;
-//        }
-        
-        /* Loop through all data points */
-        for(int i = 0; i < size; i++) {
-            user = dataArray[4 * i];
-            movie = dataArray[4 * i + 1];
-            rating = dataArray[4 * i + 3];
-            
-            /* Get error */
-            error = rating - predictRatingPLUS(user, movie);
-            
-            /* If user has changed */
-//            if(prev_user == user) {
-//                userCount++;
-//                moviesRatedByCurrUser.push_back(movie);
-//            } else {
-//                userCount = 1;
-//                moviesRatedByCurrUser.clear();
-//                moviesRatedByCurrUser.push_back(movie);
-//            }
-//            
-//            float *currSumY = sumY[user - 1];
-            
-            /* Iteration of stochastic gradient descent */
-            for(int k = 0; k < FEATURES; k++) {
-                userVal = userFeatures[user - 1][k];
-                movieVal = movieFeatures[movie - 1][k];
-//                float curr_norm = norms[user - 1];
-                
-                
-                userFeatures[user - 1][k] += LRATE_UF * (error * movieVal - REG_UF * userVal);
-//                movieFeatures[movie - 1][k] += LRATE_MF * (error * (userVal + curr_norm * currSumY[k]) - REG_MF * movieVal);
-                movieFeatures[movie - 1][k] += LRATE_MF * (error * userVal - REG_MF * movieVal);
-//                temp_sum[k] += (error * curr_norm * movieVal);
-            }
-            
-            /* Store  */
-            userBiasVal = userBias[user - 1];
-            movieBiasVal = movieBias[movie - 1];
-            
-            /* Tune biases */
-            movieBias[movie - 1] += LRATE_M * (error - REG_M * movieBiasVal);
-            userBias[user - 1] += LRATE_U * (error - REG_U * userBiasVal);
-            
-//            int movie_count = movieCountByUser[user - 1];
-//            if(userCount == movie_count) {
-//                for(int j = 0; j < movie_count; j++) {
-//                    
-//                    float *currY = Y[moviesRatedByCurrUser[j] - 1];
-//                    
-//                    for(int k = 0; k < FEATURES; k++) {
-//                        float old = currY[k];
-//                        currY[k] += LRATE_W * (temp_sum[k] - REG_Y * old);
-//                        currSumY[k] += (currY[k] - old);
-//                    }
-//                }
-//                
-//                for(int z = 0; z < FEATURES; z++) {
-//                    temp_sum[z] = 0.0;
-//                }
-//            }
-//            
-//            prev_user = user;
+        if(prev_user == user) {
+            movieCount++;
+        } else {
+            movieCount = 1;
         }
         
-        end = clock();
-        printf("Epoch %d took %f seconds!\n", epoch_trained + 1, (end - start) / CLOCKS_PER_SEC);
+        error = rating - predictRatingPLUS(user, movie);
+        
+        curr_norm = user_norms_table[user - 1];
+        
+        //Train user and movie features
+        for(int i = 0; i < NUMFEATURES; i++){
+            userVal = user_feature_table[user - 1][i];
+            movieVal = movie_feature_table[movie - 1][i];
+            
+            if(movieCount == user_movies_table->at(user - 1).size()){
+                user_implicit_vector_sum_table[user - 1][i] = 0;
+                for(int i = 0; i < user_movies_table->at(user - 1).size(); i++){
+                    currMovie = user_movies_table->at(user - 1)[i];
+                    float * currImplicitVector = &movie_implicit_vector_table[currMovie - 1][i];
+                    *currImplicitVector += LRATE_W_BASE * (movieVal * curr_norm * error - REG_Y * *currImplicitVector);
+                }
+            }
+            
+            user_feature_table[user - 1][i] += LRATE_UF_BASE * (error * movieVal - REG_UF * userVal);
+            movie_feature_table[movie - 1][i] += LRATE_MF_BASE * (error * (userVal + curr_norm * user_implicit_vector_sum_table[user - 1][i]) - REG_MF * movieVal);
+        }
+        
+        //Train user rating deviation
+        user_rating_deviation_table[user - 1] += LRATE_U_BASE * (error - REG_U * user_rating_deviation_table[user - 1]);
+        
+        
+        //Train movie rating deviation
+        movie_rating_deviation_table[movie - 1] += LEARNING_D * (error - REG_M * movie_rating_deviation_table[movie - 1]);
+    }
+    
+    return 0;
+}
 
-        if(ptrainRMSE){
+void computeSVDPlusPlus(int num_features, int epochs, int* train_data, int* probe_data, long data_size) {
+    NUMFEATURES = num_features;
+    dataArray = train_data;
+    DATASIZE = (int) data_size;
+    
+    float start, end;
+    float duration;
+    
+    random_device rd;     // only used once to initialise (seed) engine
+    mt19937 rng(rd());    // random-number engine used (Mersenne-Twister in this case)
+    uniform_int_distribution<int> uni(0, DATASIZE - 1); // guaranteed unbiased
+    
+    start = clock();
+    initializeFeatureVectorsPlus();
+    end = clock();
+    duration=(end-start)/CLOCKS_PER_SEC;
+    
+    printf("Feature initialization took %f seconds\n", duration);
+    
+    float sum, error, userVal, movieVal, adjustUser, adjustMovie, oldTrainRMSE = 2.0f, newTrainRMSE, oldProbeRMSE = 2.0f, newProbeRMSE, adjustLearn;
+    int user, movie, rating, date, randUser, randFeature, randMovie;
+    
+    for(int k = 0; k < epochs; k++) {
+        start = clock();
+        printf("Training epoch %d\n", k + 1);
+        /*
+         * Train on every data point
+         */
+
+        /* Hogwild here */
+        std::vector<hogNode*> nodes(NUMTHREADS);
+        
+        pthread_t threads[NUMTHREADS];
+        
+        int starting = 0, ending = 0;
+        
+        for(int i = 0; i < NUMTHREADS; i++){
+            starting = ending;
+            ending = (i + 1) * DATASIZE/NUMTHREADS;
+            
+            nodes[i] = new hogNode(0, 0, 0, starting, ending);
+            pthread_create(&threads[i], NULL, hogwildPlus, (void *) nodes[i]);
+        }
+        
+        for(int i = 0; i < NUMTHREADS; i++){
+            pthread_join(threads[i], NULL);
+        }
+        
+        for(int i = 0; i < NUMTHREADS; i++){
+            delete nodes[i];
+        }
+        
+        
+        /*
+         * Check to make sure magnitude of features aren't too large.
+         */
+        for(int i = 0; i < 10000; i++){
+            randUser = rand() % TOTAL_USERS;
+            randMovie = rand() % TOTAL_MOVIES;
+            randFeature = rand() % NUMFEATURES;
+            
+            adjustUser = user_feature_table[randUser][randFeature];
+            assert(adjustUser < 50 && adjustUser > -50);
+            
+            adjustMovie = movie_feature_table[randMovie][randFeature];
+            assert(adjustMovie < 50 && adjustMovie > -50);
+        }
+        end = clock();
+        duration=(end-start)/CLOCKS_PER_SEC;
+        
+        printf("Epoch %d took %f seconds\n",k + 1, duration);
+        
+        if(printTrainRMSE){
             sum = 0.0;
-            for (int j = 0; j < size; j++) {
+            for (int j = 0; j < DATASIZE; j++) {
                 user = dataArray[4 * j];
                 movie = dataArray[4 * j + 1];
+                date = dataArray[4 * j + 2];
                 rating = dataArray[4 * j + 3];
                 sum += powf(rating - predictRatingPLUS(user, movie), 2);
             }
             
-            newTrainRMSE = powf(sum/(size), 0.5);
+            newTrainRMSE = powf(sum/(DATASIZE), 0.5);
             
             printf("Training RMSE, old: %f, new %f\n", oldTrainRMSE, newTrainRMSE);
             if(newTrainRMSE - oldTrainRMSE > 0){
@@ -336,6 +374,7 @@ void computeSVDPlusPlus(int num_features, int epochs, int* train_data, int* prob
         for (int j = 0; j < PROBE_SIZE; j++) {
             user = probe_data[4 * j];
             movie = probe_data[4 * j + 1];
+            date = probe_data[4 * j + 2];
             rating = probe_data[4 * j + 3];
             sum += powf(rating - predictRatingPLUS(user, movie), 2);
         }
@@ -349,33 +388,9 @@ void computeSVDPlusPlus(int num_features, int epochs, int* train_data, int* prob
             break;
         }
         
+        
         oldProbeRMSE = newProbeRMSE;
-        epoch_trained++;
-        
-        
-        LRATE_UF_BASE *= 0.9;
-        LRATE_MF_BASE *= 0.9;
-        LRATE_M_BASE *= 0.9;
-        LRATE_U_BASE *= 0.9;
-        LRATE_W_BASE *= 0.9;
-
     }
     
-    delete []movieCountByUser;
     
-    for(int i = 0; i < TOTAL_MOVIES; i++) {
-        delete Y[i];
-    }
-    delete [] Y;
-    delete [] temp_sum;
 }
-
-
-
-
-
-
-
-
-
-

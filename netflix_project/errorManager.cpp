@@ -41,7 +41,7 @@ void predictQual(){
     }
     
     for(int i = 0; i < QUAL_SIZE; i++){    
-        float predictedRating = predictRating(qualData[i * 4], qualData[i * 4 + 1], qualData[i * 4 + 2]);
+        float predictedRating = 0;//predictRating(qualData[i * 4], qualData[i * 4 + 1], qualData[i * 4 + 2]);
         
         if(predictedRating < 1)
             predictedRating = 1;

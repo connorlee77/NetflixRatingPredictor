@@ -7,12 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5500C7911B0FF67B00ECEDA6 /* svd.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 552D0EEE1AEC40530082D855 /* svd.cpp */; };
 		552D0EDA1AEA2A800082D855 /* dataManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 552D0ED71AEA1E610082D855 /* dataManager.cpp */; };
 		552D0EF31AECD5690082D855 /* errorManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 552D0EF11AECD5690082D855 /* errorManager.cpp */; };
 		553E45C51B0EB2C1004211CF /* hogNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 553E45C31B0EB2C1004211CF /* hogNode.cpp */; };
-		553E45C81B0F2116004211CF /* svdplus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 553E45C61B0F2116004211CF /* svdplus.cpp */; };
 		558FD3801ADFAB8C00953B06 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 558FD37F1ADFAB8C00953B06 /* main.cpp */; };
+		C870F2C21B11DFB9001D5623 /* svdplus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 553E45C61B0F2116004211CF /* svdplus.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -143,9 +142,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5500C7911B0FF67B00ECEDA6 /* svd.cpp in Sources */,
+				C870F2C21B11DFB9001D5623 /* svdplus.cpp in Sources */,
 				552D0EF31AECD5690082D855 /* errorManager.cpp in Sources */,
-				553E45C81B0F2116004211CF /* svdplus.cpp in Sources */,
 				552D0EDA1AEA2A800082D855 /* dataManager.cpp in Sources */,
 				558FD3801ADFAB8C00953B06 /* main.cpp in Sources */,
 				553E45C51B0EB2C1004211CF /* hogNode.cpp in Sources */,
