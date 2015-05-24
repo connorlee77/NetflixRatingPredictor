@@ -21,30 +21,33 @@ const int TOTAL_MOVIES = 17770;
 const int TOTAL_DAYS = 2243;
 float GLOBAL_AVERAGE;
 
-float LRATE_UF_BASE = 0.007;
-float REG_UF = 0.015;
-float C_FACTOR_UF = 0.002;
-int TAU_UF = 10;
+float LRATE_MF;
+float LRATE_BASE_MF = 0.018;
+const float TAU = 20;
+const float C_FACTOR = 0.02;
+float REG_MF = 0.0015;
 
-float LRATE_MF_BASE = 0.007;
-float REG_MF = 0.015;
-float C_FACTOR_MF = 0.002;
-int TAU_MF = 10;
+float LRATE_UF;
+float LRATE_BASE_UF = 0.018;
+float REG_UF = 0.0015;
 
-float LRATE_M_BASE = 0.007;
-float REG_M = 0.005;
-float C_FACTOR_M = 0.01;
-int TAU_M = 10;
+float LEARNING_A;
+float LEARNING_A_BASE = 0.01;
+float TAU_A = 20;
+float C_FACTOR_A = 0.01;
+float REG_A = 0.005;
 
-float LRATE_U_BASE = 0.007;
-float REG_U = 0.005;
-float C_FACTOR_U = 0.01;
-int TAU_U = 10;
+float LEARNING_D;
+float LEARNING_D_BASE = 0.01;
+const float TAU_D = 20;
+const float C_FACTOR_D = 0.01;
+float REG_D = 0.0;
 
-float LRATE_W_BASE = 0.007;
-float REG_Y = 0.015;
+float LRATE_W;
+float LRATE_W_BASE = 0.001;
+float REG_Y = 0.005;
 float C_FACTOR_W = 0.01;
-int TAU_W = 10;
+int TAU_W = 20;
 
 float **user_feature_table;
 float *user_rating_deviation_table;
@@ -254,19 +257,20 @@ void *hogwildPlus(void *rates) {
                     currMovie = user_movies_table->at(user - 1)[i];
                     float * currImplicitVector = &movie_implicit_vector_table[currMovie - 1][i];
                     *currImplicitVector += LRATE_W_BASE * (movieVal * curr_norm * error - REG_Y * *currImplicitVector);
+                    user_implicit_vector_sum_table[user - 1][i] += *currImplicitVector;
                 }
             }
             
-            user_feature_table[user - 1][i] += LRATE_UF_BASE * (error * movieVal - REG_UF * userVal);
-            movie_feature_table[movie - 1][i] += LRATE_MF_BASE * (error * (userVal + curr_norm * user_implicit_vector_sum_table[user - 1][i]) - REG_MF * movieVal);
+            user_feature_table[user - 1][i] += LRATE_UF * (error * movieVal - REG_UF * userVal);
+            movie_feature_table[movie - 1][i] += LRATE_MF * (error * (userVal + curr_norm * user_implicit_vector_sum_table[user - 1][i]) - REG_MF * movieVal);
         }
         
         //Train user rating deviation
-        user_rating_deviation_table[user - 1] += LRATE_U_BASE * (error - REG_U * user_rating_deviation_table[user - 1]);
+        user_rating_deviation_table[user - 1] += LEARNING_A * (error - REG_A * user_rating_deviation_table[user - 1]);
         
         
         //Train movie rating deviation
-        movie_rating_deviation_table[movie - 1] += LRATE_M_BASE * (error - REG_M * movie_rating_deviation_table[movie - 1]);
+        movie_rating_deviation_table[movie - 1] += LEARNING_D * (error - REG_D * movie_rating_deviation_table[movie - 1]);
     }
     
     return 0;
@@ -295,6 +299,34 @@ void computeSVDPlusPlus(int num_features, int epochs, int* train_data, int* prob
     int user, movie, rating, date, randUser, randFeature, randMovie;
     
     for(int k = 0; k < epochs; k++) {
+//                adjustLearn = (C_FACTOR_UF / LRATE_BASE_UF) * ((float) k / TAU);
+//                float LRATE_UF = LRATE_BASE_UF * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU);
+//        
+//                adjustLearn = (C_FACTOR_MF / LRATE_BASE_MF) * ((float) k / TAU);
+//                float LRATE_MF = LRATE_BASE_MF * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU);
+//        
+//                adjustLearn = (C_FACTOR_M / LEARNING_D_BASE) * ((float) k / TAU);
+//                float LRATE_M = LEARNING_D_BASE * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU);
+//        
+//                adjustLearn = (C_FACTOR_U / LEARNING_A_BASE) * ((float) k / TAU);
+//                float LRATE_U = LRATE_U_BASE * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU);
+//        
+//                adjustLearn = (C_FACTOR_W/LRATE_W_BASE) * ((float) k / TAU);
+//                float LRATE_W = LRATE_W_BASE * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU);
+        if(oldProbeRMSE < 0.925) {
+            REG_UF = 0.08;
+            REG_MF = 0.006;
+            REG_A = 0.03;
+            REG_D = 0.0;
+            REG_Y = 0.03;
+            
+            LRATE_BASE_MF = 0.003 * 0.9 * 0.9;
+            LRATE_BASE_UF = 0.006 * 0.9 * 0.9;
+            LEARNING_A_BASE = 0.003 * 0.9 * 0.9;
+            LEARNING_D_BASE = 0.012 * 0.9 * 0.9;
+            LRATE_W_BASE = 0.001 * 0.9 * 0.9;
+        }
+        
         start = clock();
         printf("Training epoch %d\n", k + 1);
         /*
