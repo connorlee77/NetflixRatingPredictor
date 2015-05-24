@@ -25,7 +25,7 @@ int main(int argc, const char * argv[]) {
     start = clock();
     
     //Store the training data in train_data
-    int* trainingData = fillData(trainingDataWithProbe, IVsize, 4);
+    int* trainingData = fillData(trainingDataFullFile, IIIsize, 4);
     int* probeData = fillData(probeDataFile, PROBE_SIZE, 4);
     
     end = clock();
@@ -33,10 +33,10 @@ int main(int argc, const char * argv[]) {
     printf("Reading data took %f seconds\n",duration);
     
     //Set the length of the feature vectors
-    int num_features = 250;
+    int num_features = 30;
     int epochs = 250;
-    //computeSVDPlusPlus(num_features, epochs, trainingData, probeData, IIIsize);
-    computeSVD(0.018, num_features, epochs, trainingData, probeData, IIIsize);
+    computeSVDPlusPlus(num_features, epochs, trainingData, probeData, IIIsize);
+//    computeSVD(0.018, num_features, epochs, trainingData, probeData, IIIsize);
     delete [] trainingData;
     
     predictQual();
@@ -44,47 +44,47 @@ int main(int argc, const char * argv[]) {
     
     delete [] probeData;
     
-//    delete [] norms;
-//    delete [] userBias;
-//    delete [] movieBias;
-//    
-//    for(int i = 0; i < TOTAL_USERS; i++) {
-//        delete userFeatures[i];
-//        delete sumY[i];
-//    }
-//    
-//    delete [] sumY;
-//    delete [] userFeatures;
-//    
-//    for(int i = 0; i < TOTAL_MOVIES; i++) {
-//        delete movieFeatures[i];
-//    }
-//    
-//    delete [] movieFeatures;
-
-    for(int i = 0; i < TOTAL_USERS; i++){
-        delete [] user_feature_table[i];
-        //        delete [] user_time_dependent_deviation_table[i];
-        //        delete [] user_varying_time_dependent_baseline_scaling_table[i];
-        //        delete [] user_frequency_table[i];
-    }
-    delete [] user_feature_table;
-    delete [] user_rating_deviation_table;
-    //    delete [] user_mean_rating_date_table;
-    //    delete [] user_time_deviation_scaling_table;
-    //    delete [] user_time_dependent_deviation_table;
-    //    delete [] user_constant_time_dependent_baseline_scaling_table;
-    //    delete [] user_varying_time_dependent_baseline_scaling_table;
-    //    delete [] user_frequency_table;
+    delete [] norms;
+    delete [] userBias;
+    delete [] movieBias;
     
-    for(int i = 0; i < TOTAL_MOVIES; i++){
-        delete[] movie_feature_table[i];
-        //        delete[] movie_time_changing_bias_table[i];
-        //        delete[] movie_frequency_bias_table[i];
+    for(int i = 0; i < TOTAL_USERS; i++) {
+        delete userFeatures[i];
+        delete sumY[i];
     }
-    delete[] movie_feature_table;
-    delete [] movie_rating_deviation_table;
-    //    delete [] movie_time_changing_bias_table;
-    //    delete[] movie_frequency_bias_table;
+    
+    delete [] sumY;
+    delete [] userFeatures;
+    
+    for(int i = 0; i < TOTAL_MOVIES; i++) {
+        delete movieFeatures[i];
+    }
+    
+    delete [] movieFeatures;
+
+//    for(int i = 0; i < TOTAL_USERS; i++){
+//        delete [] user_feature_table[i];
+//        //        delete [] user_time_dependent_deviation_table[i];
+//        //        delete [] user_varying_time_dependent_baseline_scaling_table[i];
+//        //        delete [] user_frequency_table[i];
+//    }
+//    delete [] user_feature_table;
+//    delete [] user_rating_deviation_table;
+//    //    delete [] user_mean_rating_date_table;
+//    //    delete [] user_time_deviation_scaling_table;
+//    //    delete [] user_time_dependent_deviation_table;
+//    //    delete [] user_constant_time_dependent_baseline_scaling_table;
+//    //    delete [] user_varying_time_dependent_baseline_scaling_table;
+//    //    delete [] user_frequency_table;
+//    
+//    for(int i = 0; i < TOTAL_MOVIES; i++){
+//        delete[] movie_feature_table[i];
+//        //        delete[] movie_time_changing_bias_table[i];
+//        //        delete[] movie_frequency_bias_table[i];
+//    }
+//    delete[] movie_feature_table;
+//    delete [] movie_rating_deviation_table;
+//    //    delete [] movie_time_changing_bias_table;
+//    //    delete[] movie_frequency_bias_table;
     return 0;
 }
