@@ -596,7 +596,7 @@ void computeSVD(float learning_rate, int num_features, int epochs, int* train_da
         
         printf("Probe RMSE, old: %f, new %f\n\n", oldProbeRMSE, newProbeRMSE);
         
-        if(oldProbeRMSE - newProbeRMSE < 0.00003){
+        if(oldProbeRMSE - newProbeRMSE < 0.00001){
             fprintf(stderr, "Probe RMSE drop is miniscule. Training done.\n");
             break;
         }
