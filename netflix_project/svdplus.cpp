@@ -8,7 +8,7 @@
 
 #include "svdplus.h"
 
-const int NUMTHREADS = 8;
+const int NUMTHREADS = 7;
 int DATASIZE;
 int NUMFEATURES;
 
@@ -299,20 +299,20 @@ void computeSVDPlusPlus(int num_features, int epochs, int* train_data, int* prob
     int user, movie, rating, date, randUser, randFeature, randMovie;
     
     for(int k = 0; k < epochs; k++) {
-//                adjustLearn = (C_FACTOR_UF / LRATE_BASE_UF) * ((float) k / TAU);
-//                float LRATE_UF = LRATE_BASE_UF * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU);
-//        
-//                adjustLearn = (C_FACTOR_MF / LRATE_BASE_MF) * ((float) k / TAU);
-//                float LRATE_MF = LRATE_BASE_MF * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU);
-//        
-//                adjustLearn = (C_FACTOR_M / LEARNING_D_BASE) * ((float) k / TAU);
-//                float LRATE_M = LEARNING_D_BASE * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU);
-//        
-//                adjustLearn = (C_FACTOR_U / LEARNING_A_BASE) * ((float) k / TAU);
-//                float LRATE_U = LRATE_U_BASE * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU);
-//        
-//                adjustLearn = (C_FACTOR_W/LRATE_W_BASE) * ((float) k / TAU);
-//                float LRATE_W = LRATE_W_BASE * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU);
+        adjustLearn = (C_FACTOR / LRATE_BASE_UF) * ((float) k / TAU);
+        LRATE_UF = LRATE_BASE_UF * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU);
+        
+        adjustLearn = (C_FACTOR / LRATE_BASE_MF) * ((float) k / TAU);
+        LRATE_MF = LRATE_BASE_MF * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU);
+        
+        adjustLearn = (C_FACTOR/LRATE_W_BASE) * ((float) k / TAU);
+        LRATE_W = LRATE_W_BASE * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU);
+        
+        adjustLearn = (C_FACTOR_A / LEARNING_A_BASE) * ((float) k / TAU);
+        LEARNING_A = LEARNING_A_BASE * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU);
+        
+        adjustLearn = (C_FACTOR_D / LEARNING_D_BASE) * ((float) k / TAU);
+        LEARNING_D = LEARNING_D_BASE * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU);
         if(oldProbeRMSE < 0.925) {
             REG_UF = 0.08;
             REG_MF = 0.006;
