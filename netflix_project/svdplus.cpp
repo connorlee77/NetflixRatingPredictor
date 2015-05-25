@@ -32,14 +32,8 @@ float LRATE_UF;
 float LRATE_BASE_UF = 0.018;
 float REG_UF = 0.0015;
 
-float LEARNING_A;
-float LEARNING_A_BASE = 0.01;
-float C_FACTOR_A = 0.01;
 float REG_A = 0.007;
 
-float LEARNING_D;
-float LEARNING_D_BASE = 0.01;
-const float C_FACTOR_D = 0.01;
 float REG_D = 0.012;
 
 float LRATE_W;
@@ -62,17 +56,17 @@ float *user_norms_table;
 
 int *dataArray;
 
-float * global_deviations = new float[NUMPARAMS];
-float * global_variances= new float[NUMPARAMS];
-float * global_hessians= new float[NUMPARAMS];
-float * global_finite_variances= new float[NUMPARAMS];
-float * global_times= new float[NUMPARAMS];
+double * global_deviations = new double[NUMPARAMS];
+double * global_variances= new double[NUMPARAMS];
+double * global_hessians= new double[NUMPARAMS];
+double * global_finite_variances= new double[NUMPARAMS];
+double * global_times= new double[NUMPARAMS];
 
-float * new_global_deviations = new float[NUMPARAMS];
-float * new_global_variances = new float[NUMPARAMS];
-float * new_global_hessians = new float[NUMPARAMS];
-float * new_global_finite_variances = new float[NUMPARAMS];
-float * new_global_times = new float[NUMPARAMS];
+double * new_global_deviations = new double[NUMPARAMS];
+double * new_global_variances = new double[NUMPARAMS];
+double * new_global_hessians = new double[NUMPARAMS];
+double * new_global_finite_variances = new double[NUMPARAMS];
+double * new_global_times = new double[NUMPARAMS];
 
 bool printVectorInitInfo = 0;
 bool printPredictionInfo = 0;
@@ -229,35 +223,22 @@ float predictRatingPLUS(int user, int movie) {
     return sum;
 }
 
-float predictRatingAdjusted(int user, int movie, float * deviations) {
-    float sum = GLOBAL_AVERAGE;
-    
-    /*
-     * Include prediction using user and movie features
-     */
-    for(int i = 0; i < NUMFEATURES; i++) {
-        sum += (movie_feature_table[movie - 1][i] * (user_feature_table[user - 1][i] + user_norms_table[user - 1] * user_implicit_vector_sum_table[user - 1][i]));
-    }
-    
-    sum += (user_rating_deviation_table[user - 1] + deviations[user - 1]) + (movie_rating_deviation_table[movie - 1] + deviations[TOTAL_USERS + movie - 1]);
-    return sum;
-}
-
 void *hogwildPlus(void *rates) {
     int user, movie, date, rating, currMovie, currIndex;
-    float error, adjustedError, userVal, movieVal, curr_norm, curr_hessian, origDev, adjustDev, learningRate;
+    float error, adjustedError, userVal, movieVal, userDev, movieDev, curr_norm;
+    double curr_hessian, origDev, adjustDev, learningRate;
     
-    float * deviations = new float[NUMPARAMS];
-    float * variances = new float[NUMPARAMS];
-    float * hessians = new float[NUMPARAMS];
-    float * finite_variances = new float[NUMPARAMS];
-    float * times = new float[NUMPARAMS];
+    double * deviations = new double[NUMPARAMS];
+    double * variances = new double[NUMPARAMS];
+    double * hessians = new double[NUMPARAMS];
+    double * finite_variances = new double[NUMPARAMS];
+    double * times = new double[NUMPARAMS];
     
-    memcpy(deviations, global_deviations, NUMPARAMS * sizeof(float));
-    memcpy(variances, global_variances, NUMPARAMS * sizeof(float));
-    memcpy(hessians, global_hessians, NUMPARAMS * sizeof(float));
-    memcpy(finite_variances, global_finite_variances, NUMPARAMS * sizeof(float));
-    memcpy(times, global_times, NUMPARAMS * sizeof(float));
+    memcpy(deviations, global_deviations, NUMPARAMS * sizeof(double));
+    memcpy(variances, global_variances, NUMPARAMS * sizeof(double));
+    memcpy(hessians, global_hessians, NUMPARAMS * sizeof(double));
+    memcpy(finite_variances, global_finite_variances, NUMPARAMS * sizeof(double));
+    memcpy(times, global_times, NUMPARAMS * sizeof(double));
     
     hogNode *curr = (hogNode *)rates;
     
@@ -266,13 +247,11 @@ void *hogwildPlus(void *rates) {
     for(int j = curr->getStart(); j < curr->getStop(); j++) {
         user = dataArray[4 * j];
         movie = dataArray[4 * j + 1];
-        date = dataArray[4 * j + 2];
+//        date = dataArray[4 * j + 2];
         rating = dataArray[4 * j + 3];
         
         int USER_DEV_INDEX = user - 1;
-//        printf("user index: %d\n", USER_DEV_INDEX);
         int MOVIE_DEV_INDEX = TOTAL_USERS + movie - 1;
-//        printf("movie index: %d\n", MOVIE_DEV_INDEX);
         
         if(prev_user == user) {
             movieCount++;
@@ -281,67 +260,84 @@ void *hogwildPlus(void *rates) {
         }
         
         error = rating - predictRatingPLUS(user, movie);
-        adjustedError = rating - predictRatingAdjusted(user, movie, deviations);
-
+        userDev = user_rating_deviation_table[user - 1];
+        movieDev = movie_rating_deviation_table[movie - 1];
+        
         //Train user rating deviation
         currIndex = USER_DEV_INDEX;
-        origDev = 2 * error - REG_A * user_rating_deviation_table[user - 1];
-//        printf("error: %f\n", origDev);
-        adjustDev = 2 * adjustedError - REG_A * (user_rating_deviation_table[user - 1] + deviations[currIndex]);
-//        printf("adjusted error: %f\n", adjustDev);
+        adjustedError = error + deviations[currIndex];
+        origDev = 2.0 * error - REG_A * userDev;
+        adjustDev = 2.0 * adjustedError - REG_A * (userDev + deviations[currIndex]);
         
         curr_hessian = abs((origDev - adjustDev)/deviations[currIndex]);
         
-//        printf("Sample User hessian: %f\n", curr_hessian);
-        
-        if(abs(origDev - deviations[currIndex]) > 2 * pow(variances[currIndex] - pow(deviations[currIndex],2),0.5) || (curr_hessian - hessians[currIndex]) > 2 * pow(finite_variances[currIndex] - pow(hessians[currIndex], 2), 0.5)){
+        if(abs(origDev - deviations[currIndex]) > 2.0 * pow(variances[currIndex] - pow(deviations[currIndex],2.0),0.5) || abs(curr_hessian - hessians[currIndex]) > 2.0 * pow(finite_variances[currIndex] - pow(hessians[currIndex], 2.0), 0.5)){
             times[currIndex]++;
         }
         
-        deviations[currIndex] = (1 - 1.0/times[currIndex]) * deviations[currIndex] + origDev * 1.0/times[currIndex];
-        variances[currIndex] = (1 - 1.0/times[currIndex]) * variances[currIndex] + pow(origDev, 2) * 1.0/times[currIndex];
-        hessians[currIndex] = (1 - 1.0/times[currIndex]) * hessians[currIndex] + curr_hessian * 1.0/times[currIndex];
-        finite_variances[currIndex] = (1 - 1.0/times[currIndex]) * finite_variances[currIndex] + curr_hessian * curr_hessian * 1.0/times[currIndex];
+        deviations[currIndex] = deviations[currIndex] * (1 - 1.0/times[currIndex]) + origDev * 1.0/times[currIndex];
+        variances[currIndex] = variances[currIndex] * (1 - 1.0/times[currIndex]) + pow(origDev, 2.0) * 1.0/times[currIndex];
+        hessians[currIndex] = hessians[currIndex] * (1 - 1.0/times[currIndex]) + curr_hessian * 1.0/times[currIndex];
+        finite_variances[currIndex] = finite_variances[currIndex] * (1 - 1.0/times[currIndex]) + pow(curr_hessian, 2.0) * 1.0/times[currIndex];
         
-        times[currIndex] = times[currIndex] * (1 - (pow(deviations[currIndex], 2)/variances[currIndex])) + 1;
+        learningRate = (hessians[currIndex]/finite_variances[currIndex]) * pow(deviations[currIndex], 2.0)/(variances[currIndex]);
         
-        learningRate = (hessians[currIndex]/finite_variances[currIndex]) * pow(deviations[currIndex], 2)/(variances[currIndex]);
+        if(0){
+            printf("User: %d, Movie: %d\n", user, movie);
+                printf("Current deviation: %f\n", deviations[currIndex]);
+                printf("Current variance: %f\n", variances[currIndex]);
+                printf("Current hessians: %f\n", hessians[currIndex]);
+                printf("Current finite_variance: %f\n", finite_variances[currIndex]);
+                printf("Current times: %f\n", times[currIndex]);
+            printf("Sample User Learning rate: %f\n", learningRate);
+        }
         
-//        if(j % 10000000 == 0)
-//            printf("Sample User Learning rate: %f\n", learningRate);
+        times[currIndex] = times[currIndex] * (1 - (pow(deviations[currIndex], 2.0)/variances[currIndex])) + 1;
         
         user_rating_deviation_table[user - 1] += learningRate * origDev;
         
         //Train movie rating deviation
         currIndex = MOVIE_DEV_INDEX;
-        origDev = 2 * error - REG_D * movie_rating_deviation_table[movie - 1];
-        adjustDev = 2 * adjustedError - REG_D * (user_rating_deviation_table[movie - 1] + deviations[currIndex]);
+        adjustedError = error + deviations[currIndex];
+        origDev = 2.0 * error - REG_D * movieDev;
+        adjustDev = 2.0 * adjustedError - REG_D * (movieDev + deviations[currIndex]);
         
         curr_hessian = abs((origDev - adjustDev)/deviations[currIndex]);
         
-        if(abs(origDev - deviations[currIndex]) > 2 * pow(variances[currIndex] - pow(deviations[currIndex],2),0.5) || (curr_hessian - hessians[currIndex]) > 2 * pow(finite_variances[currIndex] - pow(hessians[currIndex], 2), 0.5)){
+        if(abs(origDev - deviations[currIndex]) > 2.0 * pow(variances[currIndex] - pow(deviations[currIndex],2.0),0.5) || abs(curr_hessian - hessians[currIndex]) > 2.0 * pow(finite_variances[currIndex] - pow(hessians[currIndex], 2.0), 0.5)){
             times[currIndex]++;
         }
         
-        deviations[currIndex] = (1 - 1.0/times[currIndex]) * deviations[currIndex] + origDev * 1.0/times[currIndex];
-        variances[currIndex] = (1 - 1.0/times[currIndex]) * variances[currIndex] + pow(origDev, 2) * 1.0/times[currIndex];
-        hessians[currIndex] = (1 - 1.0/times[currIndex]) * hessians[currIndex] + curr_hessian * 1.0/times[currIndex];
-        finite_variances[currIndex] = (1 - 1.0/times[currIndex]) * finite_variances[currIndex] + curr_hessian * curr_hessian * 1.0/times[currIndex];
+        deviations[currIndex] = deviations[currIndex] * (1 - 1.0/times[currIndex]) + origDev * 1.0/times[currIndex];
+        variances[currIndex] = variances[currIndex] * (1 - 1.0/times[currIndex]) + pow(origDev, 2.0) * 1.0/times[currIndex];
+        hessians[currIndex] = hessians[currIndex] * (1 - 1.0/times[currIndex]) + curr_hessian * 1.0/times[currIndex];
+        finite_variances[currIndex] = finite_variances[currIndex] * (1 - 1.0/times[currIndex]) + pow(curr_hessian, 2.0) * 1.0/times[currIndex];
         
-        times[currIndex] = times[currIndex] * (1 - (pow(deviations[currIndex], 2)/variances[currIndex])) + 1;
+        learningRate = (hessians[currIndex]/finite_variances[currIndex]) * pow(deviations[currIndex], 2.0)/(variances[currIndex]);
         
-        learningRate = (hessians[currIndex]/finite_variances[currIndex]) * pow(deviations[currIndex], 2)/(variances[currIndex]);
+        if(0){
+            printf("User: %d, Movie: %d\n", user, movie);
+            printf("Current deviation: %f\n", deviations[currIndex]);
+            printf("Current variance: %f\n", variances[currIndex]);
+            printf("Current hessians: %f\n", hessians[currIndex]);
+            printf("Current finite_variance: %f\n", finite_variances[currIndex]);
+            printf("Current times: %f\n", times[currIndex]);
+            printf("Sample Movie Learning rate: %f\n\n", learningRate);
+        }
         
-//        if(j % 10000000 == 0)
-//            printf("Sample movie Learning rate: %f\n\n", learningRate);
-        
+        times[currIndex] = times[currIndex] * (1 - (pow(deviations[currIndex], 2.0)/variances[currIndex])) + 1;
+
         movie_rating_deviation_table[movie - 1] += learningRate * origDev;
         
         //Train user and movie features
         curr_norm = user_norms_table[user - 1];
         for(int i = 0; i < NUMFEATURES; i++){
+            //Train user features
             userVal = user_feature_table[user - 1][i];
             movieVal = movie_feature_table[movie - 1][i];
+            
+            user_feature_table[user - 1][i] += LRATE_UF * (2 * error * movieVal - REG_UF * userVal);
+            movie_feature_table[movie - 1][i] += LRATE_MF * (error * (userVal + curr_norm * user_implicit_vector_sum_table[user - 1][i]) - REG_MF * movieVal);
             
             if(movieCount == user_ratings_count_noqual_table[user - 1] || j == curr->getStop() - 1){
                 user_implicit_vector_sum_table[user - 1][i] = 0;
@@ -352,9 +348,6 @@ void *hogwildPlus(void *rates) {
                     user_implicit_vector_sum_table[user - 1][i] += *currImplicitVector;
                 }
             }
-            
-            user_feature_table[user - 1][i] += LRATE_UF * (error * movieVal - REG_UF * userVal);
-            movie_feature_table[movie - 1][i] += LRATE_MF * (error * (userVal + curr_norm * user_implicit_vector_sum_table[user - 1][i]) - REG_MF * movieVal);
         }
     }
     
@@ -394,7 +387,8 @@ void computeSVDPlusPlus(int num_features, int epochs, int* train_data, int* prob
     
     printf("Feature initialization took %f seconds\n", duration);
     
-    float sum, error, adjustUser, adjustMovie, oldTrainRMSE = 2.0f, newTrainRMSE, oldProbeRMSE = 2.0f, newProbeRMSE, adjustLearn, deviation = 0, variance = 0;
+    float sum, error, adjustUser, adjustMovie, oldTrainRMSE = 2.0f, newTrainRMSE, oldProbeRMSE = 2.0f, newProbeRMSE, adjustLearn;
+    double deviation = 0, variance = 0, featureDeviation = 0, featureVariance = 0;
     int user, movie, rating, date, randUser, randFeature, randMovie;
     
     for(int j = 0; j < 0.01 * DATASIZE; j++){
@@ -407,13 +401,12 @@ void computeSVDPlusPlus(int num_features, int epochs, int* train_data, int* prob
         variance += pow(2 * error, 2);
     }
     
-    
-    
     printf("deviation: %f, variance: %f\n", deviation/(0.01 * DATASIZE), variance/(0.01 * DATASIZE));
+
+    fill(global_times, global_times + NUMPARAMS, 1.0);
+    fill(global_deviations, global_deviations + NUMPARAMS, 0.1 * deviation/(0.01 * DATASIZE));
+    fill(global_variances, global_variances + NUMPARAMS, 0.1 * variance/(0.01 * DATASIZE));
     
-    fill(global_times, global_times + NUMPARAMS, 50.0);
-    fill(global_deviations, global_deviations + NUMPARAMS, 0.01 * deviation/(0.01 * DATASIZE));
-    fill(global_variances, global_variances + NUMPARAMS, 0.01 * variance/(0.01 * DATASIZE));
     for(int k = 0; k < epochs; k++) {
         adjustLearn = (C_FACTOR / LRATE_BASE_UF) * ((float) k / TAU);
         LRATE_UF = LRATE_BASE_UF * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU);
@@ -423,12 +416,6 @@ void computeSVDPlusPlus(int num_features, int epochs, int* train_data, int* prob
         
         adjustLearn = (C_FACTOR/LRATE_W_BASE) * ((float) k / TAU);
         LRATE_W = LRATE_W_BASE * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU);
-        
-        adjustLearn = (C_FACTOR_A / LEARNING_A_BASE) * ((float) k / TAU);
-        LEARNING_A = LEARNING_A_BASE * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU);
-        
-        adjustLearn = (C_FACTOR_D / LEARNING_D_BASE) * ((float) k / TAU);
-        LEARNING_D = LEARNING_D_BASE * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU);
         if(oldProbeRMSE < 0.94) {
             REG_UF = 0.08;
             REG_MF = 0.006;
@@ -438,8 +425,6 @@ void computeSVDPlusPlus(int num_features, int epochs, int* train_data, int* prob
             
             LRATE_BASE_MF = 0.003 * 0.9 * 0.9;
             LRATE_BASE_UF = 0.006 * 0.9 * 0.9;
-            LEARNING_A_BASE = 0.003 * 0.9 * 0.9;
-            LEARNING_D_BASE = 0.012 * 0.9 * 0.9;
             LRATE_W_BASE = 0.001 * 0.9 * 0.9;
         }
         
