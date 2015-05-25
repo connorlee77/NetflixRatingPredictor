@@ -11,6 +11,7 @@
 const int NUMTHREADS = 7;
 int DATASIZE;
 int NUMFEATURES;
+int NUMPARAMS = 3;
 
 const float GLOBAL_AVG_SET1 = 3.608609;
 const float GLOBAL_AVG_SET2 = 3.608859;
@@ -23,7 +24,7 @@ float GLOBAL_AVERAGE;
 
 float LRATE_MF;
 float LRATE_BASE_MF = 0.018;
-const float TAU = 20;
+const float TAU = 8;
 const float C_FACTOR = 0.02;
 float REG_MF = 0.0015;
 
@@ -33,21 +34,18 @@ float REG_UF = 0.0015;
 
 float LEARNING_A;
 float LEARNING_A_BASE = 0.01;
-float TAU_A = 20;
 float C_FACTOR_A = 0.01;
 float REG_A = 0.005;
 
 float LEARNING_D;
 float LEARNING_D_BASE = 0.01;
-const float TAU_D = 20;
 const float C_FACTOR_D = 0.01;
-float REG_D = 0.0;
+float REG_D = 0.01;
 
 float LRATE_W;
-float LRATE_W_BASE = 0.001;
+float LRATE_W_BASE = 0.004;
 float REG_Y = 0.005;
 float C_FACTOR_W = 0.01;
-int TAU_W = 20;
 
 float **user_feature_table;
 float *user_rating_deviation_table;
@@ -272,7 +270,7 @@ void *hogwildPlus(void *rates) {
             userVal = user_feature_table[user - 1][i];
             movieVal = movie_feature_table[movie - 1][i];
             
-            if(movieCount == user_ratings_count_noqual_table[user - 1]){
+            if(movieCount == user_ratings_count_noqual_table[user - 1] || j == curr->getStop() - 1){
                 user_implicit_vector_sum_table[user - 1][i] = 0;
                 for(int j = 0; j < user_ratings_count_withqual_table[user - 1]; j++){
                     currMovie = user_movies_table[user - 1][j];
@@ -437,9 +435,6 @@ void computeSVDPlusPlus(int num_features, int epochs, int* train_data, int* prob
             break;
         }
         
-        
         oldProbeRMSE = newProbeRMSE;
     }
-    
-    
 }

@@ -25,7 +25,7 @@ int main(int argc, const char * argv[]) {
     start = clock();
     
     //Store the training data in train_data
-    int* trainingData = fillData(trainingDataFile, BASE_SIZE, 4);
+    int* trainingData = fillData(trainingDataFullFile, IIIsize, 4);
     int* probeData = fillData(probeDataFile, PROBE_SIZE, 4);
     
     end = clock();
@@ -35,7 +35,7 @@ int main(int argc, const char * argv[]) {
     //Set the length of the feature vectors
     int num_features = 65;
     int epochs = 250;
-    computeSVDPlusPlus(num_features, epochs, trainingData, probeData, BASE_SIZE);
+    computeSVDPlusPlus(num_features, epochs, trainingData, probeData, IIIsize);
 //    computeSVD(0.018, num_features, epochs, trainingData, probeData, BASE_SIZE);
     delete [] trainingData;
     

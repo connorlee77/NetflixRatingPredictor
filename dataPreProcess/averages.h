@@ -20,18 +20,18 @@ using namespace std;
 #include <sstream>
 
 // Roshan's path
-//#define inSampleDataFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file1.dta"
-//#define outUserOffsetBin "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/userOffsets.bin"
-//#define outMovieAveragesBin "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/movieAverages.bin"
-//#define outUserTimeAverages "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/userTimeAverages.bin"
-//#define userFrequencies "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/userFrequencies.bin"
+#define inSampleDataFile "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/file1.dta"
+#define outUserOffsetBin "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/userOffsets.bin"
+#define outMovieAveragesBin "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/movieAverages.bin"
+#define outUserTimeAverages "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/userTimeAverages.bin"
+#define userFrequencies "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/userFrequencies.bin"
 
 // Connor's path
-#define inSampleDataFile "/Users/ConnorLee/Desktop/netflix/file1.dta"
-#define outUserOffsetBin "/Users/ConnorLee/Desktop/netflix/userOffsets.bin"
-#define outMovieAveragesBin "/Users/ConnorLee/Desktop/netflix/movieAverages.bin"
-#define outUserTimeAverages "/Users/ConnorLee/Desktop/netflix/userTimeAverages.bin"
-#define userFrequencies "/Users/ConnorLee/Desktop/netflix/userFrequencies.bin"
+//#define inSampleDataFile "/Users/ConnorLee/Desktop/netflix/file1.dta"
+//#define outUserOffsetBin "/Users/ConnorLee/Desktop/netflix/userOffsets.bin"
+//#define outMovieAveragesBin "/Users/ConnorLee/Desktop/netflix/movieAverages.bin"
+//#define outUserTimeAverages "/Users/ConnorLee/Desktop/netflix/userTimeAverages.bin"
+//#define userFrequencies "/Users/ConnorLee/Desktop/netflix/userFrequencies.bin"
 
 
 void fillInMatrices(int* trainingData, int** userDataMatrix, int** movieDataMatrix);

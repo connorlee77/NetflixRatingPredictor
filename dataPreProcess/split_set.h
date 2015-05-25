@@ -14,10 +14,10 @@
 #include <iostream>
 #include <fstream>
 //Roshan's path
-//#define FILE_PATH "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/"
+#define FILE_PATH "/Users/roshanagrawal/Documents/Caltech/Smore\ Year/Third\ Term/CS156b/UMRatingPredictor/netflix_split_data/"
 
 //Connor's path
-#define FILE_PATH "/Users/ConnorLee/Desktop/netflix/"
+//#define FILE_PATH "/Users/ConnorLee/Desktop/netflix/"
 
 class split_set{
     

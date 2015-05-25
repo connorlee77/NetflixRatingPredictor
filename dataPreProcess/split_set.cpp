@@ -99,7 +99,7 @@ void split_set::parse_guide_data_set() {
 }
 
 void splitDataSet() {
-    split_set obj = split_set("um/all.idx", "um/all.dta");
+    split_set obj = split_set("all.idx", "all.dta");
     obj.parse_guide_data_set();
     printf("%s", "done");
 }
