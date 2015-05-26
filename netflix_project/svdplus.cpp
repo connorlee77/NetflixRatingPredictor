@@ -153,8 +153,8 @@ void initializeFeatureVectorsPlus() {
     user_norms_table = new float[TOTAL_USERS];
     
     for(int i = 0; i < TOTAL_USERS; i++) {
-        float curr = (float) user_ratings_count_withqual_table[i];
-        user_norms_table[i] = 1.0/sqrt(curr);
+        float curr = (float) user_ratings_count_withqual_table[i] + 1;
+        user_norms_table[i] = 1.0 / sqrt(curr);
     }
     /*
      * End initialization of user_norms_table
@@ -166,17 +166,6 @@ void initializeFeatureVectorsPlus() {
      */
     user_rating_deviation_table = new float[TOTAL_USERS];
     
-    ifstream userRatingDeviationStream;
-    userRatingDeviationStream.open(userRatingDeviationFile, ios::in|ios::binary);
-    if(!userRatingDeviationStream.is_open()) {
-        fprintf(stderr, "user rating deviation binary file was not opened!\n");
-        exit(0);
-    }
-    userRatingDeviationStream.seekg (0, ios::beg);
-    
-    userRatingDeviationStream.read(reinterpret_cast<char*> (user_rating_deviation_table), sizeof(float) * TOTAL_USERS);
-    
-    userRatingDeviationStream.close();
     /*
      * End initialization user_rating_deviation_table
      */
@@ -214,17 +203,13 @@ void initializeFeatureVectorsPlus() {
      */
     movie_rating_deviation_table = new float[TOTAL_MOVIES];
     
-    ifstream movieRatingDeviationStream;
-    movieRatingDeviationStream.open(movieRatingDeviationFile, ios::in|ios::binary);
-    if(!movieRatingDeviationStream.is_open()) {
-        fprintf(stderr, "binary file was not opened!\n");
-        exit(0);
+    for(int i = 0; i < TOTAL_MOVIES; i++) {
+        movie_rating_deviation_table[i] = 0;
     }
-    movieRatingDeviationStream.seekg (0, ios::beg);
     
-    movieRatingDeviationStream.read(reinterpret_cast<char*> (movie_rating_deviation_table), sizeof(float) * TOTAL_MOVIES);
-    
-    movieRatingDeviationStream.close();
+    for(int i = 0; i < TOTAL_USERS; i++) {
+        user_rating_deviation_table[i] = 0;
+    }
 }
 
 float predictRatingPLUS(int user, int movie) {
@@ -316,35 +301,59 @@ void computeSVDPlusPlus(int num_features, int epochs, int* train_data, int* prob
     
     float sum, error, userVal, movieVal, adjustUser, adjustMovie, oldTrainRMSE = 2.0f, newTrainRMSE, oldProbeRMSE = 2.0f, newProbeRMSE, adjustLearn;
     int user, movie, rating, date, randUser, randFeature, randMovie;
+        LRATE_BASE_MF = 0.003;
+        LRATE_BASE_UF = 0.003;
+        LEARNING_A_BASE = 0.0045;
+        LEARNING_D_BASE = 0.0009; //old 0.0012
+        LRATE_W_BASE = 0.003;
     
+        LRATE_MF = LRATE_BASE_MF;
+        LRATE_UF = LRATE_BASE_UF;
+        LEARNING_A = LEARNING_A_BASE;
+        LEARNING_D = LEARNING_D_BASE;
+        LRATE_W = LRATE_W_BASE;
+    
+        REG_UF = 0.06;
+        REG_MF = 0.006;
+        REG_A = 0.03;
+        REG_D = 0.0;
+        REG_Y = 0.03;
     for(int k = 0; k < epochs; k++) {
-        adjustLearn = (C_FACTOR / LRATE_BASE_UF) * ((float) k / TAU);
-        LRATE_UF = LRATE_BASE_UF * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU);
         
-        adjustLearn = (C_FACTOR / LRATE_BASE_MF) * ((float) k / TAU);
-        LRATE_MF = LRATE_BASE_MF * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU);
-        
-        adjustLearn = (C_FACTOR/LRATE_W_BASE) * ((float) k / TAU);
-        LRATE_W = LRATE_W_BASE * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU);
-        
-        adjustLearn = (C_FACTOR_A / LEARNING_A_BASE) * ((float) k / TAU);
-        LEARNING_A = LEARNING_A_BASE * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU);
-        
-        adjustLearn = (C_FACTOR_D / LEARNING_D_BASE) * ((float) k / TAU);
-        LEARNING_D = LEARNING_D_BASE * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU);
-        if(oldProbeRMSE < 0.925) {
-            REG_UF = 0.08;
-            REG_MF = 0.006;
-            REG_A = 0.03;
-            REG_D = 0.0;
-            REG_Y = 0.03;
-            
-            LRATE_BASE_MF = 0.003 * 0.9 * 0.9;
-            LRATE_BASE_UF = 0.006 * 0.9 * 0.9;
-            LEARNING_A_BASE = 0.003 * 0.9 * 0.9;
-            LEARNING_D_BASE = 0.012 * 0.9 * 0.9;
-            LRATE_W_BASE = 0.001 * 0.9 * 0.9;
-        }
+        /* Search, then converge */
+//        adjustLearn = (C_FACTOR / LRATE_BASE_UF) * ((float) k / TAU);
+//        LRATE_UF = LRATE_BASE_UF * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU);
+//        
+//        adjustLearn = (C_FACTOR / LRATE_BASE_MF) * ((float) k / TAU);
+//        LRATE_MF = LRATE_BASE_MF * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU);
+//        
+//        adjustLearn = (C_FACTOR/LRATE_W_BASE) * ((float) k / TAU);
+//        LRATE_W = LRATE_W_BASE * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU);
+//        
+//        adjustLearn = (C_FACTOR_A / LEARNING_A_BASE) * ((float) k / TAU);
+//        LEARNING_A = LEARNING_A_BASE * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU);
+//        
+//        adjustLearn = (C_FACTOR_D / LEARNING_D_BASE) * ((float) k / TAU);
+//        LEARNING_D = LEARNING_D_BASE * (1 + adjustLearn) / (1 + adjustLearn + (float) (k * k) / TAU);
+//        if(oldProbeRMSE < 0.94) {
+//            REG_UF = 0.08;
+//            REG_MF = 0.006;
+//            REG_A = 0.03;
+//            REG_D = 0.0;
+//            REG_Y = 0.03;
+//            
+////            LRATE_BASE_MF = 0.003;
+////            LRATE_BASE_UF = 0.006;
+////            LEARNING_A_BASE = 0.003;
+////            LEARNING_D_BASE = 0.012;
+////            LRATE_W_BASE = 0.001;
+//            
+//            LRATE_BASE_MF = 0.004;
+//            LRATE_BASE_UF = 0.004;
+//            LEARNING_A_BASE = 0.003;
+//            LEARNING_D_BASE = 0.012;
+//            LRATE_W_BASE = 0.001;
+//        }
         
         start = clock();
         printf("Training epoch %d\n", k + 1);
@@ -436,5 +445,11 @@ void computeSVDPlusPlus(int num_features, int epochs, int* train_data, int* prob
         }
         
         oldProbeRMSE = newProbeRMSE;
+        
+                LRATE_MF *= 0.98;
+                LRATE_UF *= 0.98;
+                LEARNING_A *= 0.98;
+                LEARNING_D *= 0.98;
+                LRATE_W *= 0.98;
     }
 }

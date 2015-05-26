@@ -499,16 +499,12 @@ void computeSVD(float learning_rate, int num_features, int epochs, int* train_da
         LEARNING_D = LEARNING_D_BASE * (1 + adjustLearn)/(1 + adjustLearn + (float) (k * k)/ TAU_D);
         
         if(oldProbeRMSE < 0.92) {
-//            REG = 0.015;
-//            REG_A = 0.03;
-//            REG_D = 0.03;
             REG = 0.02;
             REG_A = 0.011;
             REG_D = 0.011;
             printf("lrate: %f\n", LRATE);
             printf("lrateA: %f\n", LEARNING_A);
             printf("lrateD: %f\n", LEARNING_D);
-            
         }
         
         printf("Training epoch %d\n", k + 1);
